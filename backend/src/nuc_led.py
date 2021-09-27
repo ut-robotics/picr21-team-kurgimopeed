@@ -117,9 +117,18 @@ class NucLED():
 
 if __name__ == "__main__":
     import time
+ 
+    def breath():
+        for i in range(64):
+            yield i
+        for i in range(64)[::-1]:
+            yield i
+
     led = NucLED()
 
+    led.set_led(led.TYPE_RING, mode=led.MODE_OFF)
     while True:
-        for i in led.get_ring_colors():
-            led.set_led(led.TYPE_RING, color=i, mode=led.MODE_ON)
-            time.sleep(0.1)
+        for i in led.get_ring_colors()[1:]:
+            for b in breath():
+                led.set_led(led.TYPE_RING, color=i, brightness=b, mode=led.MODE_ON)
+                time.sleep(0.01)
