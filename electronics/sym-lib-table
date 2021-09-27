@@ -1,0 +1,4 @@
+(sym_lib_table
+  (lib (name Electronics)(type Legacy)(uri ${KIPRJMOD}/Electronics.lib)(options "")(descr ""))
+  (lib (name 2021-09-13_09-53-18)(type Legacy)(uri ${KIPRJMOD}/korvpall-libs/2021-09-13_09-53-18.lib)(options "")(descr ""))
+)
