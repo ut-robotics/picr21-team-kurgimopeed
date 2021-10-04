@@ -4,20 +4,24 @@ import cv2
 import pyrealsense2 as rs
 
 from threading import Thread
+import atexit, time
 
-class RSCamera(object):
+class RSCamera():
     def __init__(self):
         # configure depth and color streams
         self.pipeline = rs.pipeline()
         self.config = rs.config()
 
-        # Get device product line for setting a supporting resolution
         self.pipeline_wrapper = rs.pipeline_wrapper(self.pipeline)
         self.pipeline_profile = self.config.resolve(self.pipeline_wrapper)
         self.device = self.pipeline_profile.get_device()
         self.device_product_line = str(self.device.get_info(rs.camera_info.product_line))
 
-        # TODO: configure desired shit
+        # TODO: find good config and load 
+        #am = rs.rs400_advanced_mode(rs.context().devices().front())
+        #am.load_json()
+
+
         # enable depth
         # 848x480 90 fps max
         # go 60
@@ -25,6 +29,10 @@ class RSCamera(object):
         # enable rgb
         # 960x540 60 fps max, 1920x1080 30 possible
         self.config.enable_stream(rs.stream.color, 960, 540, rs.format.bgr8, 60)
+
+        # flag to check in capture thread
+        self.stop = False
+        atexit.register(self.cleanup)
 
         print("starting rs pipeline")
         self.pipeline.start(self.config)
@@ -35,18 +43,19 @@ class RSCamera(object):
 
         # start capture thread
         self.thread = Thread(target=self.process_frame_thread)
+        self.thread.daemon = True
         self.thread.start()
 
-    def __del__(self):
+    def cleanup(self):
+        # stop the pipeline sir
         print("stopping rs pipeline")
+        self.stop = True
+        time.sleep(0.1)
         self.pipeline.stop()
 
-    def is_ready(self):
-        return self.color_frame
-
     def process_frame_thread(self):
-        while True:
-            # wait for a coherent pair of frames: depth and color
+        while not self.stop:
+            # wait for a coherent pair of frames
             frames = self.pipeline.wait_for_frames()
             depth_frame = frames.get_depth_frame()
             color_frame = frames.get_color_frame()

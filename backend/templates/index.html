@@ -1,27 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>kurgimopeed</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="static/jquery.min.js"></script>
+    <script src="static/jquery-ui.min.js"></script>
+    <script src="static/remote-control.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
 </head>
-<body style="max-width: 80vw">
-    <h1>kurgimopeed big admin panel</h1>
 
+<body id="keyboard_area" style="margin: 0;">
+    <h1>korgimopeed controller</h1>
+    <h2>Your ID: <span id="ws-id"></span></h2>
+    <input id="speed_slider" type="range" min="0" max="100" value="50">
+
+    <!--
     <h2>depth feed</h2>
     <img src="/depth-feed">
 
     <h2>color feed</h2>
     <img src="/color-feed">
-
-    <script>
-
-        $(document).ready(function () {
-
-        });
-    </script>
+    -->
 </body>
+
 </html>
