@@ -71,6 +71,9 @@ class MotorDriver(MotorControllerHandler):
         super().start(self.send_queue)
         return self
 
+    def start(self):
+        self.__enter__()
+
     def get_target_motor_speeds(self):
         return [
             int(
@@ -93,6 +96,9 @@ class MotorDriver(MotorControllerHandler):
             self.send_queue.put_nowait((motor1, motor2, motor3, thrower, callback))
             return True
         return False
+
+    def stop(self):
+        self.send(0, 0, 0, 0)
 
     def close(self):
         self.send_queue.put(STOP_CODE)

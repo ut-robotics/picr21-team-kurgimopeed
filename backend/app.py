@@ -1,3 +1,4 @@
+import atexit
 from typing import List
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request
@@ -8,8 +9,17 @@ from fastapi.staticfiles import StaticFiles
 import time
 import json
 from src.motor_driver import MotorDriver
+from src.nuc_led import NucLED
 
-from RSCamera import RSCamera
+# camera works perfectly, just frames have to finish buffering after reload lol
+#from src.RSCamera import RSCamera
+
+led = NucLED()
+
+def default_led():
+    led.set_led(led.TYPE_RING, color=led.RING_RED, brightness=0xff, mode=led.MODE_FADE_1HZ)
+
+default_led()
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -44,22 +54,41 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
+motor_driver = MotorDriver("/dev/ttyACM0")
+print("starting motor driver")
+motor_driver.start()
+
+def cleanup_motor_driver():
+    print("stopping motor driver")
+    motor_driver.close()
+
+# TODO: this is never called, because atexit doesnt work on multiprocessed threads.
+atexit.register(cleanup_motor_driver)
+
 @app.websocket("/ws/{client_id}")
 async def websocket_endpoint(websocket: WebSocket, client_id: int):
     await manager.connect(websocket)
     try:
-        with MotorDriver("/dev/ttyACM0") as driver:
-            while True:
-                text = await websocket.receive_text()
-                await manager.send_personal_message(f"You wrote: {text}", websocket)
-                data = json.loads(text)
-                driver.send(speed=data["speed"], direction=data["direction"], turn_speed=0, thrower=0, callback=None)
-                #await manager.broadcast(f"Client #{client_id} says: {text}")
+        while True:
+            led.set_led(led.TYPE_RING, brightness=0xff, mode=led.MODE_ON)
+            text = await websocket.receive_text()
+            await manager.send_personal_message(f"You wrote: {text}", websocket)
+            data = json.loads(text)
+            print(data)
+            speed, direction, turn, thrower, enable = [data[i] for i in ["speed", "direction", "turn", "thrower", "enable"]]
+            if enable:
+                led.set_led(led.TYPE_RING, color=led.RING_GREEN)
+                motor_driver.send(speed=speed, direction=direction, turn_speed=turn, thrower=thrower, callback=None)
+            else:
+                led.set_led(led.TYPE_RING, color=led.RING_RED)
+                motor_driver.stop()
     except WebSocketDisconnect:
+        default_led()
+        motor_driver.stop()
         manager.disconnect(websocket)
         await manager.broadcast(f"Client #{client_id} left the chat")
 
-rs_cam = RSCamera()
+#rs_cam = RSCamera()
 
 @app.get("/depth-feed")
 async def depth_feed(request: Request):

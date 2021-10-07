@@ -21,7 +21,6 @@ class RSCamera():
         #am = rs.rs400_advanced_mode(rs.context().devices().front())
         #am.load_json()
 
-
         # enable depth
         # 848x480 90 fps max
         # go 60
@@ -52,6 +51,9 @@ class RSCamera():
         self.stop = True
         time.sleep(0.1)
         self.pipeline.stop()
+
+    def is_ready(self):
+        return self.color_frame
 
     def process_frame_thread(self):
         while not self.stop:
