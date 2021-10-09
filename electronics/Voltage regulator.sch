@@ -39,6 +39,8 @@ $Comp
 L Electronics:NCP164 U?
 U 1 1 616198FF
 P 8650 1200
+AR Path="/616198FF" Ref="U?"  Part="1" 
+AR Path="/615F51F3/616198FF" Ref="U?"  Part="1" 
 F 0 "U?" H 8500 1675 50  0000 C CNN
 F 1 "NCP164" H 8500 1584 50  0000 C CNN
 F 2 "" H 8700 1150 50  0001 C CNN
@@ -49,17 +51,6 @@ $EndComp
 Wire Wire Line
 	8200 1050 8200 950 
 Connection ~ 8200 950 
-$Comp
-L Device:C C?
-U 1 1 6161AE12
-P 7900 1100
-F 0 "C?" H 8015 1146 50  0000 L CNN
-F 1 "1uF" H 8015 1055 50  0000 L CNN
-F 2 "" H 7938 950 50  0001 C CNN
-F 3 "~" H 7900 1100 50  0001 C CNN
-	1    7900 1100
-	1    0    0    -1  
-$EndComp
 $Comp
 L Device:C C?
 U 1 1 6161B8C9
@@ -73,17 +64,6 @@ F 3 "~" H 9050 1100 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	8800 950  9050 950 
-$Comp
-L power:GND #PWR?
-U 1 1 6161D458
-P 7900 1250
-F 0 "#PWR?" H 7900 1000 50  0001 C CNN
-F 1 "GND" H 7905 1077 50  0000 C CNN
-F 2 "" H 7900 1250 50  0001 C CNN
-F 3 "" H 7900 1250 50  0001 C CNN
-	1    7900 1250
-	1    0    0    -1  
-$EndComp
 $Comp
 L power:GND #PWR?
 U 1 1 6161DBE9
@@ -117,7 +97,6 @@ F 3 "" H 7900 950 50  0001 C CNN
 	1    7900 950 
 	1    0    0    -1  
 $EndComp
-Connection ~ 7900 950 
 Wire Wire Line
 	7900 950  8200 950 
 $Comp
@@ -154,4 +133,178 @@ Wire Wire Line
 Wire Wire Line
 	10250 1250 10250 1450
 Connection ~ 10250 1450
+$Comp
+L Electronics:3mm_pad J?
+U 1 1 6161FB1D
+P 10500 2350
+F 0 "J?" H 10629 2518 50  0000 L CNN
+F 1 "3mm_pad" H 10629 2427 50  0000 L CNN
+F 2 "" H 10800 2400 50  0001 C CNN
+F 3 "" H 10800 2400 50  0001 C CNN
+	1    10500 2350
+	1    0    0    -1  
+$EndComp
+$Comp
+L Electronics:3mm_pad J?
+U 1 1 6161FE7C
+P 10500 2650
+F 0 "J?" H 10550 2700 50  0000 L CNN
+F 1 "3mm_pad" H 10629 2727 50  0000 L CNN
+F 2 "" H 10800 2700 50  0001 C CNN
+F 3 "" H 10800 2700 50  0001 C CNN
+	1    10500 2650
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:CP C?
+U 1 1 616296D7
+P 10500 2400
+F 0 "C?" H 10618 2446 50  0000 L CNN
+F 1 "CP" H 10618 2355 50  0000 L CNN
+F 2 "" H 10538 2250 50  0001 C CNN
+F 3 "~" H 10500 2400 50  0001 C CNN
+	1    10500 2400
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:Vdrive #PWR?
+U 1 1 6162F172
+P 10500 2250
+F 0 "#PWR?" H 10300 2100 50  0001 C CNN
+F 1 "Vdrive" H 10515 2423 50  0000 C CNN
+F 2 "" H 10500 2250 50  0001 C CNN
+F 3 "" H 10500 2250 50  0001 C CNN
+	1    10500 2250
+	1    0    0    -1  
+$EndComp
+Connection ~ 10500 2250
+$Comp
+L power:GND #PWR?
+U 1 1 6162F7C6
+P 10500 2550
+F 0 "#PWR?" H 10500 2300 50  0001 C CNN
+F 1 "GND" H 10505 2377 50  0000 C CNN
+F 2 "" H 10500 2550 50  0001 C CNN
+F 3 "" H 10500 2550 50  0001 C CNN
+	1    10500 2550
+	1    0    0    -1  
+$EndComp
+Connection ~ 10500 2550
+Text Notes 10050 2900 0    50   ~ 0
+Battery connection pads
+$Comp
+L Electronics:NCV8730 U?
+U 1 1 6163410C
+P 8550 2500
+F 0 "U?" H 8575 3025 50  0000 C CNN
+F 1 "NCV8730" H 8575 2934 50  0000 C CNN
+F 2 "" H 8750 2500 50  0001 C CNN
+F 3 "" H 8750 2500 50  0001 C CNN
+	1    8550 2500
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 6161D458
+P 7900 1250
+F 0 "#PWR?" H 7900 1000 50  0001 C CNN
+F 1 "GND" H 7905 1077 50  0000 C CNN
+F 2 "" H 7900 1250 50  0001 C CNN
+F 3 "" H 7900 1250 50  0001 C CNN
+	1    7900 1250
+	1    0    0    -1  
+$EndComp
+Connection ~ 7900 950 
+$Comp
+L Device:C C?
+U 1 1 6161AE12
+P 7900 1100
+F 0 "C?" H 8015 1146 50  0000 L CNN
+F 1 "1uF" H 8015 1055 50  0000 L CNN
+F 2 "" H 7938 950 50  0001 C CNN
+F 3 "~" H 7900 1100 50  0001 C CNN
+	1    7900 1100
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C?
+U 1 1 6163F803
+P 8000 2350
+F 0 "C?" H 8115 2396 50  0000 L CNN
+F 1 "1uF" H 8115 2305 50  0000 L CNN
+F 2 "" H 8038 2200 50  0001 C CNN
+F 3 "~" H 8000 2350 50  0001 C CNN
+	1    8000 2350
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C?
+U 1 1 6163FAF1
+P 9000 2350
+F 0 "C?" H 9115 2396 50  0000 L CNN
+F 1 "1uF" H 9115 2305 50  0000 L CNN
+F 2 "" H 9038 2200 50  0001 C CNN
+F 3 "~" H 9000 2350 50  0001 C CNN
+	1    9000 2350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8300 2300 8300 2200
+Wire Wire Line
+	8000 2200 8300 2200
+Connection ~ 8300 2200
+Wire Wire Line
+	8850 2200 9000 2200
+$Comp
+L power:GND #PWR?
+U 1 1 616459CB
+P 8000 2500
+F 0 "#PWR?" H 8000 2250 50  0001 C CNN
+F 1 "GND" H 8005 2327 50  0000 C CNN
+F 2 "" H 8000 2500 50  0001 C CNN
+F 3 "" H 8000 2500 50  0001 C CNN
+	1    8000 2500
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 61645D42
+P 9000 2500
+F 0 "#PWR?" H 9000 2250 50  0001 C CNN
+F 1 "GND" H 9005 2327 50  0000 C CNN
+F 2 "" H 9000 2500 50  0001 C CNN
+F 3 "" H 9000 2500 50  0001 C CNN
+	1    9000 2500
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:Vdrive #PWR?
+U 1 1 61647D32
+P 8000 2200
+F 0 "#PWR?" H 7800 2050 50  0001 C CNN
+F 1 "Vdrive" H 8015 2373 50  0000 C CNN
+F 2 "" H 8000 2200 50  0001 C CNN
+F 3 "" H 8000 2200 50  0001 C CNN
+	1    8000 2200
+	1    0    0    -1  
+$EndComp
+Connection ~ 8000 2200
+$Comp
+L power:+5VD #PWR?
+U 1 1 6164BE06
+P 9000 2200
+F 0 "#PWR?" H 9000 2050 50  0001 C CNN
+F 1 "+5VD" H 9015 2373 50  0000 C CNN
+F 2 "" H 9000 2200 50  0001 C CNN
+F 3 "" H 9000 2200 50  0001 C CNN
+	1    9000 2200
+	1    0    0    -1  
+$EndComp
+Connection ~ 9000 2200
+Text Notes 10350 1900 0    50   ~ 0
+USB port
+Text Notes 8000 1600 0    50   ~ 0
+USB 5V to CPU logic 3v3
+Text Notes 8000 2850 0    50   ~ 0
+Battery to driver logic 5V
 $EndSCHEMATC
