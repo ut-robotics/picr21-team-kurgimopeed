@@ -30,6 +30,22 @@ $(document).ready(function () {
     //ws watchdog
     setInterval(function(){
         ws_status = $("#ws-status")
+
+        if (ws.status() === WebSocket.OPEN) {
+            if (ws_status.text() !== "OPEN") {
+                $("#video").html(`
+<h2>depth feed</h2>
+<img src="/depth-feed" width="50%">
+
+<h2>color feed</h2>
+<img src="/color-feed" width="50%">
+                `);
+            }
+        } else {
+            $("#video").html("");
+            window.stop(); // haha ebig hakke ::--DD
+        }
+
         switch (ws.status()){
             case WebSocket.CLOSED:
                 ws_status.text("CLOSED")
@@ -52,6 +68,7 @@ $(document).ready(function () {
                 ws_status.text("unknown")
                 ws_status[0].setAttribute("class", "closed");
         }
+
     }, 100)
 
     function sendMessage(data) {

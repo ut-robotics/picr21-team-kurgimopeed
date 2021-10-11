@@ -72,6 +72,7 @@ class MotorDriver(MotorControllerHandler):
         return self
 
     def start(self):
+        print("starting motor driver")
         self.__enter__()
 
     def get_target_motor_speeds(self):
@@ -101,6 +102,7 @@ class MotorDriver(MotorControllerHandler):
         self.send(0, 0, 0, 0)
 
     def close(self):
+        print("stopping motor driver")
         self.send_queue.put(STOP_CODE)
 
     def __exit__(self, exc_type, exc_val, exc_tb):

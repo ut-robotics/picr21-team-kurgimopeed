@@ -8,55 +8,58 @@
     <title>kurgimopeed</title>
     <script src="static/js/jquery.min.js"></script>
     <script src="static/js/remote-control.js"></script>
+    <script src="static/js/calibrate.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
     <link rel="stylesheet" href="static/css/remote-control.css">
 </head>
 
 <body>
     <h1>kurgimopeed controller</h1>
-    <h2>Your ID: <span id="ws-id"></span></h2>
-    <b>WS status: <span id="ws-status"></span></b><br>
-    <button id="main_switch" class="main_disabled">OFF</button><br>
-    <div>
-        <div class="row">
-            <div class="column">
-                <div>
+    <div id="rc">
+        <h2>Your ID: <span id="ws-id"></span></h2>
+        <b>WS status: <span id="ws-status"></span></b><br>
+        <button id="main_switch" class="main_disabled">OFF</button><br>
+        <div>
+            <div class="row">
+                <div class="column">
                     <div>
-                        <b>Main speed: </b><span id="speed_slider_text"></span>
+                        <div>
+                            <b>Main speed: </b><span id="speed_slider_text"></span>
+                        </div>
+                        <input id="speed_slider" type="range" min="0" max="100" value="0">
                     </div>
-                    <input id="speed_slider" type="range" min="0" max="100" value="0">
+                    <div>
+                        <div>
+                            <b>Thrower speed: </b><span id="thrower_slider_text"></span>
+                        </div>
+                        <input id="thrower_slider" type="range" min="0" max="2000" value="0">
+                    </div>
                 </div>
-                <div>
+            </div>
+            <div class="row">
+                <div class="controls">
                     <div>
-                        <b>Thrower speed: </b><span id="thrower_slider_text"></span>
+                        <button id="key_turnL">⭯</button>
+                        <button id="key_up">↑</button>
+                        <button id="key_turnR">⭮</button>
                     </div>
-                    <input id="thrower_slider" type="range" min="0" max="2000" value="0">
+                    <div>
+                        <button id="key_left">←</button>
+                        <button id="key_down">↓</button>
+                        <button id="key_right">→</button>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="controls">
-                <div>
-                    <button id="key_turnL">⭯</button>
-                    <button id="key_up">↑</button>
-                    <button id="key_turnR">⭮</button>
-                </div>
-                <div>
-                    <button id="key_left">←</button>
-                    <button id="key_down">↓</button>
-                    <button id="key_right">→</button>
-                </div>
-            </div>
         </div>
+
+
+    <div id="video">
     </div>
 
-    <!--
-    <h2>depth feed</h2>
-    <img src="/depth-feed" width="50%">
+    <div id="calibrate">
 
-    <h2>color feed</h2>
-    <img src="/color-feed" width="50%">
-    -->
+    </div>
 </body>
 
 </html>

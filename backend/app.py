@@ -8,16 +8,17 @@ from fastapi.staticfiles import StaticFiles
 
 import time
 import json
+
 from src.motor_driver import MotorDriver
+from src.ImageProcess import ImageProcess
 from src.nuc_led import NucLED
 
 # camera works perfectly, just frames have to finish buffering after reload lol
-#from src.RSCamera import RSCamera
 
 led = NucLED()
 
 def default_led():
-    led.set_led(led.TYPE_RING, color=led.RING_RED, brightness=0xff, mode=led.MODE_FADE_1HZ)
+    led.set_led(led.TYPE_RING, color=led.RING_RED, brightness=64, mode=led.MODE_FADE_1HZ)
 
 default_led()
 
@@ -55,15 +56,16 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 motor_driver = MotorDriver("/dev/ttyACM0")
-print("starting motor driver")
 motor_driver.start()
 
-def cleanup_motor_driver():
-    print("stopping motor driver")
-    motor_driver.close()
+image_proccess = ImageProcess(motor_driver)
+image_proccess.start()
 
-# TODO: this is never called, because atexit doesnt work on multiprocessed threads.
-atexit.register(cleanup_motor_driver)
+@app.on_event("shutdown")
+async def shutdown_event():
+    motor_driver.close()
+    image_proccess.stop()
+    led.set_led(led.TYPE_RING, 64, led.MODE_FADE_05HZ, led.RING_PINK)
 
 @app.websocket("/ws/{client_id}")
 async def websocket_endpoint(websocket: WebSocket, client_id: int):
@@ -88,31 +90,30 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
         manager.disconnect(websocket)
         await manager.broadcast(f"Client #{client_id} left the chat")
 
-#rs_cam = RSCamera()
-
 @app.get("/depth-feed")
-async def depth_feed(request: Request):
+def depth_feed(request: Request):
     def feed_generator():
-        while True:
+        while not image_proccess.stop:
             yield (b"--frame\r\n"
-                b"Content-Type: image/jpeg\r\n\r\n" + rs_cam.depth_frame + b"\r\n\r\n")
+                b"Content-Type: image/jpeg\r\n\r\n" + image_proccess.get_frame1() + b"\r\n\r\n")
             time.sleep(1/25) # big sync fix
 
-    while not rs_cam.is_ready():
+    while not image_proccess.has_new_frame1():
         time.sleep(0.2)
-    return StreamingResponse(feed_generator(), media_type="multipart/x-mixed-replace;boundary=frame")
+    return StreamingResponse(feed_generator(), status_code=206, media_type="multipart/x-mixed-replace;boundary=frame")
+
 
 @app.get("/color-feed")
-async def color_feed(request: Request):
+def color_feed(request: Request):
     def feed_generator():
-        while True:
+        while not image_proccess.stop:
             yield (b"--frame\r\n"
-                b"Content-Type: image/jpeg\r\n\r\n" + rs_cam.color_frame + b"\r\n\r\n")
+                b"Content-Type: image/jpeg\r\n\r\n" + image_proccess.get_frame2() + b"\r\n\r\n")
             time.sleep(1/25) # big sync fix
 
-    while not rs_cam.is_ready():
-        time.sleep(0.2)
-    return StreamingResponse(feed_generator(), media_type="multipart/x-mixed-replace;boundary=frame")
+    while not image_proccess.has_new_frame2():
+        time.sleep(0.2) 
+    return StreamingResponse(feed_generator(), status_code=206, media_type="multipart/x-mixed-replace;boundary=frame")
 
 @app.get("/")
 async def index(request: Request):

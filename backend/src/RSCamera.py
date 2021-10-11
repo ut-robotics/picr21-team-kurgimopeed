@@ -4,7 +4,7 @@ import cv2
 import pyrealsense2 as rs
 
 from threading import Thread
-import atexit, time
+import time
 
 class RSCamera():
     def __init__(self):
@@ -21,39 +21,33 @@ class RSCamera():
         #am = rs.rs400_advanced_mode(rs.context().devices().front())
         #am.load_json()
 
+        self.depth_resolution = (848, 480)
+        self.color_resolution = (960, 540)
+
         # enable depth
         # 848x480 90 fps max
         # go 60
-        self.config.enable_stream(rs.stream.depth, 848, 480, rs.format.z16, 60)
+        x, y = self.depth_resolution
+        self.config.enable_stream(rs.stream.depth, x, y, rs.format.z16, 60)
         # enable rgb
         # 960x540 60 fps max, 1920x1080 30 possible
-        self.config.enable_stream(rs.stream.color, 960, 540, rs.format.bgr8, 60)
+        x, y = self.color_resolution
+        self.config.enable_stream(rs.stream.color, x, y, rs.format.bgr8, 60)
 
-        # flag to check in capture thread
-        self.stop = False
-        atexit.register(self.cleanup)
+        #atexit.register(self.cleanup)
 
-        print("starting rs pipeline")
-        self.pipeline.start(self.config)
-        
         # should be tuple?
         self.color_frame = None
         self.depth_frame = None
 
-        # start capture thread
-        self.thread = Thread(target=self.process_frame_thread)
-        self.thread.daemon = True
-        self.thread.start()
+    def start(self):
+        self.pipeline.start(self.config)
+        print("started rs pipeline")
 
     def cleanup(self):
         # stop the pipeline sir
         print("stopping rs pipeline")
-        self.stop = True
-        time.sleep(0.1)
         self.pipeline.stop()
-
-    def is_ready(self):
-        return self.color_frame
 
     def process_frame_thread(self):
         while not self.stop:
