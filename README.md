@@ -2,4 +2,4 @@
 
 ## Usage
 
-`python backend/app.py` - start admin web view
+`sudo uvicorn app:app --port 5000` - start admin web view (in backend dir). port is configured in `/etc/nginx/nginx.conf`. root is required for led drivers and realsense (nice arch plugdev)
