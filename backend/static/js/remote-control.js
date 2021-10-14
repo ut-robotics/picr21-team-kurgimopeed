@@ -38,7 +38,7 @@ $(document).ready(function () {
 <img src="/depth-feed" width="50%">
 
 <h2>color feed</h2>
-<img src="/color-feed" width="50%">
+<img src="/color-feed" width="100%">
                 `);
             }
         } else {

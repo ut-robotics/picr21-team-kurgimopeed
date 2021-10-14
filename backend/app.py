@@ -2,7 +2,7 @@ import atexit
 from typing import List
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request
-from fastapi.responses import StreamingResponse, Response
+from fastapi.responses import StreamingResponse, Response, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
@@ -118,3 +118,14 @@ def color_feed(request: Request):
 @app.get("/")
 async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
+
+@app.get("/config")
+def load_config(request: Request):
+    with open("../config/threshold_config.json", "r") as f:
+        return JSONResponse(content=json.load(f))
+
+@app.post("/config")
+async def save_config(request: Request):
+    j = await request.json()
+    with open("../config/threshold_config.json", "w") as f:
+        json.dump(j, f)
