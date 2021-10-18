@@ -1,3 +1,10 @@
+function play_march() {
+    $.ajax({
+        url: "/play_march",
+        method: "post"
+    })
+}
+
 class WSHandler {
     constructor() {
         this.client_id = Date.now()
