@@ -24,12 +24,12 @@ class WSHandler {
 }
 
 $(document).ready(function () {
-    ws = new WSHandler()
+    var ws = new WSHandler()
     document.querySelector("#ws-id").textContent = ws.client_id;
 
     //ws watchdog
     setInterval(function(){
-        ws_status = $("#ws-status")
+        let ws_status = $("#ws-status")
 
         if (ws.status() === WebSocket.OPEN) {
             if (ws_status.text() !== "OPEN") {
@@ -206,9 +206,9 @@ $(document).ready(function () {
     });
 
     function main_toggle(){  //main switch and attributes
-        var en = "main_enabled"
-        var dis = "main_disabled"
-        main_switch = $("#main_switch") 
+        const en = "main_enabled"
+        const dis = "main_disabled"
+        let main_switch = $("#main_switch") 
         if (main_switch.hasClass(dis)){
             main_switch.removeClass(dis)
             main_switch.addClass(en)
