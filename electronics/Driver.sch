@@ -63,16 +63,6 @@ F 3 "~" H 2850 2250 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	2750 2400 2850 2400
-Text Label 3450 2400 2    50   ~ 0
-MOT1out_2
-Text Label 3450 2100 2    50   ~ 0
-MOT1out_1
-Connection ~ 2850 2100
-Connection ~ 2850 2400
-Wire Wire Line
-	2850 2100 3450 2100
-Wire Wire Line
-	2850 2400 3450 2400
 $Comp
 L Device:CP C?
 U 1 1 6160C840
@@ -109,65 +99,13 @@ Wire Wire Line
 	1750 2700 1750 2800
 Wire Wire Line
 	1850 2700 1750 2700
-$Comp
-L power:GND #PWR?
-U 1 1 6160C854
-P 2300 2950
-F 0 "#PWR?" H 2300 2700 50  0001 C CNN
-F 1 "GND" H 2305 2777 50  0000 C CNN
-F 2 "" H 2300 2950 50  0001 C CNN
-F 3 "" H 2300 2950 50  0001 C CNN
-	1    2300 2950
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR?
-U 1 1 6160C85A
-P 1750 2900
-F 0 "#PWR?" H 1750 2650 50  0001 C CNN
-F 1 "GND" H 1755 2727 50  0000 C CNN
-F 2 "" H 1750 2900 50  0001 C CNN
-F 3 "" H 1750 2900 50  0001 C CNN
-	1    1750 2900
-	1    0    0    -1  
-$EndComp
 Connection ~ 1750 2800
 Wire Wire Line
 	1750 2800 1750 2900
-Wire Wire Line
-	1400 2200 1850 2200
-Text Label 1400 2200 0    50   ~ 0
-MOToff
-Wire Wire Line
-	1400 2000 1850 2000
-Text Label 1400 2000 0    50   ~ 0
-MOTSleep
 Text Label 1400 1900 0    50   ~ 0
 MOT1en_2
 Text Label 1400 1800 0    50   ~ 0
 MOT1en_1
-$Comp
-L power:GND #PWR?
-U 1 1 6160C868
-P 1350 2750
-F 0 "#PWR?" H 1350 2500 50  0001 C CNN
-F 1 "GND" H 1355 2577 50  0000 C CNN
-F 2 "" H 1350 2750 50  0001 C CNN
-F 3 "" H 1350 2750 50  0001 C CNN
-	1    1350 2750
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR?
-U 1 1 6160C86E
-P 1600 2850
-F 0 "#PWR?" H 1600 2600 50  0001 C CNN
-F 1 "GND" H 1605 2677 50  0000 C CNN
-F 2 "" H 1600 2850 50  0001 C CNN
-F 3 "" H 1600 2850 50  0001 C CNN
-	1    1600 2850
-	1    0    0    -1  
-$EndComp
 $Comp
 L Device:R_US R?
 U 1 1 6160C874
@@ -192,17 +130,6 @@ F 3 "~" H 1600 2700 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	1600 2550 1850 2550
-$Comp
-L power:GND #PWR?
-U 1 1 6160C881
-P 2750 3050
-F 0 "#PWR?" H 2750 2800 50  0001 C CNN
-F 1 "GND" H 2755 2877 50  0000 C CNN
-F 2 "" H 2750 3050 50  0001 C CNN
-F 3 "" H 2750 3050 50  0001 C CNN
-	1    2750 3050
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	1350 2450 1850 2450
 $Comp
@@ -214,17 +141,6 @@ F 1 "2.7k" H 2818 2855 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder" V 2790 2890 50  0001 C CNN
 F 3 "~" H 2750 2900 50  0001 C CNN
 	1    2750 2900
-	1    0    0    -1  
-$EndComp
-$Comp
-L Electronics:DRV8243 U?
-U 1 1 6160C88E
-P 2300 2250
-F 0 "U?" H 2000 2850 50  0000 C CNN
-F 1 "DRV8243" H 2500 2850 50  0000 C CNN
-F 2 "Electronics:VQFN-HR-14" H 1450 2800 50  0001 C CNN
-F 3 "https://www.ti.com/lit/ds/symlink/drv8243-q1.pdf" H 2200 2400 50  0001 C CNN
-	1    2300 2250
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
@@ -281,16 +197,6 @@ F 3 "~" H 6500 2250 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	6400 2400 6500 2400
-Text Label 7100 2400 2    50   ~ 0
-MOT2out_2
-Text Label 7100 2100 2    50   ~ 0
-MOT2out_1
-Connection ~ 6500 2100
-Connection ~ 6500 2400
-Wire Wire Line
-	6500 2100 7100 2100
-Wire Wire Line
-	6500 2400 7100 2400
 $Comp
 L Device:CP C?
 U 1 1 6160C8B7
@@ -327,65 +233,13 @@ Wire Wire Line
 	5400 2700 5400 2800
 Wire Wire Line
 	5500 2700 5400 2700
-$Comp
-L power:GND #PWR?
-U 1 1 6160C8CB
-P 5950 2950
-F 0 "#PWR?" H 5950 2700 50  0001 C CNN
-F 1 "GND" H 5955 2777 50  0000 C CNN
-F 2 "" H 5950 2950 50  0001 C CNN
-F 3 "" H 5950 2950 50  0001 C CNN
-	1    5950 2950
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR?
-U 1 1 6160C8D1
-P 5400 2900
-F 0 "#PWR?" H 5400 2650 50  0001 C CNN
-F 1 "GND" H 5405 2727 50  0000 C CNN
-F 2 "" H 5400 2900 50  0001 C CNN
-F 3 "" H 5400 2900 50  0001 C CNN
-	1    5400 2900
-	1    0    0    -1  
-$EndComp
 Connection ~ 5400 2800
 Wire Wire Line
 	5400 2800 5400 2900
-Wire Wire Line
-	5050 2200 5500 2200
-Text Label 5050 2200 0    50   ~ 0
-MOToff
-Wire Wire Line
-	5050 2000 5500 2000
-Text Label 5050 2000 0    50   ~ 0
-MOTSleep
 Text Label 5050 1900 0    50   ~ 0
 MOT2en_2
 Text Label 5050 1800 0    50   ~ 0
 MOT2en_1
-$Comp
-L power:GND #PWR?
-U 1 1 6160C8DF
-P 5000 2750
-F 0 "#PWR?" H 5000 2500 50  0001 C CNN
-F 1 "GND" H 5005 2577 50  0000 C CNN
-F 2 "" H 5000 2750 50  0001 C CNN
-F 3 "" H 5000 2750 50  0001 C CNN
-	1    5000 2750
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR?
-U 1 1 6160C8E5
-P 5250 2850
-F 0 "#PWR?" H 5250 2600 50  0001 C CNN
-F 1 "GND" H 5255 2677 50  0000 C CNN
-F 2 "" H 5250 2850 50  0001 C CNN
-F 3 "" H 5250 2850 50  0001 C CNN
-	1    5250 2850
-	1    0    0    -1  
-$EndComp
 $Comp
 L Device:R_US R?
 U 1 1 6160C8EB
@@ -410,17 +264,6 @@ F 3 "~" H 5250 2700 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	5250 2550 5500 2550
-$Comp
-L power:GND #PWR?
-U 1 1 6160C8F8
-P 6400 3050
-F 0 "#PWR?" H 6400 2800 50  0001 C CNN
-F 1 "GND" H 6405 2877 50  0000 C CNN
-F 2 "" H 6400 3050 50  0001 C CNN
-F 3 "" H 6400 3050 50  0001 C CNN
-	1    6400 3050
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	5000 2450 5500 2450
 $Comp
@@ -499,16 +342,6 @@ F 3 "~" H 9950 2250 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	9850 2400 9950 2400
-Text Label 10550 2400 2    50   ~ 0
-MOT3out_2
-Text Label 10550 2100 2    50   ~ 0
-MOT3out_1
-Connection ~ 9950 2100
-Connection ~ 9950 2400
-Wire Wire Line
-	9950 2100 10550 2100
-Wire Wire Line
-	9950 2400 10550 2400
 $Comp
 L Device:CP C?
 U 1 1 6160C92E
@@ -545,65 +378,21 @@ Wire Wire Line
 	8850 2700 8850 2800
 Wire Wire Line
 	8950 2700 8850 2700
-$Comp
-L power:GND #PWR?
-U 1 1 6160C942
-P 9400 2950
-F 0 "#PWR?" H 9400 2700 50  0001 C CNN
-F 1 "GND" H 9405 2777 50  0000 C CNN
-F 2 "" H 9400 2950 50  0001 C CNN
-F 3 "" H 9400 2950 50  0001 C CNN
-	1    9400 2950
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR?
-U 1 1 6160C948
-P 8850 2900
-F 0 "#PWR?" H 8850 2650 50  0001 C CNN
-F 1 "GND" H 8855 2727 50  0000 C CNN
-F 2 "" H 8850 2900 50  0001 C CNN
-F 3 "" H 8850 2900 50  0001 C CNN
-	1    8850 2900
-	1    0    0    -1  
-$EndComp
 Connection ~ 8850 2800
 Wire Wire Line
 	8850 2800 8850 2900
 Wire Wire Line
 	8500 2200 8950 2200
 Text Label 8500 2200 0    50   ~ 0
-MOToff
+MOT_off
 Wire Wire Line
 	8500 2000 8950 2000
 Text Label 8500 2000 0    50   ~ 0
-MOTSleep
+MOT_sleep
 Text Label 8500 1900 0    50   ~ 0
 MOT3en_2
 Text Label 8500 1800 0    50   ~ 0
 MOT3en_1
-$Comp
-L power:GND #PWR?
-U 1 1 6160C956
-P 8450 2750
-F 0 "#PWR?" H 8450 2500 50  0001 C CNN
-F 1 "GND" H 8455 2577 50  0000 C CNN
-F 2 "" H 8450 2750 50  0001 C CNN
-F 3 "" H 8450 2750 50  0001 C CNN
-	1    8450 2750
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR?
-U 1 1 6160C95C
-P 8700 2850
-F 0 "#PWR?" H 8700 2600 50  0001 C CNN
-F 1 "GND" H 8705 2677 50  0000 C CNN
-F 2 "" H 8700 2850 50  0001 C CNN
-F 3 "" H 8700 2850 50  0001 C CNN
-	1    8700 2850
-	1    0    0    -1  
-$EndComp
 $Comp
 L Device:R_US R?
 U 1 1 6160C962
@@ -628,17 +417,6 @@ F 3 "~" H 8700 2700 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	8700 2550 8950 2550
-$Comp
-L power:GND #PWR?
-U 1 1 6160C96F
-P 9850 3050
-F 0 "#PWR?" H 9850 2800 50  0001 C CNN
-F 1 "GND" H 9855 2877 50  0000 C CNN
-F 2 "" H 9850 3050 50  0001 C CNN
-F 3 "" H 9850 3050 50  0001 C CNN
-	1    9850 3050
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	8450 2450 8950 2450
 $Comp
@@ -652,6 +430,21 @@ F 3 "~" H 9850 2900 50  0001 C CNN
 	1    9850 2900
 	1    0    0    -1  
 $EndComp
+Wire Wire Line
+	8500 1800 8950 1800
+Wire Wire Line
+	8500 1900 8950 1900
+$Comp
+L power:Earth #PWR?
+U 1 1 616D1C7A
+P 9850 3050
+F 0 "#PWR?" H 9850 2800 50  0001 C CNN
+F 1 "Earth" H 9850 2900 50  0001 C CNN
+F 2 "" H 9850 3050 50  0001 C CNN
+F 3 "~" H 9850 3050 50  0001 C CNN
+	1    9850 3050
+	1    0    0    -1  
+$EndComp
 $Comp
 L Electronics:DRV8243 U?
 U 1 1 6160C97C
@@ -663,8 +456,275 @@ F 3 "https://www.ti.com/lit/ds/symlink/drv8243-q1.pdf" H 9300 2400 50  0001 C CN
 	1    9400 2250
 	1    0    0    -1  
 $EndComp
+$Comp
+L Electronics:DRV8243 U?
+U 1 1 6160C88E
+P 2300 2250
+F 0 "U?" H 2000 2850 50  0000 C CNN
+F 1 "DRV8243" H 2500 2850 50  0000 C CNN
+F 2 "Electronics:VQFN-HR-14" H 1450 2800 50  0001 C CNN
+F 3 "https://www.ti.com/lit/ds/symlink/drv8243-q1.pdf" H 2200 2400 50  0001 C CNN
+	1    2300 2250
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:Earth #PWR?
+U 1 1 616EF01B
+P 9400 2950
+F 0 "#PWR?" H 9400 2700 50  0001 C CNN
+F 1 "Earth" H 9400 2800 50  0001 C CNN
+F 2 "" H 9400 2950 50  0001 C CNN
+F 3 "~" H 9400 2950 50  0001 C CNN
+	1    9400 2950
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:Earth #PWR?
+U 1 1 616F0746
+P 8850 2900
+F 0 "#PWR?" H 8850 2650 50  0001 C CNN
+F 1 "Earth" H 8850 2750 50  0001 C CNN
+F 2 "" H 8850 2900 50  0001 C CNN
+F 3 "~" H 8850 2900 50  0001 C CNN
+	1    8850 2900
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:Earth #PWR?
+U 1 1 616F1D4C
+P 8700 2850
+F 0 "#PWR?" H 8700 2600 50  0001 C CNN
+F 1 "Earth" H 8700 2700 50  0001 C CNN
+F 2 "" H 8700 2850 50  0001 C CNN
+F 3 "~" H 8700 2850 50  0001 C CNN
+	1    8700 2850
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:Earth #PWR?
+U 1 1 616F3423
+P 8450 2750
+F 0 "#PWR?" H 8450 2500 50  0001 C CNN
+F 1 "Earth" H 8450 2600 50  0001 C CNN
+F 2 "" H 8450 2750 50  0001 C CNN
+F 3 "~" H 8450 2750 50  0001 C CNN
+	1    8450 2750
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:Earth #PWR?
+U 1 1 616F565E
+P 6400 3050
+F 0 "#PWR?" H 6400 2800 50  0001 C CNN
+F 1 "Earth" H 6400 2900 50  0001 C CNN
+F 2 "" H 6400 3050 50  0001 C CNN
+F 3 "~" H 6400 3050 50  0001 C CNN
+	1    6400 3050
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:Earth #PWR?
+U 1 1 616F6E00
+P 5950 2950
+F 0 "#PWR?" H 5950 2700 50  0001 C CNN
+F 1 "Earth" H 5950 2800 50  0001 C CNN
+F 2 "" H 5950 2950 50  0001 C CNN
+F 3 "~" H 5950 2950 50  0001 C CNN
+	1    5950 2950
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:Earth #PWR?
+U 1 1 616F85FE
+P 5400 2900
+F 0 "#PWR?" H 5400 2650 50  0001 C CNN
+F 1 "Earth" H 5400 2750 50  0001 C CNN
+F 2 "" H 5400 2900 50  0001 C CNN
+F 3 "~" H 5400 2900 50  0001 C CNN
+	1    5400 2900
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:Earth #PWR?
+U 1 1 616F9D5B
+P 5250 2850
+F 0 "#PWR?" H 5250 2600 50  0001 C CNN
+F 1 "Earth" H 5250 2700 50  0001 C CNN
+F 2 "" H 5250 2850 50  0001 C CNN
+F 3 "~" H 5250 2850 50  0001 C CNN
+	1    5250 2850
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:Earth #PWR?
+U 1 1 616FB4B8
+P 5000 2750
+F 0 "#PWR?" H 5000 2500 50  0001 C CNN
+F 1 "Earth" H 5000 2600 50  0001 C CNN
+F 2 "" H 5000 2750 50  0001 C CNN
+F 3 "~" H 5000 2750 50  0001 C CNN
+	1    5000 2750
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:Earth #PWR?
+U 1 1 616FD602
+P 2750 3050
+F 0 "#PWR?" H 2750 2800 50  0001 C CNN
+F 1 "Earth" H 2750 2900 50  0001 C CNN
+F 2 "" H 2750 3050 50  0001 C CNN
+F 3 "~" H 2750 3050 50  0001 C CNN
+	1    2750 3050
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:Earth #PWR?
+U 1 1 616FECDD
+P 2300 2950
+F 0 "#PWR?" H 2300 2700 50  0001 C CNN
+F 1 "Earth" H 2300 2800 50  0001 C CNN
+F 2 "" H 2300 2950 50  0001 C CNN
+F 3 "~" H 2300 2950 50  0001 C CNN
+	1    2300 2950
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:Earth #PWR?
+U 1 1 6170042B
+P 1750 2900
+F 0 "#PWR?" H 1750 2650 50  0001 C CNN
+F 1 "Earth" H 1750 2750 50  0001 C CNN
+F 2 "" H 1750 2900 50  0001 C CNN
+F 3 "~" H 1750 2900 50  0001 C CNN
+	1    1750 2900
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:Earth #PWR?
+U 1 1 61701B1D
+P 1600 2850
+F 0 "#PWR?" H 1600 2600 50  0001 C CNN
+F 1 "Earth" H 1600 2700 50  0001 C CNN
+F 2 "" H 1600 2850 50  0001 C CNN
+F 3 "~" H 1600 2850 50  0001 C CNN
+	1    1600 2850
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:Earth #PWR?
+U 1 1 61703249
+P 1350 2750
+F 0 "#PWR?" H 1350 2500 50  0001 C CNN
+F 1 "Earth" H 1350 2600 50  0001 C CNN
+F 2 "" H 1350 2750 50  0001 C CNN
+F 3 "~" H 1350 2750 50  0001 C CNN
+	1    1350 2750
+	1    0    0    -1  
+$EndComp
+$Comp
+L Electronics:3mm_pad J?
+U 1 1 616E830E
+P 3250 2200
+F 0 "J?" H 3379 2368 50  0000 L CNN
+F 1 "3mm_pad" H 3379 2277 50  0000 L CNN
+F 2 "" H 3550 2250 50  0001 C CNN
+F 3 "" H 3550 2250 50  0001 C CNN
+	1    3250 2200
+	1    0    0    -1  
+$EndComp
+$Comp
+L Electronics:3mm_pad J?
+U 1 1 616E8314
+P 3250 2500
+AR Path="/615F51F3/616E8314" Ref="J?"  Part="1" 
+AR Path="/615F228F/616E8314" Ref="J?"  Part="1" 
+F 0 "J?" H 3379 2668 50  0000 L CNN
+F 1 "3mm_pad" H 3379 2577 50  0000 L CNN
+F 2 "" H 3550 2550 50  0001 C CNN
+F 3 "" H 3550 2550 50  0001 C CNN
+	1    3250 2500
+	1    0    0    -1  
+$EndComp
 Wire Wire Line
-	8500 1800 8950 1800
+	2850 2400 3250 2400
+Connection ~ 2850 2400
 Wire Wire Line
-	8500 1900 8950 1900
+	2850 2100 3250 2100
+Connection ~ 2850 2100
+$Comp
+L Electronics:3mm_pad J?
+U 1 1 6171EB7C
+P 6900 2200
+F 0 "J?" H 7029 2368 50  0000 L CNN
+F 1 "3mm_pad" H 7029 2277 50  0000 L CNN
+F 2 "" H 7200 2250 50  0001 C CNN
+F 3 "" H 7200 2250 50  0001 C CNN
+	1    6900 2200
+	1    0    0    -1  
+$EndComp
+$Comp
+L Electronics:3mm_pad J?
+U 1 1 6171EB82
+P 6900 2500
+AR Path="/615F51F3/6171EB82" Ref="J?"  Part="1" 
+AR Path="/615F228F/6171EB82" Ref="J?"  Part="1" 
+F 0 "J?" H 7029 2668 50  0000 L CNN
+F 1 "3mm_pad" H 7029 2577 50  0000 L CNN
+F 2 "" H 7200 2550 50  0001 C CNN
+F 3 "" H 7200 2550 50  0001 C CNN
+	1    6900 2500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6500 2400 6900 2400
+Wire Wire Line
+	6500 2100 6900 2100
+$Comp
+L Electronics:3mm_pad J?
+U 1 1 617214C8
+P 10350 2200
+F 0 "J?" H 10479 2368 50  0000 L CNN
+F 1 "3mm_pad" H 10479 2277 50  0000 L CNN
+F 2 "" H 10650 2250 50  0001 C CNN
+F 3 "" H 10650 2250 50  0001 C CNN
+	1    10350 2200
+	1    0    0    -1  
+$EndComp
+$Comp
+L Electronics:3mm_pad J?
+U 1 1 617214CE
+P 10350 2500
+AR Path="/615F51F3/617214CE" Ref="J?"  Part="1" 
+AR Path="/615F228F/617214CE" Ref="J?"  Part="1" 
+F 0 "J?" H 10479 2668 50  0000 L CNN
+F 1 "3mm_pad" H 10479 2577 50  0000 L CNN
+F 2 "" H 10650 2550 50  0001 C CNN
+F 3 "" H 10650 2550 50  0001 C CNN
+	1    10350 2500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9950 2400 10350 2400
+Wire Wire Line
+	9950 2100 10350 2100
+Connection ~ 6500 2100
+Connection ~ 6500 2400
+Connection ~ 9950 2100
+Connection ~ 9950 2400
+Wire Wire Line
+	5050 2200 5500 2200
+Text Label 5050 2200 0    50   ~ 0
+MOT_off
+Wire Wire Line
+	5050 2000 5500 2000
+Text Label 5050 2000 0    50   ~ 0
+MOT_sleep
+Wire Wire Line
+	1400 2200 1850 2200
+Text Label 1400 2200 0    50   ~ 0
+MOT_off
+Wire Wire Line
+	1400 2000 1850 2000
+Text Label 1400 2000 0    50   ~ 0
+MOT_sleep
 $EndSCHEMATC

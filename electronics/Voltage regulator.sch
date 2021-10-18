@@ -178,18 +178,6 @@ F 3 "" H 10500 2250 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Connection ~ 10500 2250
-$Comp
-L power:GND #PWR?
-U 1 1 6162F7C6
-P 10500 2550
-F 0 "#PWR?" H 10500 2300 50  0001 C CNN
-F 1 "GND" H 10505 2377 50  0000 C CNN
-F 2 "" H 10500 2550 50  0001 C CNN
-F 3 "" H 10500 2550 50  0001 C CNN
-	1    10500 2550
-	1    0    0    -1  
-$EndComp
-Connection ~ 10500 2550
 Text Notes 10050 2900 0    50   ~ 0
 Battery connection pads
 $Comp
@@ -256,28 +244,6 @@ Connection ~ 8300 2200
 Wire Wire Line
 	8850 2200 9000 2200
 $Comp
-L power:GND #PWR?
-U 1 1 616459CB
-P 8000 2500
-F 0 "#PWR?" H 8000 2250 50  0001 C CNN
-F 1 "GND" H 8005 2327 50  0000 C CNN
-F 2 "" H 8000 2500 50  0001 C CNN
-F 3 "" H 8000 2500 50  0001 C CNN
-	1    8000 2500
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR?
-U 1 1 61645D42
-P 9000 2500
-F 0 "#PWR?" H 9000 2250 50  0001 C CNN
-F 1 "GND" H 9005 2327 50  0000 C CNN
-F 2 "" H 9000 2500 50  0001 C CNN
-F 3 "" H 9000 2500 50  0001 C CNN
-	1    9000 2500
-	1    0    0    -1  
-$EndComp
-$Comp
 L power:Vdrive #PWR?
 U 1 1 61647D32
 P 8000 2200
@@ -307,4 +273,37 @@ Text Notes 8000 1600 0    50   ~ 0
 USB 5V to CPU logic 3v3
 Text Notes 8000 2850 0    50   ~ 0
 Battery to driver logic 5V
+$Comp
+L power:Earth #PWR?
+U 1 1 616C048A
+P 8000 2500
+F 0 "#PWR?" H 8000 2250 50  0001 C CNN
+F 1 "Earth" H 8000 2350 50  0001 C CNN
+F 2 "" H 8000 2500 50  0001 C CNN
+F 3 "~" H 8000 2500 50  0001 C CNN
+	1    8000 2500
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:Earth #PWR?
+U 1 1 616C65CD
+P 9000 2500
+F 0 "#PWR?" H 9000 2250 50  0001 C CNN
+F 1 "Earth" H 9000 2350 50  0001 C CNN
+F 2 "" H 9000 2500 50  0001 C CNN
+F 3 "~" H 9000 2500 50  0001 C CNN
+	1    9000 2500
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:Earth #PWR?
+U 1 1 616CCACC
+P 10500 2550
+F 0 "#PWR?" H 10500 2300 50  0001 C CNN
+F 1 "Earth" H 10500 2400 50  0001 C CNN
+F 2 "" H 10500 2550 50  0001 C CNN
+F 3 "~" H 10500 2550 50  0001 C CNN
+	1    10500 2550
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC

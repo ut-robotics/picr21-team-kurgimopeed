@@ -1,4 +1,4 @@
-18998133753367141
+19001402092953141
 Battery
 BatteryHolder_Bulgin_BX0036_1xC
 Bulgin Battery Holder, BX0036, Battery Type C (https://www.bulgin.com/products/pub/media/bulgin/data/Battery_holders.pdf)
@@ -50729,6 +50729,13 @@ FCI_10118193-0001LF
 11
 11
 Electronics
+MAX14930DASE&plus_
+
+
+0
+16
+16
+Electronics
 NCP164
 
 
@@ -50742,6 +50749,13 @@ NCV8730
 0
 5
 5
+Electronics
+SAMTEC_FTSH-105-XX-X-DV
+translated Allegro footprint
+
+0
+10
+10
 Electronics
 STM32G441KBT3
 
