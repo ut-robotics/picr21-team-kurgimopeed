@@ -1,4 +1,5 @@
 from serial import Serial
+from serial.tools.list_ports import comports
 import struct
 from multiprocessing import Process, Queue
 from math import pi, sin
@@ -57,8 +58,16 @@ class MotorControllerHandler():
         print("Motor controller stopped")
 
 class MotorDriver(MotorControllerHandler):
-    def __init__(self, port, baudrate=115200, timeout=1):
+    def __init__(self, port=None, baudrate=115200, timeout=1):
         self.send_queue = Queue(5) #send items in this queue to motor controller 
+
+        self.COM_HWID = "USB VID:PID=0483:5740 SER=208B388F5056"
+
+        if not port:
+            port = self.get_comm()
+            if not port: # fuck
+                print("serial comm port not found!!1!!!")
+
         super().__init__(port, baudrate, timeout, self.send_queue)
 
         self.speed = 0
@@ -81,6 +90,12 @@ class MotorDriver(MotorControllerHandler):
                 sin((i-self.direction) * pi/180) * self.speed + self.turn_speed
             ) for i in self.motor_angles
         ]
+
+    def get_comm(self):
+        ports = comports()
+        for p in ports:
+            if p.hwid.startswith(self.COM_HWID):
+                return p.device
 
     #add new motor movement into queue that sends data to controller. 
     #Return true if successfuly added into queue
@@ -113,6 +128,7 @@ if __name__ == "__main__":
     #because lambda doesn't have name, they can't be used
     def callback(x):
         print(x)
+
 
     with MotorDriver("/dev/ttyACM0") as driver:
         driver.send(speed=10, direction=0, turn_speed=0, thrower=0, callback=callback) #add new data to send into controller

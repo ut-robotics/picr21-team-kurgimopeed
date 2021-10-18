@@ -55,7 +55,7 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
-motor_driver = MotorDriver("/dev/ttyACM0")
+motor_driver = MotorDriver()
 motor_driver.start()
 
 image_proccess = ImageProcess(motor_driver)
