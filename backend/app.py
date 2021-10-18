@@ -127,5 +127,6 @@ def load_config(request: Request):
 @app.post("/config")
 async def save_config(request: Request):
     j = await request.json()
+    image_proccess.threshold_values = list(j.values())
     with open("../config/threshold_config.json", "w") as f:
         json.dump(j, f)

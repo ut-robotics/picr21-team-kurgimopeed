@@ -25,6 +25,8 @@ class ImageProcess(RSCamera):
         self.new_debug_frame2 = False
         self.debug_frame2 = np.array([])
 
+        self.threshold_values = [0, 0, 0, 0, 0, 0]
+
     def start(self):
         self.thread.start()
         print("Image processing started")
@@ -58,8 +60,6 @@ class ImageProcess(RSCamera):
         self.stop = False
         super().start()
 
-        changed = 0
-
         try:
             while not self.stop:
                 frames = self.pipeline.wait_for_frames()
@@ -82,14 +82,16 @@ class ImageProcess(RSCamera):
                 #depth_frame = np.array(np.right_shift(depth_frame, 2), dtype=np.uint16 )
 
                 # yes
+                """
                 curr = os.stat("../config/threshold_config.json").st_mtime
                 if changed != curr:
                     changed = curr
                     with open("../config/threshold_config.json", "r") as f:
                         tc = list(json.load(f).values())
+                """
 
-                lower = np.array(tc[:3])
-                upper = np.array(tc[3:])
+                lower = np.array(self.threshold_values[:3])
+                upper = np.array(self.threshold_values[3:])
 
                 color_mask = cv2.cvtColor(color_frame, cv2.COLOR_BGR2HSV)
                 color_mask = cv2.inRange(color_mask, lower, upper)
