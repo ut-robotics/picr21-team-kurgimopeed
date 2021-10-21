@@ -12,6 +12,7 @@ import json
 from src.motor_driver import MotorDriver
 from src.ImageProcess import ImageProcess
 from src.nuc_led import NucLED
+from src.MusicBox import MusicBox
 
 # camera works perfectly, just frames have to finish buffering after reload lol
 
@@ -60,6 +61,8 @@ motor_driver.start()
 
 image_proccess = ImageProcess(motor_driver)
 image_proccess.start()
+
+musicbox = MusicBox(motor_driver)
 
 @app.on_event("shutdown")
 async def shutdown_event():
@@ -124,119 +127,10 @@ def load_config(request: Request):
     with open("../config/threshold_config.json", "r") as f:
         return JSONResponse(content=json.load(f))
 
-thrower_note_lut = {
-    "f6": 246,
-    "g6": 275,
-    "a6": 303,
-    "c7": 357,
-    "e7": 443,
-    "f7": 466,
-    "a6b": 288,
-    "a7": 581,
-    "a7b": 551,
-    "g7": 520,
-    "g7b": 494,
-    "e7b": 418,
-    "b6b": 321,
-    "d7": 397,
-    "d7b": 376,
-    "b6": 338,
-    "0": 0
-}
-
-imp_march = [
-("a6", 1),
-("a6", 1),
-("a6", 1),
-("f6", 3/4),
-("c7", 1/4),
-
-("a6", 1),
-("f6", 3/4),
-("c7", 1/4),
-("a6", 2),
-
-("e7", 1),
-("e7", 1),
-("e7", 1),
-("f7", 3/4),
-("c7", 1/4),
-
-("a6b", 1),
-("f6", 3/4),
-("c7", 1/4),
-("a6", 2),
-
-("a7", 1),
-("a6", 3/4),
-("a6", 1/4),
-("a7", 1),
-("a7b", 3/4),
-("g7", 1/4),
-
-("g7b", 1/4),
-("f7", 1/4),
-("g7b", 1/2),
-("0", 1/2),
-("b6b", 1/2),
-("e7b", 1),
-("d7", 3/4),
-("d7b", 1/4),
-
-("c7", 1/4),
-("b6", 1/4),
-("c7", 1/2),
-("0", 1/2),
-("f6", 1/2),
-("a6b", 1),
-("f6", 3/4),
-("a6", 1/4),
-
-("c7", 1),
-("a6", 3/4),
-("c7", 1/4),
-("e7", 2),
-
-("a7", 1),
-("a6", 3/4),
-("a6", 1/4),
-("a7", 1),
-("a7b", 1/2),
-("g7", 1/2),
-
-("g7b", 1/4),
-("f7", 1/4),
-("g7b", 1/2),
-("0", 1/2),
-("b6b", 1/2),
-("e7b", 1),
-("d7", 3/4),
-("d7b", 1/4),
-
-("c7", 1/4),
-("b6", 1/4),
-("c7", 1/2),
-("0", 1/2),
-("f6", 1/2),
-("a6b", 1),
-("f6", 3/4),
-("c7", 1/4),
-
-("a6", 1),
-("f6", 3/4),
-("c7", 1/4),
-("a6", 1)
-]
-
 @app.post("/play_march")
 async def play_march(request: Request):
     #j = await request.json()
-    bpm = 103
-    for note, dur in imp_march:
-        motor_driver.send(thrower=thrower_note_lut[note])
-        time.sleep(dur * (60 / bpm) * 0.9)
-        motor_driver.send(thrower=0)
-        time.sleep(dur * (60 / bpm) * 0.1)
+    musicbox.play("imperial_march")
 
 @app.post("/config")
 async def save_config(request: Request):
