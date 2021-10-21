@@ -5,4 +5,5 @@
   (lib (name MAX14930DASE+)(type Legacy)(uri ${KIPRJMOD}/korvpall-libs/MAX14930DASE+.lib)(options "")(descr ""))
   (lib (name FTSH-105-XX-X-DV)(type Legacy)(uri ${KIPRJMOD}/korvpall-libs/FTSH-105-XX-X-DV.lib)(options "")(descr ""))
   (lib (name MAX12930EASA)(type Legacy)(uri ${KIPRJMOD}/korvpall-libs/MAX12930EASA.lib)(options "")(descr ""))
+  (lib (name 215079-4)(type Legacy)(uri ${KIPRJMOD}/korvpall-libs/215079-4.lib)(options "")(descr ""))
 )

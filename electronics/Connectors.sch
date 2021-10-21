@@ -1,0 +1,88 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 5 5
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L FTSH-105-XX-X-DV:FTSH-105-XX-X-DV J?
+U 1 1 617B8592
+P 9250 1250
+AR Path="/613FDA12/617B8592" Ref="J?"  Part="1" 
+AR Path="/617B7795/617B8592" Ref="J?"  Part="1" 
+F 0 "J?" H 9250 1717 50  0000 C CNN
+F 1 "FTSH-105-XX-X-DV" H 9250 1626 50  0000 C CNN
+F 2 "SAMTEC_FTSH-105-XX-X-DV" H 9250 1250 50  0001 L BNN
+F 3 "" H 9250 1250 50  0001 L BNN
+F 4 "H" H 9250 1250 50  0001 L BNN "PARTREV"
+F 5 "Manufacturer Recommendation" H 9250 1250 50  0001 L BNN "STANDARD"
+F 6 "Samtec" H 9250 1250 50  0001 L BNN "MANUFACTURER"
+	1    9250 1250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9750 1450 10350 1450
+Wire Wire Line
+	9750 1150 10350 1150
+Wire Wire Line
+	8500 1150 8500 1250
+Wire Wire Line
+	8500 1150 8750 1150
+Wire Wire Line
+	8750 1450 8500 1450
+Connection ~ 8500 1450
+Wire Wire Line
+	8500 1450 8500 1650
+Wire Wire Line
+	8750 1250 8500 1250
+Connection ~ 8500 1250
+Wire Wire Line
+	8500 1250 8500 1450
+Wire Wire Line
+	8750 1050 8500 1050
+Wire Wire Line
+	8500 1050 8500 950 
+Wire Wire Line
+	9750 1050 10350 1050
+$Comp
+L power:+3V3 #PWR?
+U 1 1 617B85A5
+P 8500 950
+AR Path="/613FDA12/617B85A5" Ref="#PWR?"  Part="1" 
+AR Path="/617B7795/617B85A5" Ref="#PWR0159"  Part="1" 
+F 0 "#PWR0159" H 8500 800 50  0001 C CNN
+F 1 "+3V3" H 8515 1123 50  0000 C CNN
+F 2 "" H 8500 950 50  0001 C CNN
+F 3 "" H 8500 950 50  0001 C CNN
+	1    8500 950 
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 617B85AB
+P 8500 1650
+AR Path="/613FDA12/617B85AB" Ref="#PWR?"  Part="1" 
+AR Path="/617B7795/617B85AB" Ref="#PWR0160"  Part="1" 
+F 0 "#PWR0160" H 8500 1400 50  0001 C CNN
+F 1 "GND" H 8505 1477 50  0000 C CNN
+F 2 "" H 8500 1650 50  0001 C CNN
+F 3 "" H 8500 1650 50  0001 C CNN
+	1    8500 1650
+	1    0    0    -1  
+$EndComp
+Text Label 10350 1450 2    50   ~ 0
+MCU_NRST
+Text Label 10350 1050 2    50   ~ 0
+CPU_SWDIO
+Text Label 10350 1150 2    50   ~ 0
+CPU_SWCLK
+$EndSCHEMATC
