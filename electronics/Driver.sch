@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 3 5
+Sheet 2 3
 Title ""
 Date ""
 Rev ""
@@ -102,10 +102,6 @@ Wire Wire Line
 Connection ~ 1750 2800
 Wire Wire Line
 	1750 2800 1750 2900
-Text Label 1400 1900 0    50   ~ 0
-MOT1en_2
-Text Label 1400 1800 0    50   ~ 0
-MOT1en_1
 $Comp
 L Device:R_US R?
 U 1 1 6160C874
@@ -143,10 +139,6 @@ F 3 "~" H 2750 2900 50  0001 C CNN
 	1    2750 2900
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	1400 1800 1850 1800
-Wire Wire Line
-	1400 1900 1850 1900
 $Comp
 L Device:C C?
 U 1 1 6160C896
@@ -236,10 +228,6 @@ Wire Wire Line
 Connection ~ 5400 2800
 Wire Wire Line
 	5400 2800 5400 2900
-Text Label 5050 1900 0    50   ~ 0
-MOT2en_2
-Text Label 5050 1800 0    50   ~ 0
-MOT2en_1
 $Comp
 L Device:R_US R?
 U 1 1 6160C8EB
@@ -288,10 +276,6 @@ F 3 "https://www.ti.com/lit/ds/symlink/drv8243-q1.pdf" H 5850 2400 50  0001 C CN
 	1    5950 2250
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	5050 1800 5500 1800
-Wire Wire Line
-	5050 1900 5500 1900
 $Comp
 L Device:C C?
 U 1 1 6160C90D
@@ -381,16 +365,6 @@ Wire Wire Line
 Connection ~ 8850 2800
 Wire Wire Line
 	8850 2800 8850 2900
-Wire Wire Line
-	8500 2200 8950 2200
-Text Label 8500 2200 0    50   ~ 0
-MOT_off
-Wire Wire Line
-	8500 2000 8950 2000
-Text Label 8500 2000 0    50   ~ 0
-MOT_sleep
-Text Label 8500 1900 0    50   ~ 0
-MOT3en_2
 $Comp
 L Device:R_US R?
 U 1 1 6160C962
@@ -428,10 +402,6 @@ F 3 "~" H 9850 2900 50  0001 C CNN
 	1    9850 2900
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	8500 1800 8950 1800
-Wire Wire Line
-	8500 1900 8950 1900
 $Comp
 L power:Earth #PWR0131
 U 1 1 616D1C7A
@@ -709,22 +679,34 @@ Connection ~ 6500 2100
 Connection ~ 6500 2400
 Connection ~ 9950 2100
 Connection ~ 9950 2400
-Wire Wire Line
-	5050 2200 5500 2200
-Text Label 5050 2200 0    50   ~ 0
-MOT_off
-Wire Wire Line
-	5050 2000 5500 2000
-Text Label 5050 2000 0    50   ~ 0
-MOT_sleep
-Wire Wire Line
-	1400 2200 1850 2200
-Text Label 1400 2200 0    50   ~ 0
-MOT_off
-Wire Wire Line
-	1400 2000 1850 2000
-Text Label 1400 2000 0    50   ~ 0
-MOT_sleep
-Text HLabel 8500 1800 0    50   Input ~ 0
+Text HLabel 8950 1800 0    50   Input ~ 0
 MOT3en_1
+Text HLabel 8950 1900 0    50   Input ~ 0
+MOT3en_2
+Text HLabel 8950 2000 0    50   Input ~ 0
+MOT_sleep
+Text HLabel 8950 2200 0    50   Input ~ 0
+MOT_off
+Text HLabel 1850 1800 0    50   Input ~ 0
+MOT1en_1
+Text HLabel 1850 1900 0    50   Input ~ 0
+MOT1en_2
+Text HLabel 5500 1800 0    50   Input ~ 0
+MOT2en_1
+Text HLabel 5500 1900 0    50   Input ~ 0
+MOT2en_2
+Text HLabel 5500 2000 0    50   Input ~ 0
+MOT_sleep
+Text HLabel 5500 2200 0    50   Input ~ 0
+MOT_off
+Text HLabel 1850 2000 0    50   Input ~ 0
+MOT_sleep
+Text HLabel 1850 2200 0    50   Input ~ 0
+MOT_off
+Text Notes 2050 3450 0    50   ~ 0
+Motor 1 driver
+Text Notes 5700 3500 0    50   ~ 0
+Motor 2 driver
+Text Notes 9250 3450 0    50   ~ 0
+Motor 3 driver
 $EndSCHEMATC

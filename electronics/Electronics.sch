@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 1 5
+Sheet 1 3
 Title ""
 Date ""
 Rev ""
@@ -14,27 +14,783 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Sheet
-S 7700 750  2950 2100
-U 613FDA12
-F0 "CPU" 50
-F1 "CPU.sch" 50
-$EndSheet
-$Sheet
-S 4300 750  2800 2100
+S 1800 6600 1550 900 
 U 615F228F
 F0 "Driver" 50
 F1 "Driver.sch" 50
 $EndSheet
 $Sheet
-S 800  750  2950 2050
-U 615F51F3
-F0 "Voltage regulator" 50
-F1 "Voltage regulator.sch" 50
-$EndSheet
-$Sheet
-S 900  3650 2800 1600
+S 3750 6600 1350 900 
 U 617B7795
 F0 "Connectors" 50
 F1 "Connectors.sch" 50
 $EndSheet
+$Comp
+L power:GND #PWR?
+U 1 1 61724086
+P 1700 3550
+AR Path="/613FDA12/61724086" Ref="#PWR?"  Part="1" 
+AR Path="/61724086" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 1700 3300 50  0001 C CNN
+F 1 "GND" H 1705 3377 50  0000 C CNN
+F 2 "" H 1700 3550 50  0001 C CNN
+F 3 "" H 1700 3550 50  0001 C CNN
+	1    1700 3550
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 6172408C
+P 4450 1900
+AR Path="/613FDA12/6172408C" Ref="#PWR?"  Part="1" 
+AR Path="/6172408C" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 4450 1650 50  0001 C CNN
+F 1 "GND" H 4455 1727 50  0000 C CNN
+F 2 "" H 4450 1900 50  0001 C CNN
+F 3 "" H 4450 1900 50  0001 C CNN
+	1    4450 1900
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C?
+U 1 1 61724092
+P 5350 3700
+AR Path="/613FDA12/61724092" Ref="C?"  Part="1" 
+AR Path="/61724092" Ref="C?"  Part="1" 
+F 0 "C?" H 5465 3746 50  0000 L CNN
+F 1 "0.1uF" H 5465 3655 50  0000 L CNN
+F 2 "" H 5388 3550 50  0001 C CNN
+F 3 "~" H 5350 3700 50  0001 C CNN
+	1    5350 3700
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C?
+U 1 1 61724098
+P 1850 1250
+AR Path="/613FDA12/61724098" Ref="C?"  Part="1" 
+AR Path="/61724098" Ref="C?"  Part="1" 
+F 0 "C?" V 2102 1250 50  0000 C CNN
+F 1 "0.1uF" V 2011 1250 50  0000 C CNN
+F 2 "" H 1888 1100 50  0001 C CNN
+F 3 "~" H 1850 1250 50  0001 C CNN
+	1    1850 1250
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	1700 1050 1700 1250
+Connection ~ 1700 1250
+Connection ~ 1700 1550
+Wire Wire Line
+	1700 1250 1700 1550
+Wire Wire Line
+	1700 2050 1700 1550
+Connection ~ 2000 1550
+$Comp
+L power:GND #PWR?
+U 1 1 617240A4
+P 2150 1550
+AR Path="/613FDA12/617240A4" Ref="#PWR?"  Part="1" 
+AR Path="/617240A4" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 2150 1300 50  0001 C CNN
+F 1 "GND" H 2155 1377 50  0000 C CNN
+F 2 "" H 2150 1550 50  0001 C CNN
+F 3 "" H 2150 1550 50  0001 C CNN
+	1    2150 1550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2000 1250 2000 1550
+$Comp
+L Device:CP C?
+U 1 1 617240AB
+P 1850 1550
+AR Path="/613FDA12/617240AB" Ref="C?"  Part="1" 
+AR Path="/617240AB" Ref="C?"  Part="1" 
+F 0 "C?" V 2105 1550 50  0000 C CNN
+F 1 "4.7uF" V 2014 1550 50  0000 C CNN
+F 2 "" H 1888 1400 50  0001 C CNN
+F 3 "~" H 1850 1550 50  0001 C CNN
+	1    1850 1550
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	2000 1550 2150 1550
+$Comp
+L power:GND #PWR?
+U 1 1 617240BA
+P 5350 3850
+AR Path="/613FDA12/617240BA" Ref="#PWR?"  Part="1" 
+AR Path="/617240BA" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 5350 3600 50  0001 C CNN
+F 1 "GND" H 5355 3677 50  0000 C CNN
+F 2 "" H 5350 3850 50  0001 C CNN
+F 3 "" H 5350 3850 50  0001 C CNN
+	1    5350 3850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4300 2050 4300 1900
+Wire Wire Line
+	4300 1900 4450 1900
+$Comp
+L MAX14930DASE+:MAX14930DASE+ U?
+U 1 1 617240C2
+P 7800 1150
+AR Path="/615F51F3/617240C2" Ref="U?"  Part="1" 
+AR Path="/613FDA12/617240C2" Ref="U?"  Part="1" 
+AR Path="/617240C2" Ref="U?"  Part="1" 
+F 0 "U?" H 8600 1537 60  0000 C CNN
+F 1 "MAX14930DASE+" H 8600 1431 60  0000 C CNN
+F 2 "21-0041_S16+1_MXM" H 8600 1390 60  0001 C CNN
+F 3 "" H 7800 1150 60  0000 C CNN
+	1    7800 1150
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 617240C8
+P 7800 1850
+AR Path="/615F51F3/617240C8" Ref="#PWR?"  Part="1" 
+AR Path="/613FDA12/617240C8" Ref="#PWR?"  Part="1" 
+AR Path="/617240C8" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 7800 1600 50  0001 C CNN
+F 1 "GND" H 7805 1677 50  0000 C CNN
+F 2 "" H 7800 1850 50  0001 C CNN
+F 3 "" H 7800 1850 50  0001 C CNN
+	1    7800 1850
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+3V3 #PWR?
+U 1 1 617240D4
+P 7800 1000
+AR Path="/615F51F3/617240D4" Ref="#PWR?"  Part="1" 
+AR Path="/613FDA12/617240D4" Ref="#PWR?"  Part="1" 
+AR Path="/617240D4" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 7800 850 50  0001 C CNN
+F 1 "+3V3" H 7815 1173 50  0000 C CNN
+F 2 "" H 7800 1000 50  0001 C CNN
+F 3 "" H 7800 1000 50  0001 C CNN
+	1    7800 1000
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C?
+U 1 1 617240E0
+P 7650 1150
+AR Path="/615F51F3/617240E0" Ref="C?"  Part="1" 
+AR Path="/613FDA12/617240E0" Ref="C?"  Part="1" 
+AR Path="/617240E0" Ref="C?"  Part="1" 
+F 0 "C?" V 7902 1150 50  0000 C CNN
+F 1 "0.1uF" V 7811 1150 50  0000 C CNN
+F 2 "" H 7688 1000 50  0001 C CNN
+F 3 "~" H 7650 1150 50  0001 C CNN
+	1    7650 1150
+	0    -1   -1   0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 617240E6
+P 7400 1150
+AR Path="/615F51F3/617240E6" Ref="#PWR?"  Part="1" 
+AR Path="/613FDA12/617240E6" Ref="#PWR?"  Part="1" 
+AR Path="/617240E6" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 7400 900 50  0001 C CNN
+F 1 "GND" H 7405 977 50  0000 C CNN
+F 2 "" H 7400 1150 50  0001 C CNN
+F 3 "" H 7400 1150 50  0001 C CNN
+	1    7400 1150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7400 1150 7500 1150
+Wire Wire Line
+	7800 1250 7500 1250
+Wire Wire Line
+	7500 1250 7500 1150
+Connection ~ 7500 1150
+$Comp
+L power:Earth #PWR?
+U 1 1 617240F6
+P 9400 1850
+AR Path="/615F51F3/617240F6" Ref="#PWR?"  Part="1" 
+AR Path="/613FDA12/617240F6" Ref="#PWR?"  Part="1" 
+AR Path="/617240F6" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 9400 1600 50  0001 C CNN
+F 1 "Earth" H 9400 1700 50  0001 C CNN
+F 2 "" H 9400 1850 50  0001 C CNN
+F 3 "~" H 9400 1850 50  0001 C CNN
+	1    9400 1850
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+3V3 #PWR?
+U 1 1 61724108
+P 1700 1050
+AR Path="/613FDA12/61724108" Ref="#PWR?"  Part="1" 
+AR Path="/61724108" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 1700 900 50  0001 C CNN
+F 1 "+3V3" H 1715 1223 50  0000 C CNN
+F 2 "" H 1700 1050 50  0001 C CNN
+F 3 "" H 1700 1050 50  0001 C CNN
+	1    1700 1050
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+3V3 #PWR?
+U 1 1 6172410E
+P 5350 3550
+AR Path="/613FDA12/6172410E" Ref="#PWR?"  Part="1" 
+AR Path="/6172410E" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 5350 3400 50  0001 C CNN
+F 1 "+3V3" H 5365 3723 50  0000 C CNN
+F 2 "" H 5350 3550 50  0001 C CNN
+F 3 "" H 5350 3550 50  0001 C CNN
+	1    5350 3550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7800 1150 7800 1000
+Connection ~ 7800 1150
+Text Label 6750 1350 0    50   ~ 0
+MCU-MOT1en1
+Wire Wire Line
+	6750 1350 7800 1350
+Text Label 6750 1450 0    50   Italic 0
+MCU-MOT1en2
+Wire Wire Line
+	6750 1450 7800 1450
+Text Label 6750 1550 0    50   ~ 0
+MCU-MOT2en1
+Wire Wire Line
+	6750 1550 7800 1550
+Text Label 6750 1650 0    50   ~ 0
+MCU-MOT2en2
+Wire Wire Line
+	6750 1650 7800 1650
+$Comp
+L MAX14930DASE+:MAX14930DASE+ U?
+U 1 1 61724129
+P 7800 2700
+AR Path="/615F51F3/61724129" Ref="U?"  Part="1" 
+AR Path="/613FDA12/61724129" Ref="U?"  Part="1" 
+AR Path="/61724129" Ref="U?"  Part="1" 
+F 0 "U?" H 8600 3087 60  0000 C CNN
+F 1 "MAX14930DASE+" H 8600 2981 60  0000 C CNN
+F 2 "21-0041_S16+1_MXM" H 8600 2940 60  0001 C CNN
+F 3 "" H 7800 2700 60  0000 C CNN
+	1    7800 2700
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 6172412F
+P 7800 3400
+AR Path="/615F51F3/6172412F" Ref="#PWR?"  Part="1" 
+AR Path="/613FDA12/6172412F" Ref="#PWR?"  Part="1" 
+AR Path="/6172412F" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 7800 3150 50  0001 C CNN
+F 1 "GND" H 7805 3227 50  0000 C CNN
+F 2 "" H 7800 3400 50  0001 C CNN
+F 3 "" H 7800 3400 50  0001 C CNN
+	1    7800 3400
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+3V3 #PWR?
+U 1 1 6172413B
+P 7800 2550
+AR Path="/615F51F3/6172413B" Ref="#PWR?"  Part="1" 
+AR Path="/613FDA12/6172413B" Ref="#PWR?"  Part="1" 
+AR Path="/6172413B" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 7800 2400 50  0001 C CNN
+F 1 "+3V3" H 7815 2723 50  0000 C CNN
+F 2 "" H 7800 2550 50  0001 C CNN
+F 3 "" H 7800 2550 50  0001 C CNN
+	1    7800 2550
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C?
+U 1 1 61724147
+P 7650 2700
+AR Path="/615F51F3/61724147" Ref="C?"  Part="1" 
+AR Path="/613FDA12/61724147" Ref="C?"  Part="1" 
+AR Path="/61724147" Ref="C?"  Part="1" 
+F 0 "C?" V 7902 2700 50  0000 C CNN
+F 1 "0.1uF" V 7811 2700 50  0000 C CNN
+F 2 "" H 7688 2550 50  0001 C CNN
+F 3 "~" H 7650 2700 50  0001 C CNN
+	1    7650 2700
+	0    -1   -1   0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 6172414D
+P 7400 2700
+AR Path="/615F51F3/6172414D" Ref="#PWR?"  Part="1" 
+AR Path="/613FDA12/6172414D" Ref="#PWR?"  Part="1" 
+AR Path="/6172414D" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 7400 2450 50  0001 C CNN
+F 1 "GND" H 7405 2527 50  0000 C CNN
+F 2 "" H 7400 2700 50  0001 C CNN
+F 3 "" H 7400 2700 50  0001 C CNN
+	1    7400 2700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7400 2700 7500 2700
+Wire Wire Line
+	7800 2800 7500 2800
+Wire Wire Line
+	7500 2800 7500 2700
+Connection ~ 7500 2700
+Wire Wire Line
+	7800 2700 7800 2550
+Connection ~ 7800 2700
+Text Label 6750 2900 0    50   ~ 0
+MCU-MOT3en1
+Wire Wire Line
+	6750 2900 7800 2900
+Text Label 6750 3000 0    50   Italic 0
+MCU-MOT3en2
+Wire Wire Line
+	6750 3000 7800 3000
+Text Label 6750 4700 0    50   ~ 0
+MCU-TRW_PWM
+Text Label 6750 3100 0    50   ~ 0
+MCU-mot_sleep
+Text Label 6750 3200 0    50   ~ 0
+MCU-mot_off
+$Comp
+L power:GND #PWR?
+U 1 1 61724185
+P 7800 5200
+AR Path="/615F51F3/61724185" Ref="#PWR?"  Part="1" 
+AR Path="/613FDA12/61724185" Ref="#PWR?"  Part="1" 
+AR Path="/61724185" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 7800 4950 50  0001 C CNN
+F 1 "GND" H 7805 5027 50  0000 C CNN
+F 2 "" H 7800 5200 50  0001 C CNN
+F 3 "" H 7800 5200 50  0001 C CNN
+	1    7800 5200
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+3V3 #PWR?
+U 1 1 61724191
+P 7800 4350
+AR Path="/615F51F3/61724191" Ref="#PWR?"  Part="1" 
+AR Path="/613FDA12/61724191" Ref="#PWR?"  Part="1" 
+AR Path="/61724191" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 7800 4200 50  0001 C CNN
+F 1 "+3V3" H 7815 4523 50  0000 C CNN
+F 2 "" H 7800 4350 50  0001 C CNN
+F 3 "" H 7800 4350 50  0001 C CNN
+	1    7800 4350
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C?
+U 1 1 6172419D
+P 7650 4500
+AR Path="/615F51F3/6172419D" Ref="C?"  Part="1" 
+AR Path="/613FDA12/6172419D" Ref="C?"  Part="1" 
+AR Path="/6172419D" Ref="C?"  Part="1" 
+F 0 "C?" V 7902 4500 50  0000 C CNN
+F 1 "0.1uF" V 7811 4500 50  0000 C CNN
+F 2 "" H 7688 4350 50  0001 C CNN
+F 3 "~" H 7650 4500 50  0001 C CNN
+	1    7650 4500
+	0    -1   -1   0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 617241A3
+P 7400 4500
+AR Path="/615F51F3/617241A3" Ref="#PWR?"  Part="1" 
+AR Path="/613FDA12/617241A3" Ref="#PWR?"  Part="1" 
+AR Path="/617241A3" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 7400 4250 50  0001 C CNN
+F 1 "GND" H 7405 4327 50  0000 C CNN
+F 2 "" H 7400 4500 50  0001 C CNN
+F 3 "" H 7400 4500 50  0001 C CNN
+	1    7400 4500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7400 4500 7500 4500
+Wire Wire Line
+	7500 4600 7500 4500
+Connection ~ 7500 4500
+$Comp
+L power:Earth #PWR?
+U 1 1 617241B3
+P 9400 5200
+AR Path="/615F51F3/617241B3" Ref="#PWR?"  Part="1" 
+AR Path="/613FDA12/617241B3" Ref="#PWR?"  Part="1" 
+AR Path="/617241B3" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 9400 4950 50  0001 C CNN
+F 1 "Earth" H 9400 5050 50  0001 C CNN
+F 2 "" H 9400 5200 50  0001 C CNN
+F 3 "~" H 9400 5200 50  0001 C CNN
+	1    9400 5200
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:Earth #PWR?
+U 1 1 617241B9
+P 10250 4500
+AR Path="/615F51F3/617241B9" Ref="#PWR?"  Part="1" 
+AR Path="/613FDA12/617241B9" Ref="#PWR?"  Part="1" 
+AR Path="/617241B9" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 10250 4250 50  0001 C CNN
+F 1 "Earth" H 10250 4350 50  0001 C CNN
+F 2 "" H 10250 4500 50  0001 C CNN
+F 3 "~" H 10250 4500 50  0001 C CNN
+	1    10250 4500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7800 4500 7800 4350
+Wire Wire Line
+	6750 3100 7800 3100
+Wire Wire Line
+	6750 3200 7800 3200
+Text Label 6750 4800 0    50   ~ 0
+MCU-Hold-serv_PWM
+Text Label 6750 4900 0    50   ~ 0
+MCU-Aim-serv_PWM
+Text HLabel 9400 2900 2    50   Output ~ 0
+MOT3en_1
+Text HLabel 9400 4700 2    50   Output ~ 0
+TRW_PWM
+Text HLabel 9400 4800 2    50   Output ~ 0
+Hold-serv_PWM
+Text HLabel 9400 4900 2    50   Output ~ 0
+Aim-serv_PWM
+Text HLabel 9400 3000 2    50   Output ~ 0
+MOT3en_2
+Text HLabel 9400 3100 2    50   Output ~ 0
+MOT_sleep
+Text HLabel 9400 3200 2    50   Output ~ 0
+MOT_off
+Text HLabel 9400 1350 2    50   Output ~ 0
+MOT1en_1
+Text HLabel 9400 1450 2    50   Output ~ 0
+MOT1en_2
+Text HLabel 9400 1550 2    50   Output ~ 0
+MOT2en_1
+Text HLabel 9400 1650 2    50   Output ~ 0
+MOT2en_2
+$Comp
+L 2021-09-13_09-53-18:STM32G441KBT3 U?
+U 1 1 617240B4
+P 1700 2050
+AR Path="/617240B4" Ref="U?"  Part="1" 
+AR Path="/613FDA12/617240B4" Ref="U?"  Part="1" 
+F 0 "U?" H 3000 2437 60  0000 C CNN
+F 1 "STM32G441KBT3" H 3000 2331 60  0000 C CNN
+F 2 "LQFP32_7X7_STM" H 3000 2290 60  0001 C CNN
+F 3 "" H 1700 2050 60  0000 C CNN
+	1    1700 2050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1700 3450 1700 3550
+Connection ~ 1700 3550
+Wire Wire Line
+	9400 5100 9400 5200
+Connection ~ 9400 5200
+Connection ~ 7800 4500
+Wire Wire Line
+	7800 4900 6750 4900
+Wire Wire Line
+	7800 4800 6750 4800
+Wire Wire Line
+	6750 4700 7800 4700
+Wire Wire Line
+	7800 4600 7500 4600
+$Comp
+L power:+5VD #PWR?
+U 1 1 6172418B
+P 9600 4500
+AR Path="/615F51F3/6172418B" Ref="#PWR?"  Part="1" 
+AR Path="/613FDA12/6172418B" Ref="#PWR?"  Part="1" 
+AR Path="/6172418B" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 9600 4350 50  0001 C CNN
+F 1 "+5VD" H 9615 4673 50  0000 C CNN
+F 2 "" H 9600 4500 50  0001 C CNN
+F 3 "" H 9600 4500 50  0001 C CNN
+	1    9600 4500
+	1    0    0    -1  
+$EndComp
+$Comp
+L MAX14930DASE+:MAX14930DASE+ U?
+U 1 1 6172417F
+P 7800 4500
+AR Path="/615F51F3/6172417F" Ref="U?"  Part="1" 
+AR Path="/613FDA12/6172417F" Ref="U?"  Part="1" 
+AR Path="/6172417F" Ref="U?"  Part="1" 
+F 0 "U?" H 8600 4887 60  0000 C CNN
+F 1 "MAX14930DASE+" H 8600 4781 60  0000 C CNN
+F 2 "21-0041_S16+1_MXM" H 8600 4740 60  0001 C CNN
+F 3 "" H 7800 4500 60  0000 C CNN
+	1    7800 4500
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C?
+U 1 1 61724197
+P 9950 4500
+AR Path="/615F51F3/61724197" Ref="C?"  Part="1" 
+AR Path="/613FDA12/61724197" Ref="C?"  Part="1" 
+AR Path="/61724197" Ref="C?"  Part="1" 
+F 0 "C?" V 10202 4500 50  0000 C CNN
+F 1 "0.1uF" V 10111 4500 50  0000 C CNN
+F 2 "" H 9988 4350 50  0001 C CNN
+F 3 "~" H 9950 4500 50  0001 C CNN
+	1    9950 4500
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	9400 4600 9600 4600
+Wire Wire Line
+	10100 4500 10250 4500
+Connection ~ 9600 4500
+Wire Wire Line
+	9400 4500 9600 4500
+Wire Wire Line
+	9600 4500 9800 4500
+Wire Wire Line
+	9600 4500 9600 4600
+$Comp
+L power:Earth #PWR?
+U 1 1 6172415D
+P 9400 3400
+AR Path="/615F51F3/6172415D" Ref="#PWR?"  Part="1" 
+AR Path="/613FDA12/6172415D" Ref="#PWR?"  Part="1" 
+AR Path="/6172415D" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 9400 3150 50  0001 C CNN
+F 1 "Earth" H 9400 3250 50  0001 C CNN
+F 2 "" H 9400 3400 50  0001 C CNN
+F 3 "~" H 9400 3400 50  0001 C CNN
+	1    9400 3400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9400 3300 9400 3400
+Connection ~ 9400 3400
+$Comp
+L power:Earth #PWR?
+U 1 1 619E369B
+P 10250 2700
+AR Path="/615F51F3/619E369B" Ref="#PWR?"  Part="1" 
+AR Path="/613FDA12/619E369B" Ref="#PWR?"  Part="1" 
+AR Path="/619E369B" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 10250 2450 50  0001 C CNN
+F 1 "Earth" H 10250 2550 50  0001 C CNN
+F 2 "" H 10250 2700 50  0001 C CNN
+F 3 "~" H 10250 2700 50  0001 C CNN
+	1    10250 2700
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+5VD #PWR?
+U 1 1 619E36A1
+P 9600 2700
+AR Path="/615F51F3/619E36A1" Ref="#PWR?"  Part="1" 
+AR Path="/613FDA12/619E36A1" Ref="#PWR?"  Part="1" 
+AR Path="/619E36A1" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 9600 2550 50  0001 C CNN
+F 1 "+5VD" H 9615 2873 50  0000 C CNN
+F 2 "" H 9600 2700 50  0001 C CNN
+F 3 "" H 9600 2700 50  0001 C CNN
+	1    9600 2700
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C?
+U 1 1 619E36A7
+P 9950 2700
+AR Path="/615F51F3/619E36A7" Ref="C?"  Part="1" 
+AR Path="/613FDA12/619E36A7" Ref="C?"  Part="1" 
+AR Path="/619E36A7" Ref="C?"  Part="1" 
+F 0 "C?" V 10202 2700 50  0000 C CNN
+F 1 "0.1uF" V 10111 2700 50  0000 C CNN
+F 2 "" H 9988 2550 50  0001 C CNN
+F 3 "~" H 9950 2700 50  0001 C CNN
+	1    9950 2700
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	9400 2800 9600 2800
+Wire Wire Line
+	10100 2700 10250 2700
+Connection ~ 9600 2700
+Wire Wire Line
+	9400 2700 9600 2700
+Wire Wire Line
+	9600 2700 9800 2700
+Wire Wire Line
+	9600 2700 9600 2800
+$Comp
+L power:Earth #PWR?
+U 1 1 619F325E
+P 10250 1150
+AR Path="/615F51F3/619F325E" Ref="#PWR?"  Part="1" 
+AR Path="/613FDA12/619F325E" Ref="#PWR?"  Part="1" 
+AR Path="/619F325E" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 10250 900 50  0001 C CNN
+F 1 "Earth" H 10250 1000 50  0001 C CNN
+F 2 "" H 10250 1150 50  0001 C CNN
+F 3 "~" H 10250 1150 50  0001 C CNN
+	1    10250 1150
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+5VD #PWR?
+U 1 1 619F3264
+P 9600 1150
+AR Path="/615F51F3/619F3264" Ref="#PWR?"  Part="1" 
+AR Path="/613FDA12/619F3264" Ref="#PWR?"  Part="1" 
+AR Path="/619F3264" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 9600 1000 50  0001 C CNN
+F 1 "+5VD" H 9615 1323 50  0000 C CNN
+F 2 "" H 9600 1150 50  0001 C CNN
+F 3 "" H 9600 1150 50  0001 C CNN
+	1    9600 1150
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C?
+U 1 1 619F326A
+P 9950 1150
+AR Path="/615F51F3/619F326A" Ref="C?"  Part="1" 
+AR Path="/613FDA12/619F326A" Ref="C?"  Part="1" 
+AR Path="/619F326A" Ref="C?"  Part="1" 
+F 0 "C?" V 10202 1150 50  0000 C CNN
+F 1 "0.1uF" V 10111 1150 50  0000 C CNN
+F 2 "" H 9988 1000 50  0001 C CNN
+F 3 "~" H 9950 1150 50  0001 C CNN
+	1    9950 1150
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	9400 1250 9600 1250
+Wire Wire Line
+	10100 1150 10250 1150
+Connection ~ 9600 1150
+Wire Wire Line
+	9400 1150 9600 1150
+Wire Wire Line
+	9600 1150 9800 1150
+Wire Wire Line
+	9600 1150 9600 1250
+Wire Wire Line
+	9400 1750 9400 1850
+Connection ~ 9400 1850
+Wire Wire Line
+	1700 2150 1700 2050
+Connection ~ 1700 2050
+Connection ~ 5350 3550
+Wire Wire Line
+	4300 2150 5100 2150
+Wire Wire Line
+	4300 2250 5100 2250
+Wire Wire Line
+	4300 2350 5100 2350
+Wire Wire Line
+	4300 2450 5100 2450
+Wire Wire Line
+	4300 2550 5100 2550
+Wire Wire Line
+	4300 2650 5100 2650
+Wire Wire Line
+	4300 2750 5100 2750
+Wire Wire Line
+	4300 3250 5100 3250
+Wire Wire Line
+	4300 3550 5350 3550
+Wire Wire Line
+	700  2250 1700 2250
+Wire Wire Line
+	1700 2350 700  2350
+Wire Wire Line
+	700  2550 1700 2550
+Wire Wire Line
+	700  2750 1700 2750
+Wire Wire Line
+	700  2850 1700 2850
+Wire Wire Line
+	700  2950 1700 2950
+Wire Wire Line
+	700  3350 1700 3350
+Text Label 5100 2150 2    50   Italic 0
+MCU-MOT3en2
+Text Label 5100 2250 2    50   Italic 0
+MCU-MOT1en2
+Text Label 5100 2350 2    50   ~ 0
+MCU-MOT3en1
+Text Label 5100 2450 2    50   ~ 0
+MCU-TRW_PWM
+Text Label 5100 2550 2    50   ~ 0
+MCU-Hold-serv_PWM
+Text Label 5100 2650 2    50   ~ 0
+MCU-mot_sleep
+Text Label 5100 2750 2    50   ~ 0
+MCU-mot_off
+Text HLabel 4600 2950 2    50   BiDi ~ 0
+MCU_SWDIO
+Text HLabel 4600 2850 2    50   Input ~ 0
+MCU_SWCLK
+Text HLabel 1150 2450 0    50   Input ~ 0
+MCU_NRST
+Wire Wire Line
+	4600 2850 4300 2850
+Wire Wire Line
+	4300 2950 4600 2950
+Wire Wire Line
+	1150 2450 1700 2450
+Text HLabel 4550 3050 2    50   BiDi ~ 0
+MCU-USB_DP
+Text HLabel 4550 3150 2    50   BiDi ~ 0
+MCU-USB_DM
+Wire Wire Line
+	4300 3050 4550 3050
+Wire Wire Line
+	4300 3150 4550 3150
+Text Label 5100 3250 2    50   ~ 0
+MCU-Aim-serv_PWM
+Text HLabel 4350 3450 2    50   Input ~ 0
+MCU-mot1-enc_1
+Text HLabel 4350 3350 2    50   Input ~ 0
+MCU-mot1-enc_2
+Text HLabel 1450 3050 0    50   Input ~ 0
+MCU-mot2-enc_1
+Text HLabel 1450 2650 0    50   Input ~ 0
+MCU-mot2-enc_2
+Text HLabel 1450 3250 0    50   Input ~ 0
+MCU-mot3-enc_2
+Text HLabel 1450 3150 0    50   Input ~ 0
+MCU-mot3-enc_1
+Text Label 700  3350 0    50   ~ 0
+MCU-MOT1en1
+Wire Wire Line
+	1450 3150 1700 3150
+Wire Wire Line
+	1450 3250 1700 3250
+Wire Wire Line
+	1450 3050 1700 3050
+Wire Wire Line
+	1450 2650 1700 2650
+Text Label 700  2750 0    50   ~ 0
+MCU-MOT2en1
+Text Label 700  2850 0    50   Italic 0
+MCU-MOT1en2
+Wire Wire Line
+	4300 3350 4350 3350
+Wire Wire Line
+	4300 3450 4350 3450
 $EndSCHEMATC
