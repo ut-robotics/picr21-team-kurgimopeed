@@ -122,9 +122,9 @@ def color_feed(request: Request):
 async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-@app.get("/config")
-def load_config(request: Request):
-    with open("../config/threshold_config.json", "r") as f:
+@app.get("/trackbar-config")
+async def load_config(request: Request):
+    with open(image_proccess.trackbar_path, "r") as f:
         return JSONResponse(content=json.load(f))
 
 @app.post("/playmusic")
@@ -135,9 +135,18 @@ async def play_march(song: str = Form(...)):
 async def play_march(request: Request):
     musicbox.stop()
 
-@app.post("/config")
+@app.post("/calibrate-camera")
+async def play_march(request: Request):
+    status = 200 if image_proccess.calibrate() else 417 #ok vs ecpectation failed
+    return Response(status_code=status)
+
+@app.post("/trackbar-config")
 async def save_config(request: Request):
     j = await request.json()
     image_proccess.threshold_values = list(j.values())
-    with open("../config/threshold_config.json", "w") as f:
+    with open(image_proccess.trackbar_path, "w") as f:
         json.dump(j, f)
+
+@app.get("/court")
+async def court(request: Request):
+    return templates.TemplateResponse("court.html", {"request": request})

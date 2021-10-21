@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6100 4000">
+  <g>
+    <g transform="translate(0, 0)">
+      <rect x="0" y="0" width="6100" height="4000" fill="darkorange" stroke="none" stroke-width="0" />
+    </g>
+    <g transform="translate(750, 450)">
+      <rect x="0" y="0" width="4600" height="3100" fill="darkorange" stroke="none" stroke-width="0" />
+      <rect x="25" y="25" width="4550" height="3050" fill="none" stroke="black" stroke-width="50" />
+      <rect x="75" y="75" width="4450" height="2950" fill="none" stroke="white" stroke-width="50" />
+      <line x1="2300" y1="100" x2="2300" y2="3000" stroke="white" stroke-width="50" />
+    </g>
+  </g>
+</svg>

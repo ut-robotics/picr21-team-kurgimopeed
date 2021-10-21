@@ -1,6 +1,6 @@
 function load_config() {
     $.ajax({
-        url: "/config",
+        url: "/trackbar-config",
         method: "get",
         dataType: "json",
         success: function (data) {
@@ -26,10 +26,23 @@ function save_config() {
     }
 
     $.ajax({
-        url: "/config",
+        url: "/trackbar-config",
         method: "post",
         data: JSON.stringify(data),
         contentType: "application/json"
+    })
+}
+
+function calibrate_camera(){
+    $.ajax({
+        url: "/calibrate-camera",
+        method: "post",
+        success: function (msg, status, jqXHR) {
+            $("#camera_calibration_response").text("calibration success")
+        },
+        error:function (msg, status, jqXHR) {
+            $("#camera_calibration_response").text("calibration failed")
+        }
     })
 }
 
