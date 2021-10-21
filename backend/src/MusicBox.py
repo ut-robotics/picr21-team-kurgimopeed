@@ -27,7 +27,6 @@ class ToneMapper():
     def fit_model(self):
         import numpy as np
         import scipy.optimize as opt
-        import matplotlib.pyplot as plt
 
         X = []
         Y = []
@@ -44,20 +43,6 @@ class ToneMapper():
             Y,
             bounds=([-np.inf, -np.inf], [np.inf, np.inf])
             )
-
-        # Calculate points with the optimized parameters
-        x_data_fit = np.linspace(min(X), max(X), 100)
-        y_data_fit = self.speed_function(x_data_fit, *optimized_parameters)
-
-        # Plot the data
-        plt.plot(X, Y, ".", label="measured data")
-        plt.plot(x_data_fit, y_data_fit, label="fitted data")
-
-        # Show the graph
-        plt.legend()
-        plt.xlabel("Blob size (px)")
-        plt.ylabel("Distance (mm)")
-        #plt.show()
 
         return optimized_parameters
 
@@ -85,32 +70,28 @@ class MusicBox(ToneMapper):
     def __init__(self, motor_driver):
         super().__init__()
         self.motor_driver = motor_driver
-        self.stop = True
+        self.STOP = True
 
         self.tone_length = 0.9 #in % how much tone should last and other for stop 
 
-        self.player = Thread(target=self.run)
-        self.player.daemon = True
-
-        self.song = None
+        self.player = None
 
     def play(self, song):
-        if self.player.is_alive():
-            self.stop()
-            self.join()
-        self.song = song
+        self.stop()
+        self.player = Thread(target=self.run, args=(song,))
+        self.player.daemon = True
         self.player.start()
 
     def stop(self):
-        self.stop = True
-    
-    def join(self):
-        self.player.join()
+        self.STOP = True
+        if self.player is not None:
+            self.player.join()
+            self.player = None
 
-    def run(self):
+    def run(self, song):
         sheet = SimpleQueue()
         bpm = None
-        with open(self.path+self.song) as f:
+        with open(self.path+song) as f:
             for line in f.read().split("\n"):
                 if line != "":
                     if bpm is None:
@@ -118,25 +99,26 @@ class MusicBox(ToneMapper):
                     else:
                         sheet.put(line.split(" "))
 
-        self.stop = False
+        self.STOP = False
         
-        while not sheet.empty() or not self.stop:
+        while not sheet.empty() and not self.STOP:
             note, length = sheet.get()
             length = eval(length)*(60 / bpm)
 
             self.motor_driver.send(thrower=self.get_speed(note))
 
             start = time.time()
-            while time.time()-start >= length*self.tone_length:
-                if self.stop:
+            while time.time()-start < length*self.tone_length:
+                if self.STOP:
                     break
 
             self.motor_driver.send(thrower=0)
 
-            start = time.time()
-            while time.time()-start >= length*(1 - self.tone_length):
-                if self.stop:
+            while time.time()-start < length:
+                if self.STOP:
                     break
+
+        self.motor_driver.send(thrower=0)
 
 if __name__ == "__main__":
     music = MusicBox(None)

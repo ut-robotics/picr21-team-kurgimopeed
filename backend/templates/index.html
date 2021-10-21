@@ -9,8 +9,10 @@
     <script src="static/js/jquery.min.js"></script>
     <script src="static/js/remote-control.js"></script>
     <script src="static/js/calibrate.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <script src="static/js/music.js"></script>
+    <link rel="stylesheet" href="static/css/water.css">
     <link rel="stylesheet" href="static/css/remote-control.css">
+
 </head>
 
 <body>
@@ -63,7 +65,15 @@
     <button onclick="load_config()">Load threshold.json</button>
     <button onclick="save_config()">Save threshold.json</button>
 
-    <button onclick="play_march()">Imperial march</button>
+    <div>
+        <div>
+            <button class="stopmusic" style="background-color: red;">Stop Music</button>
+        </div>
+        <div>
+            <button class="playmusic" song="imperial_march">Imperial march</button>
+            <button class="playmusic" song="sus">SUS</button>
+        </div>
+    </div>
 </body>
 
 </html>

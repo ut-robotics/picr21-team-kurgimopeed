@@ -1,7 +1,7 @@
 import atexit
 from typing import List
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request, Form
 from fastapi.responses import StreamingResponse, Response, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -127,10 +127,13 @@ def load_config(request: Request):
     with open("../config/threshold_config.json", "r") as f:
         return JSONResponse(content=json.load(f))
 
-@app.post("/play_march")
+@app.post("/playmusic")
+async def play_march(song: str = Form(...)):
+    musicbox.play(song)
+
+@app.post("/stopmusic")
 async def play_march(request: Request):
-    #j = await request.json()
-    musicbox.play("imperial_march")
+    musicbox.stop()
 
 @app.post("/config")
 async def save_config(request: Request):
