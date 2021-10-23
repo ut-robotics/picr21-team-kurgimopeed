@@ -41,14 +41,14 @@ $EndComp
 $Comp
 L power:GND #PWR?
 U 1 1 6172408C
-P 4450 1900
+P 4400 1900
 AR Path="/613FDA12/6172408C" Ref="#PWR?"  Part="1" 
 AR Path="/6172408C" Ref="#PWR?"  Part="1" 
-F 0 "#PWR?" H 4450 1650 50  0001 C CNN
-F 1 "GND" H 4455 1727 50  0000 C CNN
-F 2 "" H 4450 1900 50  0001 C CNN
-F 3 "" H 4450 1900 50  0001 C CNN
-	1    4450 1900
+F 0 "#PWR?" H 4400 1650 50  0001 C CNN
+F 1 "GND" H 4405 1727 50  0000 C CNN
+F 2 "" H 4400 1900 50  0001 C CNN
+F 3 "" H 4400 1900 50  0001 C CNN
+	1    4400 1900
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -132,7 +132,7 @@ $EndComp
 Wire Wire Line
 	4300 2050 4300 1900
 Wire Wire Line
-	4300 1900 4450 1900
+	4300 1900 4400 1900
 $Comp
 L MAX14930DASE+:MAX14930DASE+ U?
 U 1 1 617240C2
@@ -254,19 +254,19 @@ Wire Wire Line
 	7800 1150 7800 1000
 Connection ~ 7800 1150
 Text Label 6750 1350 0    50   ~ 0
-MCU-MOT1en1
+MCU-MOT1en_1
 Wire Wire Line
 	6750 1350 7800 1350
 Text Label 6750 1450 0    50   Italic 0
-MCU-MOT1en2
+MCU-MOT1en_2
 Wire Wire Line
 	6750 1450 7800 1450
 Text Label 6750 1550 0    50   ~ 0
-MCU-MOT2en1
+MCU-MOT2en_1
 Wire Wire Line
 	6750 1550 7800 1550
 Text Label 6750 1650 0    50   ~ 0
-MCU-MOT2en2
+MCU-MOT2en_2
 Wire Wire Line
 	6750 1650 7800 1650
 $Comp
@@ -350,11 +350,11 @@ Wire Wire Line
 	7800 2900 7800 2750
 Connection ~ 7800 2900
 Text Label 6750 3100 0    50   ~ 0
-MCU-MOT3en1
+MCU-MOT3en_1
 Wire Wire Line
 	6750 3100 7800 3100
 Text Label 6750 3200 0    50   Italic 0
-MCU-MOT3en2
+MCU-MOT3en_2
 Wire Wire Line
 	6750 3200 7800 3200
 Text Label 6750 4900 0    50   ~ 0
@@ -728,11 +728,11 @@ Wire Wire Line
 Wire Wire Line
 	700  3350 1700 3350
 Text Label 5100 2150 2    50   Italic 0
-MCU-MOT3en2
+MCU-MOT3en_2
 Text Label 5100 2250 2    50   Italic 0
-MCU-MOT1en2
+MCU-MOT1en_2
 Text Label 5100 2350 2    50   ~ 0
-MCU-MOT3en1
+MCU-MOT3en_1
 Text Label 5100 2450 2    50   ~ 0
 MCU-TRW_PWM
 Text Label 5100 2550 2    50   ~ 0
@@ -776,7 +776,7 @@ MCU-mot3-enc_2
 Text HLabel 1450 3150 0    50   Input ~ 0
 MCU-mot3-enc_1
 Text Label 700  3350 0    50   ~ 0
-MCU-MOT1en1
+MCU-MOT1en_1
 Wire Wire Line
 	1450 3150 1700 3150
 Wire Wire Line
@@ -786,9 +786,9 @@ Wire Wire Line
 Wire Wire Line
 	1450 2650 1700 2650
 Text Label 700  2750 0    50   ~ 0
-MCU-MOT2en1
+MCU-MOT2en_1
 Text Label 700  2850 0    50   Italic 0
-MCU-MOT1en2
+MCU-MOT1en_2
 Wire Wire Line
 	4300 3350 4350 3350
 Wire Wire Line
@@ -13778,4 +13778,208 @@ EB 4F F0 F6 E5 20 BB A0 4F 3A DC 5A EF C0 BE B8 F0 A8 AF 25 F5 FF 07 55 75 B2 C4
 00 00 00 49 45 4E 44 AE 42 60 82 
 EndData
 $EndBitmap
+$Comp
+L Device:LED D?
+U 1 1 61751932
+P 1700 4700
+AR Path="/61751932" Ref="D?"  Part="1" 
+AR Path="/617B7795/61751932" Ref="D?"  Part="1" 
+F 0 "D?" H 1693 4445 50  0000 C CNN
+F 1 "RED_LED" H 1693 4536 50  0000 C CNN
+F 2 "" H 1700 4700 50  0001 C CNN
+F 3 "~" H 1700 4700 50  0001 C CNN
+	1    1700 4700
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 61751938
+P 2050 4700
+AR Path="/615F51F3/61751938" Ref="R?"  Part="1" 
+AR Path="/617B7795/61751938" Ref="R?"  Part="1" 
+AR Path="/61751938" Ref="R?"  Part="1" 
+F 0 "R?" V 1800 4700 50  0000 C CNN
+F 1 "3.3k" V 1900 4700 50  0000 C CNN
+F 2 "" V 1980 4700 50  0001 C CNN
+F 3 "~" H 2050 4700 50  0001 C CNN
+	1    2050 4700
+	0    1    1    0   
+$EndComp
+Text Notes 1300 4950 0    50   ~ 0
+Debug LED 1
+$Comp
+L power:GND #PWR?
+U 1 1 6175193F
+P 2200 4700
+AR Path="/615F51F3/6175193F" Ref="#PWR?"  Part="1" 
+AR Path="/617B7795/6175193F" Ref="#PWR?"  Part="1" 
+AR Path="/6175193F" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 2200 4450 50  0001 C CNN
+F 1 "GND" H 2205 4527 50  0000 C CNN
+F 2 "" H 2200 4700 50  0001 C CNN
+F 3 "" H 2200 4700 50  0001 C CNN
+	1    2200 4700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1850 4700 1900 4700
+$Comp
+L Device:LED D?
+U 1 1 61754D02
+P 1700 5400
+AR Path="/61754D02" Ref="D?"  Part="1" 
+AR Path="/617B7795/61754D02" Ref="D?"  Part="1" 
+F 0 "D?" H 1693 5145 50  0000 C CNN
+F 1 "RED_LED" H 1693 5236 50  0000 C CNN
+F 2 "" H 1700 5400 50  0001 C CNN
+F 3 "~" H 1700 5400 50  0001 C CNN
+	1    1700 5400
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 61754D08
+P 2050 5400
+AR Path="/615F51F3/61754D08" Ref="R?"  Part="1" 
+AR Path="/617B7795/61754D08" Ref="R?"  Part="1" 
+AR Path="/61754D08" Ref="R?"  Part="1" 
+F 0 "R?" V 1800 5400 50  0000 C CNN
+F 1 "3.3k" V 1900 5400 50  0000 C CNN
+F 2 "" V 1980 5400 50  0001 C CNN
+F 3 "~" H 2050 5400 50  0001 C CNN
+	1    2050 5400
+	0    1    1    0   
+$EndComp
+Text Notes 1350 5650 0    50   ~ 0
+Debug LED 2
+$Comp
+L power:GND #PWR?
+U 1 1 61754D0F
+P 2200 5400
+AR Path="/615F51F3/61754D0F" Ref="#PWR?"  Part="1" 
+AR Path="/617B7795/61754D0F" Ref="#PWR?"  Part="1" 
+AR Path="/61754D0F" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 2200 5150 50  0001 C CNN
+F 1 "GND" H 2205 5227 50  0000 C CNN
+F 2 "" H 2200 5400 50  0001 C CNN
+F 3 "" H 2200 5400 50  0001 C CNN
+	1    2200 5400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1850 5400 1900 5400
+$Comp
+L Device:LED D?
+U 1 1 6177499E
+P 3200 4700
+AR Path="/6177499E" Ref="D?"  Part="1" 
+AR Path="/617B7795/6177499E" Ref="D?"  Part="1" 
+F 0 "D?" H 3193 4445 50  0000 C CNN
+F 1 "GREEN_LED" H 3193 4536 50  0000 C CNN
+F 2 "" H 3200 4700 50  0001 C CNN
+F 3 "~" H 3200 4700 50  0001 C CNN
+	1    3200 4700
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 617749A4
+P 3550 4700
+AR Path="/615F51F3/617749A4" Ref="R?"  Part="1" 
+AR Path="/617B7795/617749A4" Ref="R?"  Part="1" 
+AR Path="/617749A4" Ref="R?"  Part="1" 
+F 0 "R?" V 3300 4700 50  0000 C CNN
+F 1 "3.3k" V 3400 4700 50  0000 C CNN
+F 2 "" V 3480 4700 50  0001 C CNN
+F 3 "~" H 3550 4700 50  0001 C CNN
+	1    3550 4700
+	0    1    1    0   
+$EndComp
+Text Notes 2800 4950 0    50   ~ 0
+Debug LED 3
+$Comp
+L power:GND #PWR?
+U 1 1 617749AB
+P 3700 4700
+AR Path="/615F51F3/617749AB" Ref="#PWR?"  Part="1" 
+AR Path="/617B7795/617749AB" Ref="#PWR?"  Part="1" 
+AR Path="/617749AB" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 3700 4450 50  0001 C CNN
+F 1 "GND" H 3705 4527 50  0000 C CNN
+F 2 "" H 3700 4700 50  0001 C CNN
+F 3 "" H 3700 4700 50  0001 C CNN
+	1    3700 4700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3350 4700 3400 4700
+$Comp
+L Device:LED D?
+U 1 1 61778BA0
+P 3200 5400
+AR Path="/61778BA0" Ref="D?"  Part="1" 
+AR Path="/617B7795/61778BA0" Ref="D?"  Part="1" 
+F 0 "D?" H 3193 5145 50  0000 C CNN
+F 1 "GREEN_LED" H 3193 5236 50  0000 C CNN
+F 2 "" H 3200 5400 50  0001 C CNN
+F 3 "~" H 3200 5400 50  0001 C CNN
+	1    3200 5400
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 61778BA6
+P 3550 5400
+AR Path="/615F51F3/61778BA6" Ref="R?"  Part="1" 
+AR Path="/617B7795/61778BA6" Ref="R?"  Part="1" 
+AR Path="/61778BA6" Ref="R?"  Part="1" 
+F 0 "R?" V 3300 5400 50  0000 C CNN
+F 1 "3.3k" V 3400 5400 50  0000 C CNN
+F 2 "" V 3480 5400 50  0001 C CNN
+F 3 "~" H 3550 5400 50  0001 C CNN
+	1    3550 5400
+	0    1    1    0   
+$EndComp
+Text Notes 2800 5650 0    50   ~ 0
+Debug LED 4
+$Comp
+L power:GND #PWR?
+U 1 1 61778BAD
+P 3700 5400
+AR Path="/615F51F3/61778BAD" Ref="#PWR?"  Part="1" 
+AR Path="/617B7795/61778BAD" Ref="#PWR?"  Part="1" 
+AR Path="/61778BAD" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 3700 5150 50  0001 C CNN
+F 1 "GND" H 3705 5227 50  0000 C CNN
+F 2 "" H 3700 5400 50  0001 C CNN
+F 3 "" H 3700 5400 50  0001 C CNN
+	1    3700 5400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3350 5400 3400 5400
+Text Label 700  2250 0    50   ~ 0
+MCU-debug-LED_3
+Text Label 700  2350 0    50   ~ 0
+MCU-debug-LED_4
+Text Label 700  2550 0    50   ~ 0
+MCU-debug-LED_1
+Text Label 700  2950 0    50   ~ 0
+MCU-debug-LED_2
+Text Label 850  4700 0    50   ~ 0
+MCU-debug-LED_1
+Wire Wire Line
+	850  4700 1550 4700
+Text Label 850  5400 0    50   ~ 0
+MCU-debug-LED_2
+Wire Wire Line
+	850  5400 1550 5400
+Text Label 2350 5400 0    50   ~ 0
+MCU-debug-LED_4
+Wire Wire Line
+	2350 5400 3050 5400
+Text Label 2350 4700 0    50   ~ 0
+MCU-debug-LED_3
+Wire Wire Line
+	2350 4700 3050 4700
 $EndSCHEMATC
