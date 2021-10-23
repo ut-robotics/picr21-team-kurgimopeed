@@ -318,64 +318,41 @@ AR Path="/615F51F3/61AA5758" Ref="J?"  Part="1"
 AR Path="/617B7795/61AA5758" Ref="J?"  Part="1" 
 F 0 "J?" H 9779 5518 50  0000 L CNN
 F 1 "3mm_pad" H 9779 5427 50  0000 L CNN
-F 2 "" H 9950 5400 50  0001 C CNN
+F 2 "Electronics:3mm_pad" H 9950 5400 50  0001 C CNN
 F 3 "" H 9950 5400 50  0001 C CNN
 	1    9650 5350
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:CP C?
-U 1 1 61AA575E
-P 9650 5050
-AR Path="/615F51F3/61AA575E" Ref="C?"  Part="1" 
-AR Path="/617B7795/61AA575E" Ref="C?"  Part="1" 
-F 0 "C?" H 9768 5096 50  0000 L CNN
-F 1 "4.7uF" H 9768 5005 50  0000 L CNN
-F 2 "" H 9688 4900 50  0001 C CNN
-F 3 "~" H 9650 5050 50  0001 C CNN
-	1    9650 5050
-	1    0    0    -1  
-$EndComp
-$Comp
 L power:Vdrive #PWR?
 U 1 1 61AA5764
-P 9650 4800
+P 8950 4850
 AR Path="/615F51F3/61AA5764" Ref="#PWR?"  Part="1" 
 AR Path="/617B7795/61AA5764" Ref="#PWR?"  Part="1" 
-F 0 "#PWR?" H 9450 4650 50  0001 C CNN
-F 1 "Vdrive" H 9665 4973 50  0000 C CNN
-F 2 "" H 9650 4800 50  0001 C CNN
-F 3 "" H 9650 4800 50  0001 C CNN
-	1    9650 4800
+F 0 "#PWR?" H 8750 4700 50  0001 C CNN
+F 1 "Vdrive" H 8965 5023 50  0000 C CNN
+F 2 "" H 8950 4850 50  0001 C CNN
+F 3 "" H 8950 4850 50  0001 C CNN
+	1    8950 4850
 	1    0    0    -1  
 $EndComp
-Text Notes 9200 5500 0    50   ~ 0
-Battery connection pads
+Text Notes 8400 5550 0    50   ~ 0
+Battery connection pads with reverse polarity protection
 Text Notes 9500 3550 0    50   ~ 0
 USB port
 $Comp
 L power:Earth #PWR?
 U 1 1 61AA576C
-P 9650 5300
+P 9450 5250
 AR Path="/615F51F3/61AA576C" Ref="#PWR?"  Part="1" 
 AR Path="/617B7795/61AA576C" Ref="#PWR?"  Part="1" 
-F 0 "#PWR?" H 9650 5050 50  0001 C CNN
-F 1 "Earth" H 9650 5150 50  0001 C CNN
-F 2 "" H 9650 5300 50  0001 C CNN
-F 3 "~" H 9650 5300 50  0001 C CNN
-	1    9650 5300
+F 0 "#PWR?" H 9450 5000 50  0001 C CNN
+F 1 "Earth" H 9450 5100 50  0001 C CNN
+F 2 "" H 9450 5250 50  0001 C CNN
+F 3 "~" H 9450 5250 50  0001 C CNN
+	1    9450 5250
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	9650 5300 9650 5250
-Connection ~ 9650 5250
-Wire Wire Line
-	9650 5250 9650 5200
-Wire Wire Line
-	9650 4900 9650 4850
-Connection ~ 9650 4850
-Wire Wire Line
-	9650 4850 9650 4800
 $Comp
 L power:GND #PWR?
 U 1 1 61AB1FD7
@@ -13879,4 +13856,40 @@ $EndComp
 Wire Wire Line
 	6250 1000 6500 1000
 Connection ~ 6500 1000
+$Comp
+L Electronics:BUK7M10-40EX Q?
+U 1 1 61751376
+P 9450 4950
+F 0 "Q?" V 9792 4950 50  0000 C CNN
+F 1 "BUK6Y10-30P" V 9701 4950 50  0000 C CNN
+F 2 "Package_TO_SOT_SMD:LFPAK56" H 9650 4875 50  0001 L CIN
+F 3 "https://assets.nexperia.com/documents/data-sheet/BUK6Y10-30P.pdf" V 9450 4950 50  0001 L CNN
+	1    9450 4950
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Device:CP C?
+U 1 1 61AA575E
+P 8950 5000
+AR Path="/615F51F3/61AA575E" Ref="C?"  Part="1" 
+AR Path="/617B7795/61AA575E" Ref="C?"  Part="1" 
+F 0 "C?" H 9068 5046 50  0000 L CNN
+F 1 "4.7uF" H 9068 4955 50  0000 L CNN
+F 2 "" H 8988 4850 50  0001 C CNN
+F 3 "~" H 8950 5000 50  0001 C CNN
+	1    8950 5000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9450 5150 9450 5250
+Wire Wire Line
+	9650 5250 9450 5250
+Connection ~ 9450 5250
+Wire Wire Line
+	8950 5150 8950 5250
+Wire Wire Line
+	8950 5250 9450 5250
+Wire Wire Line
+	8950 4850 9250 4850
+Connection ~ 8950 4850
 $EndSCHEMATC
