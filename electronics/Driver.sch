@@ -102,43 +102,10 @@ Wire Wire Line
 Connection ~ 1750 2800
 Wire Wire Line
 	1750 2800 1750 2900
-$Comp
-L Device:R_US R?
-U 1 1 6160C874
-P 1350 2600
-F 0 "R?" H 1250 2700 50  0000 C CNN
-F 1 "100k" H 1200 2600 50  0000 C CNN
-F 2 "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder" V 1390 2590 50  0001 C CNN
-F 3 "~" H 1350 2600 50  0001 C CNN
-	1    1350 2600
-	1    0    0    -1  
-$EndComp
-$Comp
-L Device:R_US R?
-U 1 1 6160C87A
-P 1600 2700
-F 0 "R?" H 1500 2800 50  0000 C CNN
-F 1 "100k" H 1450 2700 50  0000 C CNN
-F 2 "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder" V 1640 2690 50  0001 C CNN
-F 3 "~" H 1600 2700 50  0001 C CNN
-	1    1600 2700
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	1600 2550 1850 2550
 Wire Wire Line
 	1350 2450 1850 2450
-$Comp
-L Device:R_US R?
-U 1 1 6160C888
-P 2750 2900
-F 0 "R?" H 2818 2946 50  0000 L CNN
-F 1 "2.7k" H 2818 2855 50  0000 L CNN
-F 2 "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder" V 2790 2890 50  0001 C CNN
-F 3 "~" H 2750 2900 50  0001 C CNN
-	1    2750 2900
-	1    0    0    -1  
-$EndComp
 $Comp
 L Device:C C?
 U 1 1 6160C896
@@ -228,43 +195,10 @@ Wire Wire Line
 Connection ~ 5400 2800
 Wire Wire Line
 	5400 2800 5400 2900
-$Comp
-L Device:R_US R?
-U 1 1 6160C8EB
-P 5000 2600
-F 0 "R?" H 4900 2700 50  0000 C CNN
-F 1 "100k" H 4850 2600 50  0000 C CNN
-F 2 "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder" V 5040 2590 50  0001 C CNN
-F 3 "~" H 5000 2600 50  0001 C CNN
-	1    5000 2600
-	1    0    0    -1  
-$EndComp
-$Comp
-L Device:R_US R?
-U 1 1 6160C8F1
-P 5250 2700
-F 0 "R?" H 5150 2800 50  0000 C CNN
-F 1 "100k" H 5100 2700 50  0000 C CNN
-F 2 "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder" V 5290 2690 50  0001 C CNN
-F 3 "~" H 5250 2700 50  0001 C CNN
-	1    5250 2700
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	5250 2550 5500 2550
 Wire Wire Line
 	5000 2450 5500 2450
-$Comp
-L Device:R_US R?
-U 1 1 6160C8FF
-P 6400 2900
-F 0 "R?" H 6468 2946 50  0000 L CNN
-F 1 "2.7k" H 6468 2855 50  0000 L CNN
-F 2 "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder" V 6440 2890 50  0001 C CNN
-F 3 "~" H 6400 2900 50  0001 C CNN
-	1    6400 2900
-	1    0    0    -1  
-$EndComp
 $Comp
 L Electronics:DRV8243 U?
 U 1 1 6160C905
@@ -365,43 +299,10 @@ Wire Wire Line
 Connection ~ 8850 2800
 Wire Wire Line
 	8850 2800 8850 2900
-$Comp
-L Device:R_US R?
-U 1 1 6160C962
-P 8450 2600
-F 0 "R?" H 8350 2700 50  0000 C CNN
-F 1 "100k" H 8300 2600 50  0000 C CNN
-F 2 "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder" V 8490 2590 50  0001 C CNN
-F 3 "~" H 8450 2600 50  0001 C CNN
-	1    8450 2600
-	1    0    0    -1  
-$EndComp
-$Comp
-L Device:R_US R?
-U 1 1 6160C968
-P 8700 2700
-F 0 "R?" H 8600 2800 50  0000 C CNN
-F 1 "100k" H 8550 2700 50  0000 C CNN
-F 2 "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder" V 8740 2690 50  0001 C CNN
-F 3 "~" H 8700 2700 50  0001 C CNN
-	1    8700 2700
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	8700 2550 8950 2550
 Wire Wire Line
 	8450 2450 8950 2450
-$Comp
-L Device:R_US R?
-U 1 1 6160C976
-P 9850 2900
-F 0 "R?" H 9918 2946 50  0000 L CNN
-F 1 "2.7k" H 9918 2855 50  0000 L CNN
-F 2 "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder" V 9890 2890 50  0001 C CNN
-F 3 "~" H 9850 2900 50  0001 C CNN
-	1    9850 2900
-	1    0    0    -1  
-$EndComp
 $Comp
 L power:Earth #PWR0131
 U 1 1 616D1C7A
@@ -422,17 +323,6 @@ F 1 "DRV8243" H 9600 2850 50  0000 C CNN
 F 2 "Electronics:VQFN-HR-14" H 8550 2800 50  0001 C CNN
 F 3 "https://www.ti.com/lit/ds/symlink/drv8243-q1.pdf" H 9300 2400 50  0001 C CNN
 	1    9400 2250
-	1    0    0    -1  
-$EndComp
-$Comp
-L Electronics:DRV8243 U?
-U 1 1 6160C88E
-P 2300 2250
-F 0 "U?" H 2000 2850 50  0000 C CNN
-F 1 "DRV8243" H 2500 2850 50  0000 C CNN
-F 2 "Electronics:VQFN-HR-14" H 1450 2800 50  0001 C CNN
-F 3 "https://www.ti.com/lit/ds/symlink/drv8243-q1.pdf" H 2200 2400 50  0001 C CNN
-	1    2300 2250
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -13682,4 +13572,141 @@ Text Notes 8100 7650 0    50   ~ 0
 21/10/2021
 Text Notes 10550 7650 0    50   ~ 0
 1.0
+$Comp
+L Device:R R?
+U 1 1 617496D9
+P 1350 2600
+AR Path="/615F51F3/617496D9" Ref="R?"  Part="1" 
+AR Path="/617B7795/617496D9" Ref="R?"  Part="1" 
+AR Path="/615F228F/617496D9" Ref="R?"  Part="1" 
+F 0 "R?" H 1420 2554 50  0000 L CNN
+F 1 "100k" H 1420 2645 50  0000 L CNN
+F 2 "" V 1280 2600 50  0001 C CNN
+F 3 "~" H 1350 2600 50  0001 C CNN
+	1    1350 2600
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 617548F3
+P 2750 2900
+AR Path="/615F51F3/617548F3" Ref="R?"  Part="1" 
+AR Path="/617B7795/617548F3" Ref="R?"  Part="1" 
+AR Path="/615F228F/617548F3" Ref="R?"  Part="1" 
+F 0 "R?" H 2680 2854 50  0000 R CNN
+F 1 "2.7k" H 2680 2945 50  0000 R CNN
+F 2 "" V 2680 2900 50  0001 C CNN
+F 3 "~" H 2750 2900 50  0001 C CNN
+	1    2750 2900
+	-1   0    0    1   
+$EndComp
+$Comp
+L Electronics:DRV8243 U?
+U 1 1 6160C88E
+P 2300 2250
+F 0 "U?" H 2000 2850 50  0000 C CNN
+F 1 "DRV8243" H 2500 2850 50  0000 C CNN
+F 2 "Electronics:VQFN-HR-14" H 1450 2800 50  0001 C CNN
+F 3 "https://www.ti.com/lit/ds/symlink/drv8243-q1.pdf" H 2200 2400 50  0001 C CNN
+	1    2300 2250
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 61753AF7
+P 1600 2700
+AR Path="/615F51F3/61753AF7" Ref="R?"  Part="1" 
+AR Path="/617B7795/61753AF7" Ref="R?"  Part="1" 
+AR Path="/615F228F/61753AF7" Ref="R?"  Part="1" 
+F 0 "R?" H 1670 2654 50  0000 L CNN
+F 1 "100k" H 1670 2745 50  0000 L CNN
+F 2 "" V 1530 2700 50  0001 C CNN
+F 3 "~" H 1600 2700 50  0001 C CNN
+	1    1600 2700
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 6175DC92
+P 5000 2600
+AR Path="/615F51F3/6175DC92" Ref="R?"  Part="1" 
+AR Path="/617B7795/6175DC92" Ref="R?"  Part="1" 
+AR Path="/615F228F/6175DC92" Ref="R?"  Part="1" 
+F 0 "R?" H 5070 2554 50  0000 L CNN
+F 1 "100k" H 5070 2645 50  0000 L CNN
+F 2 "" V 4930 2600 50  0001 C CNN
+F 3 "~" H 5000 2600 50  0001 C CNN
+	1    5000 2600
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 6175DC98
+P 5250 2700
+AR Path="/615F51F3/6175DC98" Ref="R?"  Part="1" 
+AR Path="/617B7795/6175DC98" Ref="R?"  Part="1" 
+AR Path="/615F228F/6175DC98" Ref="R?"  Part="1" 
+F 0 "R?" H 5320 2654 50  0000 L CNN
+F 1 "100k" H 5320 2745 50  0000 L CNN
+F 2 "" V 5180 2700 50  0001 C CNN
+F 3 "~" H 5250 2700 50  0001 C CNN
+	1    5250 2700
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 6175F3BD
+P 8450 2600
+AR Path="/615F51F3/6175F3BD" Ref="R?"  Part="1" 
+AR Path="/617B7795/6175F3BD" Ref="R?"  Part="1" 
+AR Path="/615F228F/6175F3BD" Ref="R?"  Part="1" 
+F 0 "R?" H 8520 2554 50  0000 L CNN
+F 1 "100k" H 8520 2645 50  0000 L CNN
+F 2 "" V 8380 2600 50  0001 C CNN
+F 3 "~" H 8450 2600 50  0001 C CNN
+	1    8450 2600
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 6175F3C3
+P 8700 2700
+AR Path="/615F51F3/6175F3C3" Ref="R?"  Part="1" 
+AR Path="/617B7795/6175F3C3" Ref="R?"  Part="1" 
+AR Path="/615F228F/6175F3C3" Ref="R?"  Part="1" 
+F 0 "R?" H 8770 2654 50  0000 L CNN
+F 1 "100k" H 8770 2745 50  0000 L CNN
+F 2 "" V 8630 2700 50  0001 C CNN
+F 3 "~" H 8700 2700 50  0001 C CNN
+	1    8700 2700
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 6176235A
+P 6400 2900
+AR Path="/615F51F3/6176235A" Ref="R?"  Part="1" 
+AR Path="/617B7795/6176235A" Ref="R?"  Part="1" 
+AR Path="/615F228F/6176235A" Ref="R?"  Part="1" 
+F 0 "R?" H 6330 2854 50  0000 R CNN
+F 1 "2.7k" H 6330 2945 50  0000 R CNN
+F 2 "" V 6330 2900 50  0001 C CNN
+F 3 "~" H 6400 2900 50  0001 C CNN
+	1    6400 2900
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 61764625
+P 9850 2900
+AR Path="/615F51F3/61764625" Ref="R?"  Part="1" 
+AR Path="/617B7795/61764625" Ref="R?"  Part="1" 
+AR Path="/615F228F/61764625" Ref="R?"  Part="1" 
+F 0 "R?" H 9780 2854 50  0000 R CNN
+F 1 "2.7k" H 9780 2945 50  0000 R CNN
+F 2 "" V 9780 2900 50  0001 C CNN
+F 3 "~" H 9850 2900 50  0001 C CNN
+	1    9850 2900
+	-1   0    0    1   
+$EndComp
 $EndSCHEMATC
