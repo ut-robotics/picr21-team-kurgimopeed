@@ -696,20 +696,6 @@ Wire Wire Line
 Connection ~ 1700 2050
 Connection ~ 5350 3550
 Wire Wire Line
-	4300 2150 5100 2150
-Wire Wire Line
-	4300 2250 5100 2250
-Wire Wire Line
-	4300 2350 5100 2350
-Wire Wire Line
-	4300 2450 5100 2450
-Wire Wire Line
-	4300 2550 5100 2550
-Wire Wire Line
-	4300 2650 5100 2650
-Wire Wire Line
-	4300 2750 5100 2750
-Wire Wire Line
 	4300 3250 5100 3250
 Wire Wire Line
 	4300 3550 5350 3550
@@ -727,19 +713,19 @@ Wire Wire Line
 	700  2950 1700 2950
 Wire Wire Line
 	700  3350 1700 3350
-Text Label 5100 2150 2    50   Italic 0
+Text Label 5100 3250 2    50   Italic 0
 MCU-MOT3en_2
-Text Label 5100 2250 2    50   Italic 0
+Text Label 5100 3350 2    50   Italic 0
 MCU-MOT1en_2
-Text Label 5100 2350 2    50   ~ 0
+Text Label 700  2750 0    50   ~ 0
 MCU-MOT3en_1
-Text Label 5100 2450 2    50   ~ 0
+Text Label 700  2850 0    50   ~ 0
 MCU-TRW_PWM
-Text Label 5100 2550 2    50   ~ 0
+Text Label 700  3150 0    50   ~ 0
 MCU-Hold-serv_PWM
-Text Label 5100 2650 2    50   ~ 0
+Text Label 700  3350 0    50   ~ 0
 MCU-mot_sleep
-Text Label 5100 2750 2    50   ~ 0
+Text Label 5100 2650 2    50   ~ 0
 MCU-mot_off
 Text HLabel 4600 2950 2    50   BiDi ~ 0
 MCU_SWDIO
@@ -761,38 +747,26 @@ Wire Wire Line
 	4300 3050 4550 3050
 Wire Wire Line
 	4300 3150 4550 3150
-Text Label 5100 3250 2    50   ~ 0
+Text Label 700  3250 0    50   ~ 0
 MCU-Aim-serv_PWM
-Text HLabel 4350 3450 2    50   Input ~ 0
+Text HLabel 4350 2550 2    50   Input ~ 0
 MCU-mot1-enc_1
-Text HLabel 4350 3350 2    50   Input ~ 0
+Text HLabel 4350 2450 2    50   Input ~ 0
 MCU-mot1-enc_2
-Text HLabel 1450 3050 0    50   Input ~ 0
+Text HLabel 4350 2350 2    50   Input ~ 0
 MCU-mot2-enc_1
-Text HLabel 1450 2650 0    50   Input ~ 0
+Text HLabel 4350 2250 2    50   Input ~ 0
 MCU-mot2-enc_2
-Text HLabel 1450 3250 0    50   Input ~ 0
+Text HLabel 4350 2150 2    50   Input ~ 0
 MCU-mot3-enc_2
-Text HLabel 1450 3150 0    50   Input ~ 0
+Text HLabel 4350 2750 2    50   Input ~ 0
 MCU-mot3-enc_1
-Text Label 700  3350 0    50   ~ 0
+Text Label 5100 3450 2    50   ~ 0
 MCU-MOT1en_1
-Wire Wire Line
-	1450 3150 1700 3150
-Wire Wire Line
-	1450 3250 1700 3250
-Wire Wire Line
-	1450 3050 1700 3050
-Wire Wire Line
-	1450 2650 1700 2650
-Text Label 700  2750 0    50   ~ 0
+Text Label 700  2550 0    50   ~ 0
 MCU-MOT2en_1
-Text Label 700  2850 0    50   Italic 0
-MCU-MOT1en_2
-Wire Wire Line
-	4300 3350 4350 3350
-Wire Wire Line
-	4300 3450 4350 3450
+Text Label 700  2650 0    50   Italic 0
+MCU-MOT2en_2
 Text Notes 8050 2250 0    50   ~ 0
 Motor 1 and 2 PWM isolator
 Text Notes 7500 4050 0    50   ~ 0
@@ -803,7 +777,7 @@ Text Notes 1700 7600 0    50   ~ 0
 Link to Hbridges
 Text Notes 4100 7600 0    50   ~ 0
 Link to all connectors and voltage regulators
-Text Notes 2650 4100 0    50   ~ 0
+Text Notes 2750 4050 0    50   ~ 0
 STM32G4 MCU
 Text Notes 7350 7500 0    50   ~ 0
 CPU and isolators
@@ -13953,27 +13927,53 @@ $EndComp
 Wire Wire Line
 	3350 5250 3400 5250
 Text Label 700  2250 0    50   ~ 0
-MCU-debug-LED_3
+MCU-debug-LED_G1
 Text Label 700  2350 0    50   ~ 0
-MCU-debug-LED_4
-Text Label 700  2550 0    50   ~ 0
-MCU-debug-LED_1
+MCU-debug-LED_G2
 Text Label 700  2950 0    50   ~ 0
-MCU-debug-LED_2
+MCU-debug-LED_R1
+Text Label 700  3050 0    50   ~ 0
+MCU-debug-LED_R2
 Text Label 850  4700 0    50   ~ 0
-MCU-debug-LED_1
+MCU-debug-LED_R1
 Wire Wire Line
 	850  4700 1550 4700
 Text Label 850  5250 0    50   ~ 0
-MCU-debug-LED_2
+MCU-debug-LED_R2
 Wire Wire Line
 	850  5250 1550 5250
 Text Label 2350 5250 0    50   ~ 0
-MCU-debug-LED_4
+MCU-debug-LED_G2
 Wire Wire Line
 	2350 5250 3050 5250
 Text Label 2350 4700 0    50   ~ 0
-MCU-debug-LED_3
+MCU-debug-LED_G1
 Wire Wire Line
 	2350 4700 3050 4700
+Wire Wire Line
+	700  2650 1700 2650
+Wire Wire Line
+	700  3050 1700 3050
+Wire Wire Line
+	700  3150 1700 3150
+Wire Wire Line
+	700  3250 1700 3250
+Wire Wire Line
+	4300 3450 5100 3450
+Wire Wire Line
+	4300 3350 5100 3350
+Wire Wire Line
+	4300 2650 5100 2650
+Wire Wire Line
+	4300 2750 4350 2750
+Wire Wire Line
+	4300 2550 4350 2550
+Wire Wire Line
+	4300 2450 4350 2450
+Wire Wire Line
+	4300 2350 4350 2350
+Wire Wire Line
+	4300 2250 4350 2250
+Wire Wire Line
+	4300 2150 4350 2150
 $EndSCHEMATC
