@@ -13751,9 +13751,9 @@ $EndBitmap
 Text Notes 7350 7500 0    50   ~ 0
 Connectors and voltage regulators\n
 Text Notes 8100 7650 0    50   ~ 0
-21/10/2021
+24/10/2021
 Text Notes 10550 7650 0    50   ~ 0
-1.0
+1.1
 $Comp
 L Device:C C?
 U 1 1 61AB200F

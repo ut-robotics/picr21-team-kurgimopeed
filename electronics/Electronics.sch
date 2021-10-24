@@ -782,9 +782,9 @@ STM32G4 MCU
 Text Notes 7350 7500 0    50   ~ 0
 CPU and isolators
 Text Notes 8100 7650 0    50   ~ 0
-21/10/2021
+24/10/2021
 Text Notes 10550 7650 0    50   ~ 0
-1.0
+1.1
 $Bitmap
 Pos 7450 6850
 Scale 0.300000

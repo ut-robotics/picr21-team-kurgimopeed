@@ -13569,9 +13569,9 @@ $EndBitmap
 Text Notes 7350 7500 0    50   ~ 0
 Kurkkumopo HBridge driver
 Text Notes 8100 7650 0    50   ~ 0
-21/10/2021
+24/10/2021
 Text Notes 10550 7650 0    50   ~ 0
-1.0
+1.1
 $Comp
 L Device:R R?
 U 1 1 617496D9
