@@ -277,40 +277,40 @@ Connection ~ 9750 3150
 $Comp
 L Electronics:3mm_pad J?
 U 1 1 61AA5752
-P 6300 4300
+P 5800 4450
 AR Path="/615F51F3/61AA5752" Ref="J?"  Part="1" 
 AR Path="/617B7795/61AA5752" Ref="J?"  Part="1" 
-F 0 "J?" H 6429 4468 50  0000 L CNN
-F 1 "3mm_pad" H 6429 4377 50  0000 L CNN
-F 2 "" H 6600 4350 50  0001 C CNN
-F 3 "" H 6600 4350 50  0001 C CNN
-	1    6300 4300
-	1    0    0    -1  
+F 0 "J?" H 5929 4618 50  0000 L CNN
+F 1 "3mm_pad" H 5929 4527 50  0000 L CNN
+F 2 "" H 6100 4500 50  0001 C CNN
+F 3 "" H 6100 4500 50  0001 C CNN
+	1    5800 4450
+	-1   0    0    1   
 $EndComp
 $Comp
 L Electronics:3mm_pad J?
 U 1 1 61AA5758
-P 6300 4700
+P 5800 4150
 AR Path="/615F51F3/61AA5758" Ref="J?"  Part="1" 
 AR Path="/617B7795/61AA5758" Ref="J?"  Part="1" 
-F 0 "J?" H 6429 4868 50  0000 L CNN
-F 1 "3mm_pad" H 6429 4777 50  0000 L CNN
-F 2 "Electronics:3mm_pad" H 6600 4750 50  0001 C CNN
-F 3 "" H 6600 4750 50  0001 C CNN
-	1    6300 4700
-	1    0    0    -1  
+F 0 "J?" H 5929 4318 50  0000 L CNN
+F 1 "3mm_pad" H 5929 4227 50  0000 L CNN
+F 2 "Electronics:3mm_pad" H 6100 4200 50  0001 C CNN
+F 3 "" H 6100 4200 50  0001 C CNN
+	1    5800 4150
+	-1   0    0    1   
 $EndComp
 $Comp
 L power:Vdrive #PWR?
 U 1 1 61AA5764
-P 5600 4200
+P 6550 4250
 AR Path="/615F51F3/61AA5764" Ref="#PWR?"  Part="1" 
 AR Path="/617B7795/61AA5764" Ref="#PWR?"  Part="1" 
-F 0 "#PWR?" H 5400 4050 50  0001 C CNN
-F 1 "Vdrive" H 5615 4373 50  0000 C CNN
-F 2 "" H 5600 4200 50  0001 C CNN
-F 3 "" H 5600 4200 50  0001 C CNN
-	1    5600 4200
+F 0 "#PWR?" H 6350 4100 50  0001 C CNN
+F 1 "Vdrive" H 6565 4423 50  0000 C CNN
+F 2 "" H 6550 4250 50  0001 C CNN
+F 3 "" H 6550 4250 50  0001 C CNN
+	1    6550 4250
 	1    0    0    -1  
 $EndComp
 Text Notes 5050 4900 0    50   ~ 0
@@ -320,14 +320,14 @@ USB port
 $Comp
 L power:Earth #PWR?
 U 1 1 61AA576C
-P 6100 4600
+P 6000 4550
 AR Path="/615F51F3/61AA576C" Ref="#PWR?"  Part="1" 
 AR Path="/617B7795/61AA576C" Ref="#PWR?"  Part="1" 
-F 0 "#PWR?" H 6100 4350 50  0001 C CNN
-F 1 "Earth" H 6100 4450 50  0001 C CNN
-F 2 "" H 6100 4600 50  0001 C CNN
-F 3 "~" H 6100 4600 50  0001 C CNN
-	1    6100 4600
+F 0 "#PWR?" H 6000 4300 50  0001 C CNN
+F 1 "Earth" H 6000 4400 50  0001 C CNN
+F 2 "" H 6000 4550 50  0001 C CNN
+F 3 "~" H 6000 4550 50  0001 C CNN
+	1    6000 4550
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -13671,39 +13671,27 @@ Connection ~ 6500 1000
 $Comp
 L Transistor_FET:DMP3013SFV Q?
 U 1 1 61751376
-P 6100 4300
-F 0 "Q?" V 6442 4300 50  0000 C CNN
-F 1 "BUK6Y10-30P" V 6351 4300 50  0000 C CNN
-F 2 "Package_TO_SOT_SMD:LFPAK56" H 6300 4225 50  0001 L CIN
-F 3 "https://assets.nexperia.com/documents/data-sheet/BUK6Y10-30P.pdf" V 6100 4300 50  0001 L CNN
-	1    6100 4300
+P 6000 4350
+F 0 "Q?" V 6342 4350 50  0000 C CNN
+F 1 "BUK6Y10-30P" V 6251 4350 50  0000 C CNN
+F 2 "Package_TO_SOT_SMD:LFPAK56" H 6200 4275 50  0001 L CIN
+F 3 "https://assets.nexperia.com/documents/data-sheet/BUK6Y10-30P.pdf" V 6000 4350 50  0001 L CNN
+	1    6000 4350
 	0    -1   -1   0   
 $EndComp
 $Comp
 L Device:CP C?
 U 1 1 61AA575E
-P 5600 4350
+P 6550 4400
 AR Path="/615F51F3/61AA575E" Ref="C?"  Part="1" 
 AR Path="/617B7795/61AA575E" Ref="C?"  Part="1" 
-F 0 "C?" H 5718 4396 50  0000 L CNN
-F 1 "4.7uF" H 5718 4305 50  0000 L CNN
-F 2 "" H 5638 4200 50  0001 C CNN
-F 3 "~" H 5600 4350 50  0001 C CNN
-	1    5600 4350
+F 0 "C?" H 6668 4446 50  0000 L CNN
+F 1 "4.7uF" H 6668 4355 50  0000 L CNN
+F 2 "" H 6588 4250 50  0001 C CNN
+F 3 "~" H 6550 4400 50  0001 C CNN
+	1    6550 4400
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	6100 4500 6100 4600
-Wire Wire Line
-	6300 4600 6100 4600
-Connection ~ 6100 4600
-Wire Wire Line
-	5600 4500 5600 4600
-Wire Wire Line
-	5600 4600 6100 4600
-Wire Wire Line
-	5600 4200 5900 4200
-Connection ~ 5600 4200
 Wire Wire Line
 	1850 1150 1950 1150
 Wire Wire Line
@@ -14120,6 +14108,25 @@ F 1 "Earth" H 4750 2850 50  0001 C CNN
 F 2 "" H 4750 3000 50  0001 C CNN
 F 3 "~" H 4750 3000 50  0001 C CNN
 	1    4750 3000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5800 4550 6000 4550
+Connection ~ 6000 4550
+Wire Wire Line
+	6200 4250 6550 4250
+Connection ~ 6550 4250
+$Comp
+L power:Earth #PWR?
+U 1 1 61794771
+P 6550 4550
+AR Path="/615F51F3/61794771" Ref="#PWR?"  Part="1" 
+AR Path="/617B7795/61794771" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 6550 4300 50  0001 C CNN
+F 1 "Earth" H 6550 4400 50  0001 C CNN
+F 2 "" H 6550 4550 50  0001 C CNN
+F 3 "~" H 6550 4550 50  0001 C CNN
+	1    6550 4550
 	1    0    0    -1  
 $EndComp
 $EndSCHEMATC
