@@ -7,4 +7,5 @@
   (lib (name MAX12930EASA)(type Legacy)(uri ${KIPRJMOD}/korvpall-libs/MAX12930EASA.lib)(options "")(descr ""))
   (lib (name 215079-4)(type Legacy)(uri ${KIPRJMOD}/korvpall-libs/215079-4.lib)(options "")(descr ""))
   (lib (name LM20323MH_NOPB)(type Legacy)(uri ${KIPRJMOD}/korvpall-libs/LM20323MH_NOPB.lib)(options "")(descr ""))
+  (lib (name TPS54227DDAR)(type Legacy)(uri ${KIPRJMOD}/korvpall-libs/TPS54227DDAR.lib)(options "")(descr ""))
 )
