@@ -1,8 +1,7 @@
 
 
-from backend.src.ArucoDetector import ArucoDetector
-from ArucoDetector import ArucoDetector
-from BallDetector import BallDetector
+from src.ArucoDetector import ArucoDetector
+from src.BallDetector import BallDetector
 
 class LocationProcess():
     def __init__(self):
@@ -14,3 +13,6 @@ class LocationProcess():
 
         self.aruco = ArucoDetector(self.marker_size)
         self.ball = BallDetector()
+
+    def get(self, mask, depth):
+        return {"robot":self.robot_location, "balls":self.ball.getLocations(mask, depth)}

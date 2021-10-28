@@ -1,8 +1,10 @@
 import numpy as np
 import cv2
+from src.LocationProcess import LocationProcess
 
 from src.RSCamera import RSCamera
 from src.ArucoCalibrator import ArucoCalibrator
+from src.LocationProcess import LocationProcess
 
 from threading import Thread
 import time, json, os
@@ -36,6 +38,8 @@ class ImageProcess(RSCamera):
         if os.path.exists(self.trackbar_path):
             with open("../config/threshold_config.json") as f:
                 self.threshold_values = list(json.load(f).values())
+
+        self.locationProcess = LocationProcess()
 
     def start(self):
         self.thread.start()
@@ -76,7 +80,7 @@ class ImageProcess(RSCamera):
                 depth_frame = frames.get_depth_frame()
                 color_frame = frames.get_color_frame()
 
-                self.depth_frame = np.array(depth_frame.get_data(), dtype=np.uint16)
+                self.depth_frame = np.asanyarray(depth_frame.get_data(), dtype=np.uint16)
                 self.color_frame = np.array(color_frame.get_data(), dtype=np.uint8)
 
                 #print(dept_frame)
@@ -85,11 +89,9 @@ class ImageProcess(RSCamera):
 
                 #depth_frame = np.vectorize(lambda x: x//0xff, otypes=[np.uint8])(depth_frame)
                 #depth_frame = cv2.applyColorMap(cv2.convertScaleAbs(depth_frame, alpha=0.15), cv2.COLORMAP_JET)
-                depth_frame = cv2.convertScaleAbs(self.depth_frame, alpha=0.14)
-                depth_frame = cv2.bitwise_not(depth_frame)
+                #depth_frame = cv2.convertScaleAbs(self.depth_frame, alpha=0.14)
+                #depth_frame = cv2.bitwise_not(depth_frame)
 
-                #depth_frame = np.asanyarray(depth_frame, dtype=np.uint8)
-                #depth_frame = np.array(np.right_shift(depth_frame, 2), dtype=np.uint16 )
 
                 # yes
                 """
@@ -103,12 +105,29 @@ class ImageProcess(RSCamera):
                 lower = np.array(self.threshold_values[:3])
                 upper = np.array(self.threshold_values[3:])
 
-                color_mask = cv2.cvtColor(self.color_frame, cv2.COLOR_BGR2HSV)
-                color_mask = cv2.inRange(color_mask, lower, upper)
-                color_mask = cv2.bitwise_and(self.color_frame, self.color_frame, mask=color_mask)
+                color_hsv = cv2.cvtColor(self.color_frame, cv2.COLOR_BGR2HSV)
+                color_mask = cv2.inRange(color_hsv, lower, upper)
 
+                print(self.locationProcess.get(color_mask, self.depth_frame))
+
+                #scale it to see better visualization
+                depth_frame = cv2.convertScaleAbs(self.depth_frame, alpha=0.14)
+                depth_frame = cv2.cvtColor(cv2.bitwise_not(depth_frame), cv2.COLOR_GRAY2BGR)
+
+
+
+                self.color_frame = cv2.bitwise_and(self.color_frame, self.color_frame, mask=color_mask)
+                self.color_frame = cv2.drawKeypoints(self.color_frame, self.locationProcess.ball.keypoints, np.array([]), (255,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+
+                xl, xr, yu, yd = self.locationProcess.ball.depth_area
+
+                depth_frame = cv2.rectangle(depth_frame, (xl, yu), (xr, yd), (0, 0, 255), 2)
+                
                 self.debug_frame1 = self.convert_debug_frame(depth_frame, self.depth_resolution)
-                self.debug_frame2 = self.convert_debug_frame(color_mask, self.color_resolution)
+                self.debug_frame2 = self.convert_debug_frame(
+                    self.color_frame, 
+                    self.color_resolution)
+
                 self.new_debug_frame1 = True
                 self.new_debug_frame2 = True
 
