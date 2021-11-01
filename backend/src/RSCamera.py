@@ -40,6 +40,9 @@ class RSCamera():
         self.color_frame = None
         self.depth_frame = None
 
+        align_to = rs.stream.color
+        self.align = rs.align(align_to)
+
     def start(self):
         self.pipeline.start(self.config)
         print("started rs pipeline")

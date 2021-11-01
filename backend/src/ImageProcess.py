@@ -77,8 +77,16 @@ class ImageProcess(RSCamera):
         try:
             while not self.stop:
                 frames = self.pipeline.wait_for_frames()
-                depth_frame = frames.get_depth_frame()
-                color_frame = frames.get_color_frame()
+
+                #https://github.com/IntelRealSense/librealsense/blob/master/wrappers/python/examples/align-depth2color.py
+                aligned_frames = self.align.process(frames)
+
+                # Get aligned frames
+                depth_frame = aligned_frames.get_depth_frame()
+                color_frame = aligned_frames.get_color_frame()
+
+                #depth_frame = frames.get_depth_frame()
+                #color_frame = frames.get_color_frame()
 
                 self.depth_frame = np.asanyarray(depth_frame.get_data(), dtype=np.uint16)
                 self.color_frame = np.array(color_frame.get_data(), dtype=np.uint8)
@@ -108,13 +116,15 @@ class ImageProcess(RSCamera):
                 color_hsv = cv2.cvtColor(self.color_frame, cv2.COLOR_BGR2HSV)
                 color_mask = cv2.inRange(color_hsv, lower, upper)
 
-                print(self.locationProcess.get(color_mask, self.depth_frame))
+                kernel = np.ones((5,5),np.uint8)
+                color_mask = cv2.morphologyEx(color_mask, cv2.MORPH_OPEN, kernel)
+
+                location = self.locationProcess.get(color_mask, self.depth_frame)
+                print(location) # temp remove, put back if necessary - josh
 
                 #scale it to see better visualization
                 depth_frame = cv2.convertScaleAbs(self.depth_frame, alpha=0.14)
                 depth_frame = cv2.cvtColor(cv2.bitwise_not(depth_frame), cv2.COLOR_GRAY2BGR)
-
-
 
                 self.color_frame = cv2.bitwise_and(self.color_frame, self.color_frame, mask=color_mask)
                 self.color_frame = cv2.drawKeypoints(self.color_frame, self.locationProcess.ball.keypoints, np.array([]), (255,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)

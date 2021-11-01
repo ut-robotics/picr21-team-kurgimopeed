@@ -1,16 +1,13 @@
 import cv2
 import numpy as np
 from math import sin, cos, pi, sqrt
+from src.Tools import linear_map
 
 class BallDetector():
     def __init__(self):
         self.camera_angle = 0
         self.camera_transformation = np.array([0, 0, 0.0])
         self.camera_fov = (87, 58) #H, V
-
-        self.depth_zoom = 1.5
-        self.depth_x_shift = -350
-        self.depth_y_shift = -180
 
         blobparams = cv2.SimpleBlobDetector_Params()
 
@@ -37,9 +34,6 @@ class BallDetector():
         self.keypoints = []
         self.depth_area = [0, 0, 0 ,0]
 
-    def linear_map(self, x, x_min, x_max, y_min, y_max):
-        return (x - x_min) * (y_max - y_min) / (x_max - x_min) + y_min
-
     def getLocations(self, mask, depth_frame):
 
         kernel = np.ones((5,5),np.uint8)
@@ -48,39 +42,37 @@ class BallDetector():
         keypoints = self.detector.detect(mask)
         self.keypoints = keypoints
 
+        #depth and color cameras are with different zoom and shifted, need pixel wrapper
         dheight, dwidth = depth_frame.shape
         mheight, mwidth = mask.shape
-
-
-        mheight *= self.depth_zoom
-        mwidth *= self.depth_zoom
-
-        #mwidth += self.depth_x_shift
-        #mheight += self.depth_y_shift
-
 
         locations = []
         for keypoint in keypoints:
             x, y = keypoint.pt
             radius = keypoint.size/2/sqrt(2) #circles inner square half edge length
 
-            rect_x_left = int(self.linear_map(x-radius, 0, mwidth, 0, dwidth))
-            rect_x_right = int(self.linear_map(x+radius, 0, mwidth, 0, dwidth))
-            rect_y_up = int(self.linear_map(y-radius, 0, mheight, 0, dheight))
-            rect_y_down = int(self.linear_map(y+radius, 0, mheight, 0, dheight))
+            rect_x_left = int(linear_map(x-radius, 0, mwidth, 0, dwidth))
+            rect_x_right = int(linear_map(x+radius, 0, mwidth, 0, dwidth))
+            rect_y_up = int(linear_map(y-radius, 0, mheight, 0, dheight))
+            rect_y_down = int(linear_map(y+radius, 0, mheight, 0, dheight))
             self.depth_area = [rect_x_left, rect_x_right, rect_y_up, rect_y_down]
 
-            dist = np.mean(depth_frame[rect_y_up:rect_y_down, rect_x_left:rect_x_right])
-            dist /= 1000 #mm to m
-            print(dist)
+            depth_ball_area = depth_frame[rect_y_up:rect_y_down, rect_x_left:rect_x_right]
+            if len(depth_ball_area)>0:
+                dist = np.mean(depth_ball_area)
+                dist /= 1000 #mm to m
 
-            alpha = (self.linear_map(y, 0, mheight, -self.camera_fov[1]/2, self.camera_fov[1]/2)+self.camera_angle)/180*pi
-            beeta = self.linear_map(x, 0, mwidth, -self.camera_fov[0]/2, self.camera_fov[0]/2)/180*pi
-        
-            s = sin(alpha)*dist
-            loc = np.array([cos(beeta)*s, sin(beeta)*s, cos(alpha)*dist])
+                alpha = (linear_map(y, 0, mheight, -self.camera_fov[1]/2, self.camera_fov[1]/2)+self.camera_angle)/180*pi
+                beeta = linear_map(x, 0, mwidth, -self.camera_fov[0]/2, self.camera_fov[0]/2)/180*pi
             
-            locations.append(np.add(loc, self.camera_transformation))
+                s = sin(alpha)*dist
+
+                cord_z = -cos(beeta)*s
+                cord_y = sin(beeta)*s
+                cord_x = cos(alpha)*dist
+
+                loc = np.array([cord_x, cord_y, cord_z])
+                locations.append(np.add(loc, self.camera_transformation))
 
         return locations
 
