@@ -1,106 +1,152 @@
-from flask import Flask, render_template, request, Response
+import atexit
+from typing import List
+
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request, Form
+from fastapi.responses import StreamingResponse, Response, JSONResponse
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 
 import time
+import json
 
-import numpy as np
+from src.motor_driver import MotorDriver
+from src.ImageProcess import ImageProcess
+from src.nuc_led import NucLED
+from src.MusicBox import MusicBox
 
-import cv2
-import pyrealsense2 as rs
+# camera works perfectly, just frames have to finish buffering after reload lol
 
-from threading import Thread
+led = NucLED()
 
-class RSCamera(object):
+def default_led():
+    led.set_led(led.TYPE_RING, color=led.RING_RED, brightness=64, mode=led.MODE_FADE_1HZ)
+
+default_led()
+
+app = FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+templates = Jinja2Templates(directory="templates")
+
+class ConnectionManager:
     def __init__(self):
-        # Configure depth and color streams
-        self.pipeline = rs.pipeline()
-        self.config = rs.config()
+        self.active_connections: List[WebSocket] = []
 
-        # Get device product line for setting a supporting resolution
-        self.pipeline_wrapper = rs.pipeline_wrapper(self.pipeline)
-        self.pipeline_profile = self.config.resolve(self.pipeline_wrapper)
-        self.device = self.pipeline_profile.get_device()
-        self.device_product_line = str(self.device.get_info(rs.camera_info.product_line))
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
 
-        found_rgb = False
-        for s in self.device.sensors:
-            if s.get_info(rs.camera_info.name) == "RGB Camera":
-                found_rgb = True
-                break
-        if not found_rgb:
-            print("The demo requires Depth camera with Color sensor")
-            exit(0)
+    def disconnect(self, websocket: WebSocket):
+        self.active_connections.remove(websocket)
 
-        self.config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
+    async def send_personal_message(self, message: str, websocket: WebSocket):
+        await websocket.send_text(message)
 
-        if self.device_product_line == "L500":
-            self.config.enable_stream(rs.stream.color, 960, 540, rs.format.bgr8, 30)
-        else:
-            self.config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
+    async def broadcast(self, message: str):
+        for connection in self.active_connections:
+            await connection.send_text(message)
 
-        # Start streaming
-        self.pipeline.start(self.config)
-        self.thread = Thread(target=self.process_frame_thread)
-        self.thread.start()
+    async def broadcast_json(self, data):
+        for connection in self.active_connections:
+            await connection.send_json(data)
 
-        self.rgb_frame = None
+    async def motor_driver_broadcast(self, value):
+        print(value)
+        await self.broadcast_json(json.dumps(value))
 
-    def __del__(self):
-        print("stopping rs pipeline")
-        self.pipeline.stop()
+manager = ConnectionManager()
 
-    def process_frame_thread(self):
+motor_driver = MotorDriver()
+motor_driver.start()
+
+image_proccess = ImageProcess(motor_driver)
+image_proccess.start()
+
+musicbox = MusicBox(motor_driver)
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    motor_driver.close()
+    image_proccess.stop()
+    led.set_led(led.TYPE_RING, 64, led.MODE_FADE_05HZ, led.RING_PINK)
+
+@app.websocket("/ws/{client_id}")
+async def websocket_endpoint(websocket: WebSocket, client_id: int):
+    await manager.connect(websocket)
+    try:
         while True:
-            # Wait for a coherent pair of frames: depth and color
-            frames = self.pipeline.wait_for_frames()
-            depth_frame = frames.get_depth_frame()
-            color_frame = frames.get_color_frame()
-            if not depth_frame or not color_frame:
-                continue
-
-            # Convert images to numpy arrays
-            depth_image = np.asanyarray(depth_frame.get_data())
-            color_image = np.asanyarray(color_frame.get_data())
-
-            # Apply colormap on depth image (image must be converted to 8-bit per pixel first)
-            depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
-
-            depth_colormap_dim = depth_colormap.shape
-            color_colormap_dim = color_image.shape
-
-            # If depth and color resolutions are different, resize color image to match depth image for display
-            if depth_colormap_dim != color_colormap_dim:
-                resized_color_image = cv2.resize(color_image, dsize=(depth_colormap_dim[1], depth_colormap_dim[0]), interpolation=cv2.INTER_AREA)
-                images = np.hstack((resized_color_image, depth_colormap))
+            led.set_led(led.TYPE_RING, brightness=0xff, mode=led.MODE_ON)
+            text = await websocket.receive_text()
+            await manager.send_personal_message(f"You wrote: {text}", websocket)
+            data = json.loads(text)
+            print(data)
+            speed, direction, turn, thrower, enable = [data[i] for i in ["speed", "direction", "turn", "thrower", "enable"]]
+            if enable:
+                led.set_led(led.TYPE_RING, color=led.RING_GREEN)
+                motor_driver.send(speed=speed, direction=direction, turn_speed=turn, thrower=thrower, callback=None)
             else:
-                images = np.hstack((color_image, depth_colormap))
+                led.set_led(led.TYPE_RING, color=led.RING_RED)
+                motor_driver.stop()
+    except WebSocketDisconnect:
+        default_led()
+        motor_driver.stop()
+        manager.disconnect(websocket)
+        await manager.broadcast(f"Client #{client_id} left the chat")
 
-            ret, jpeg = cv2.imencode(".jpg", color_image)
-            self.rgb_frame = jpeg.tobytes()
+@app.get("/depth-feed")
+def depth_feed(request: Request):
+    def feed_generator():
+        while not image_proccess.stop:
+            yield (b"--frame\r\n"
+                b"Content-Type: image/jpeg\r\n\r\n" + image_proccess.get_frame1() + b"\r\n\r\n")
+            time.sleep(1/25) # big sync fix
 
-app = Flask(__name__)
+    while not image_proccess.has_new_frame1():
+        time.sleep(0.2)
+    return StreamingResponse(feed_generator(), status_code=206, media_type="multipart/x-mixed-replace;boundary=frame")
 
-rs_cam = None
 
-# todo this serves current frame, too tired to debug
-def feed_generator():
-    while True:
-        yield (b"--frame\r\n"
-               b"Content-Type: image/jpeg\r\n\r\n" + rs_cam.rgb_frame + b"\r\n\r\n")
+@app.get("/color-feed")
+def color_feed(request: Request):
+    def feed_generator():
+        while not image_proccess.stop:
+            yield (b"--frame\r\n"
+                b"Content-Type: image/jpeg\r\n\r\n" + image_proccess.get_frame2() + b"\r\n\r\n")
+            time.sleep(1/25) # big sync fix
 
-@app.route("/rs")
-def video_feed():
-    return Response(feed_generator(), mimetype="multipart/x-mixed-replace; boundary=frame")
+    while not image_proccess.has_new_frame2():
+        time.sleep(0.2) 
+    return StreamingResponse(feed_generator(), status_code=206, media_type="multipart/x-mixed-replace;boundary=frame")
 
-@app.route("/")
-def index():
-    return render_template("index.html")
+@app.get("/")
+async def index(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
-@app.before_first_request
-def setup():
-    global rs_cam
+@app.get("/trackbar-config")
+async def load_config(request: Request):
+    with open(image_proccess.trackbar_path, "r") as f:
+        return JSONResponse(content=json.load(f))
 
-    # initialize camera and start frame processing
-    rs_cam = RSCamera()
+@app.post("/playmusic")
+async def play_march(song: str = Form(...)):
+    musicbox.play(song)
 
-if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+@app.post("/stopmusic")
+async def play_march(request: Request):
+    musicbox.stop()
+
+@app.post("/calibrate-camera")
+async def play_march(request: Request):
+    status = 200 if image_proccess.calibrate() else 417 #ok vs ecpectation failed
+    return Response(status_code=status)
+
+@app.post("/trackbar-config")
+async def save_config(request: Request):
+    j = await request.json()
+    image_proccess.threshold_values = list(j.values())
+    with open(image_proccess.trackbar_path, "w") as f:
+        json.dump(j, f)
+
+@app.get("/court")
+async def court(request: Request):
+    return templates.TemplateResponse("court.html", {"request": request})

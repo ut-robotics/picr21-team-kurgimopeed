@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>kurgimopeed - court</title>
+    <script src="static/js/jquery.min.js"></script>
+    <link rel="stylesheet" href="static/css/water.css">
+</head>
+
+<body style="max-width: 80%;">
+    <h1>kurgimopeed court</h1>
+    <canvas id="canvas">
+
+    </canvas>
+    <script>
+        const canvas = $("#canvas")[0];
+        const ctx = canvas.getContext("2d");
+        var court_img = new Image();
+
+        const scale_factor = 0.8;
+        const court_width = 6.1; // m
+        const court_height = 4; // m
+        canvas.width = scale_factor * $(window).width();
+        canvas.height = canvas.width / 1.525; // image width/height
+
+        court_img.onload = function() {
+            ctx.drawImage(court_img, 0, 0, canvas.width, canvas.width * court_img.height / court_img.width);
+        }
+
+        court_img.src = "static/img/competition_area_top.png";
+
+        // scale m to canvas pixels
+        const scale = (x) => x * (canvas.width / court_width);
+
+        let info = {
+            "balls": [
+                [1, 1],
+                [-1, -1],
+                [0.5, -0.7]
+            ],
+            "kurk": {
+                "pos": [0, 0],
+                "angle": 0
+            }
+        }
+        function render_balls() {
+            for (let i = 0; i < info.balls.length; ++i) {
+                let b = info.balls[i];
+
+                ctx.beginPath();
+                ctx.fillStyle = "#00ff00";
+                ctx.arc(canvas.width / 2 + scale(b[0]), canvas.height / 2 + scale(b[1]), 7, 0, 2 * Math.PI);
+                ctx.fill()
+            }
+        }
+
+        function render_kurk() {
+            ctx.beginPath();
+            ctx.fillStyle = "#86ffe3";
+            let pos = [canvas.width / 2 + scale(info.kurk.pos[0]), canvas.height / 2 + scale(info.kurk.pos[1])]
+            ctx.arc(pos[0], pos[1], scale(0.3 / 2), 0.5, 2 * Math.PI - 0.5);
+            ctx.fill();
+
+            // todo lolol
+            //let ang = info.kurk.angle * (Math.PI / 180.0);
+            //ctx.beginPath();
+            //ctx.moveTo(pos[0], [1]);
+            //ctx.lineTo(pos[0] )
+            //ctx.stroke();
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(court_img, 0, 0, canvas.width, canvas.width * court_img.height / court_img.width);
+            render_balls();
+            render_kurk();
+        }
+    </script>
+</body>
+
+</html>
