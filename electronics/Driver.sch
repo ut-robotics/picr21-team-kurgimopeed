@@ -4,9 +4,9 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 2 3
-Title ""
-Date ""
-Rev ""
+Title "Kurkkumopo HBridge driver"
+Date "2021-11-01"
+Rev "1.2"
 Comp ""
 Comment1 ""
 Comment2 ""
@@ -13566,12 +13566,6 @@ EB 4F F0 F6 E5 20 BB A0 4F 3A DC 5A EF C0 BE B8 F0 A8 AF 25 F5 FF 07 55 75 B2 C4
 00 00 00 49 45 4E 44 AE 42 60 82 
 EndData
 $EndBitmap
-Text Notes 7350 7500 0    50   ~ 0
-Kurkkumopo HBridge driver
-Text Notes 8100 7650 0    50   ~ 0
-24/10/2021
-Text Notes 10550 7650 0    50   ~ 0
-1.1
 $Comp
 L Device:R R?
 U 1 1 617496D9

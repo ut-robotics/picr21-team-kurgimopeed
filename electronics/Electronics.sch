@@ -4,21 +4,15 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 3
-Title ""
-Date ""
-Rev ""
+Title "CPU and isolators"
+Date "2021-11-01"
+Rev "1.2"
 Comp ""
 Comment1 ""
 Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
-Text Notes 7350 7500 0    50   ~ 0
-CPU and isolators
-Text Notes 8100 7650 0    50   ~ 0
-31/10/2021
-Text Notes 10550 7650 0    50   ~ 0
-1.1
 $Bitmap
 Pos 7450 6850
 Scale 0.300000
