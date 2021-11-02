@@ -63,17 +63,6 @@ F 3 "~" H 2850 2250 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	2750 2400 2850 2400
-$Comp
-L Device:CP C10
-U 1 1 6160C840
-P 2600 1100
-F 0 "C10" V 2855 1100 50  0000 C CNN
-F 1 "47uF" V 2764 1100 50  0000 C CNN
-F 2 "Capacitor_THT:CP_Radial_D8.0mm_P3.50mm" H 2638 950 50  0001 C CNN
-F 3 "~" H 2600 1100 50  0001 C CNN
-	1    2600 1100
-	0    -1   -1   0   
-$EndComp
 Wire Wire Line
 	2300 1050 2300 1100
 Wire Wire Line
@@ -156,17 +145,6 @@ F 3 "~" H 6500 2250 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	6400 2400 6500 2400
-$Comp
-L Device:CP C13
-U 1 1 6160C8B7
-P 6250 1100
-F 0 "C13" V 6505 1100 50  0000 C CNN
-F 1 "47uF" V 6414 1100 50  0000 C CNN
-F 2 "Capacitor_THT:CP_Radial_D8.0mm_P3.50mm" H 6288 950 50  0001 C CNN
-F 3 "~" H 6250 1100 50  0001 C CNN
-	1    6250 1100
-	0    -1   -1   0   
-$EndComp
 Wire Wire Line
 	5950 1050 5950 1100
 Wire Wire Line
@@ -260,17 +238,6 @@ F 3 "~" H 9950 2250 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	9850 2400 9950 2400
-$Comp
-L Device:CP C16
-U 1 1 6160C92E
-P 9700 1100
-F 0 "C16" V 9955 1100 50  0000 C CNN
-F 1 "47uF" V 9864 1100 50  0000 C CNN
-F 2 "Capacitor_THT:CP_Radial_D8.0mm_P3.50mm" H 9738 950 50  0001 C CNN
-F 3 "~" H 9700 1100 50  0001 C CNN
-	1    9700 1100
-	0    -1   -1   0   
-$EndComp
 Wire Wire Line
 	9400 1050 9400 1100
 Wire Wire Line
@@ -13702,5 +13669,47 @@ F 2 "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder" V 9780 2900 50  0
 F 3 "~" H 9850 2900 50  0001 C CNN
 	1    9850 2900
 	-1   0    0    1   
+$EndComp
+$Comp
+L Device:CP C?
+U 1 1 6189E08C
+P 2600 1100
+AR Path="/615F51F3/6189E08C" Ref="C?"  Part="1" 
+AR Path="/617B7795/6189E08C" Ref="C?"  Part="1" 
+AR Path="/615F228F/6189E08C" Ref="C10"  Part="1" 
+F 0 "C10" V 2345 1100 50  0000 C CNN
+F 1 "100uF" V 2436 1100 50  0000 C CNN
+F 2 "Capacitor_SMD:CP_Elec_8x10" H 2638 950 50  0001 C CNN
+F 3 "~" H 2600 1100 50  0001 C CNN
+	1    2600 1100
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:CP C?
+U 1 1 6189F82C
+P 6250 1100
+AR Path="/615F51F3/6189F82C" Ref="C?"  Part="1" 
+AR Path="/617B7795/6189F82C" Ref="C?"  Part="1" 
+AR Path="/615F228F/6189F82C" Ref="C13"  Part="1" 
+F 0 "C13" V 5995 1100 50  0000 C CNN
+F 1 "100uF" V 6086 1100 50  0000 C CNN
+F 2 "Capacitor_SMD:CP_Elec_8x10" H 6288 950 50  0001 C CNN
+F 3 "~" H 6250 1100 50  0001 C CNN
+	1    6250 1100
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:CP C?
+U 1 1 618A2886
+P 9700 1100
+AR Path="/615F51F3/618A2886" Ref="C?"  Part="1" 
+AR Path="/617B7795/618A2886" Ref="C?"  Part="1" 
+AR Path="/615F228F/618A2886" Ref="C16"  Part="1" 
+F 0 "C16" V 9445 1100 50  0000 C CNN
+F 1 "100uF" V 9536 1100 50  0000 C CNN
+F 2 "Capacitor_SMD:CP_Elec_8x10" H 9738 950 50  0001 C CNN
+F 3 "~" H 9700 1100 50  0001 C CNN
+	1    9700 1100
+	0    1    1    0   
 $EndComp
 $EndSCHEMATC

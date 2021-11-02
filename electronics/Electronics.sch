@@ -13251,21 +13251,6 @@ Wire Wire Line
 Wire Wire Line
 	2000 1550 2150 1550
 $Comp
-L Device:CP C?
-U 1 1 617240AB
-P 1850 1550
-AR Path="/613FDA12/617240AB" Ref="C?"  Part="1" 
-AR Path="/617240AB" Ref="C2"  Part="1" 
-F 0 "C2" V 2105 1550 50  0000 C CNN
-F 1 "4.7uF" V 2014 1550 50  0000 C CNN
-F 2 "Capacitor_THT:CP_Radial_D5.0mm_P2.00mm" H 1888 1400 50  0001 C CNN
-F 3 "~" H 1850 1550 50  0001 C CNN
-	1    1850 1550
-	0    1    1    0   
-$EndComp
-Wire Wire Line
-	2000 1250 2000 1550
-$Comp
 L power:GND #PWR?
 U 1 1 617240A4
 P 2150 1550
@@ -13278,10 +13263,6 @@ F 3 "" H 2150 1550 50  0001 C CNN
 	1    2150 1550
 	1    0    0    -1  
 $EndComp
-Connection ~ 2000 1550
-Wire Wire Line
-	1700 1250 1700 1550
-Connection ~ 1700 1550
 Connection ~ 1700 1250
 Wire Wire Line
 	1700 1050 1700 1250
@@ -13897,7 +13878,7 @@ F 3 "" H 5350 3550 50  0001 C CNN
 $EndComp
 Connection ~ 5350 3550
 Wire Wire Line
-	4300 3550 5350 3550
+	4300 3550 4950 3550
 $Comp
 L Device:C C?
 U 1 1 61724092
@@ -14075,5 +14056,56 @@ Wire Wire Line
 Wire Wire Line
 	3350 6300 3950 6300
 Wire Wire Line
-	1700 1550 1700 2150
+	2000 1250 2000 1550
+$Comp
+L Device:C C?
+U 1 1 61834ECC
+P 1850 1550
+AR Path="/613FDA12/61834ECC" Ref="C?"  Part="1" 
+AR Path="/61834ECC" Ref="C2"  Part="1" 
+F 0 "C2" V 1700 1550 50  0000 C CNN
+F 1 "4.7uF" V 1600 1550 50  0000 C CNN
+F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.33x1.80mm_HandSolder" H 1888 1400 50  0001 C CNN
+F 3 "~" H 1850 1550 50  0001 C CNN
+	1    1850 1550
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	1700 1250 1700 1550
+Connection ~ 1700 1550
+Wire Wire Line
+	1700 1550 1700 2050
+Connection ~ 2000 1550
+Connection ~ 1700 2050
+Wire Wire Line
+	1700 2050 1700 2150
+$Comp
+L Device:C C?
+U 1 1 618E44E9
+P 4950 3700
+AR Path="/613FDA12/618E44E9" Ref="C?"  Part="1" 
+AR Path="/618E44E9" Ref="C31"  Part="1" 
+F 0 "C31" H 5064 3654 50  0000 L CNN
+F 1 "4.7uF" H 5064 3745 50  0000 L CNN
+F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.33x1.80mm_HandSolder" H 4988 3550 50  0001 C CNN
+F 3 "~" H 4950 3700 50  0001 C CNN
+	1    4950 3700
+	-1   0    0    1   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 618EA48D
+P 4950 3850
+AR Path="/613FDA12/618EA48D" Ref="#PWR?"  Part="1" 
+AR Path="/618EA48D" Ref="#PWR0188"  Part="1" 
+F 0 "#PWR0188" H 4950 3600 50  0001 C CNN
+F 1 "GND" H 4955 3677 50  0000 C CNN
+F 2 "" H 4950 3850 50  0001 C CNN
+F 3 "" H 4950 3850 50  0001 C CNN
+	1    4950 3850
+	1    0    0    -1  
+$EndComp
+Connection ~ 4950 3550
+Wire Wire Line
+	4950 3550 5350 3550
 $EndSCHEMATC
