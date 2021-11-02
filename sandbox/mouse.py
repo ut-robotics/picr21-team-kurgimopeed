@@ -1,12 +1,21 @@
 import evdev
+from evdev import InputDevice, ecodes
 
-MOUSE_NAME = "Logitech G502 HERO Gaming Mouse"
+LG_MOUSE = "Logitech G502 HERO Gaming Mouse"
+RZ_MOUSE = "Razer Razer DeathAdder Chroma"
 
-dev = next((evdev.InputDevice(d) for d in evdev.list_devices() if evdev.InputDevice(d).name == MOUSE_NAME))
+lg_mouse = next((evdev.InputDevice(d) for d in evdev.list_devices() if evdev.InputDevice(d).name == LG_MOUSE))
+
+rz_mouse = next((
+    InputDevice(d)
+    for d in evdev.list_devices()
+    if InputDevice(d).name == RZ_MOUSE
+    and ("EV_REL", 2) in list(InputDevice(d).capabilities(verbose=True).keys())
+))
 
 x = 0
 y = 0
-for e in dev.read_loop():
+for e in lg_mouse.read_loop():
     if e.type == evdev.ecodes.EV_REL:
         if e.code == evdev.ecodes.REL_X:
             x += e.value
@@ -14,4 +23,3 @@ for e in dev.read_loop():
             y += e.value
         
         print(f"{x} {y}")
-
