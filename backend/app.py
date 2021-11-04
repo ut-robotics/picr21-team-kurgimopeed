@@ -140,6 +140,11 @@ async def play_march(request: Request):
     status = 200 if image_proccess.calibrate() else 417 #ok vs ecpectation failed
     return Response(status_code=status)
 
+@app.post("/set_debug_color_mask")
+async def play_march(request: Request):
+    j = await request.json()
+    image_proccess.show_mask = False if j["state"] == "OFF" else True
+
 @app.post("/trackbar-config")
 async def save_config(request: Request):
     j = await request.json()

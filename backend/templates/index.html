@@ -53,17 +53,19 @@
                 </div>
             </div>
         </div>
+    </div>
+
+
+    <div class="camera_section">
+        <div id="calibrate">
+            <div>
+                <button onclick="calibrate_camera()">Calibrate camera</button><br>
+                Show mask: <button id="show_mark_switch" >OFF</button><br>
+                <snap id="camera_calibration_response"></snap>
+            </div>
         </div>
-
-
-    <div id="video">
-    </div>
-    <div>
-        <button onclick="calibrate_camera()">Calibrate camera</button>
-        <snap id="camera_calibration_response"></snap>
-    </div>
-
-    <div id="calibrate">
+        <div id="video">
+        </div>
     </div>
 
     <button onclick="load_config()">Load threshold.json</button>

@@ -1,3 +1,4 @@
+from cv2 import transform
 from src.ArucoDetector import ArucoDetector
 from src.BallDetector import BallDetector
 
@@ -6,13 +7,28 @@ import numpy as np
 
 class LocationProcess():
     def __init__(self):
-        self.aruco_cord = (0, 0, 0)
+        #x positive is in blue pillar direction
+        #y positive is moving far away, if blue pillar is in right
+        #z positive is moving to the sky
+        self.aruco_locations = {
+            11: np.array([-2.27, -0.15, 0.105], dtype=np.float64), #pink basket left
+            12: np.array([-2.27, 0.16, 0.105], dtype=np.float64), #pink basket right
+            21: np.array([2.27, 0.145, 0.105], dtype=np.float64), #blue basket left 
+            22: np.array([2.27, -0.155, 0.105], dtype=np.float64)  #blue basket right
+        }
+
+        self.aruco_rotations = {
+            11: np.array([0, -90, 90], dtype=np.float64), #pink basket left
+            12: np.array([0, -90, 90], dtype=np.float64), #pink basket right
+            21: np.array([0, 90, -90], dtype=np.float64), #blue basket left 
+            22: np.array([0, 90, -90], dtype=np.float64)  #blue basket right
+        }
 
         self.robot_location = [0, 0, 0]
         self.robot_rotation = [0, 0, 0]
 
-        self.marker_size = 0.07 #in meters
-
+        self.marker_size = 0.158 #in meters
+        #self.marker_size = 0.04
         self.aruco = ArucoDetector(self.marker_size)
         self.ball = BallDetector()
 
@@ -41,9 +57,40 @@ class LocationProcess():
 
         return cord
 
-    def get(self, mask, depth):
+    def get(self, color, depth, mask, debug_frame=None):
+        _, markers = self.aruco.getMarkerLocations(color, debug_frame=debug_frame)
+
+        if len(markers)>0:
+            correct_marker_count = 0
+            transform = np.array([0, 0, 0], dtype=np.float64)
+            rotation = np.array([0, 0, 0], dtype=np.float64)
+
+            for m in markers:
+                if m["id"] in self.aruco_locations: #if such aruco id exists
+                    tcam, rcam = self.aruco.coordinateTransform(m["tvect"], m["rvect"])
+                    degrees = self.aruco.QuaternionToDegrees(rcam)
+                    cam_pos_str = (tcam[0], tcam[1], tcam[2], degrees[0], degrees[1], degrees[2])
+                    #print(" xyz:\t%.4f\t%.4f\t%.4f\tpry:\t%.2f\t%.2f\t%.2f"%cam_pos_str)
+
+                    aruco_transform = self.rotation_transform(tcam, self.aruco_rotations[m["id"]])
+                    transform += aruco_transform+self.aruco_locations[m["id"]]
+                    rotation += degrees
+
+                    correct_marker_count += 1
+                else:
+                    print("Found unknown aruco id %d"%m["id"])
+
+            self.robot_location = np.divide(transform, correct_marker_count)
+            self.robot_rotation = np.divide(rotation, correct_marker_count)
+
+        else:
+            pass
+            #location handler if no markers found
+
         balls = self.ball.getLocations(mask, depth)
         ball_locations = [self.rotation_transform(ball, self.robot_rotation) for ball in balls]
+
+        #print(self.robot_location)
         return {"robot_loc":self.robot_location, 
                 "robot_rot":self.robot_rotation,
                 "balls":ball_locations}
