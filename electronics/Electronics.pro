@@ -1,4 +1,4 @@
-update=Thu 04 Nov 2021 03:35:19 PM EET
+update=Sat 06 Nov 2021 08:55:11 PM EET
 version=1
 last_client=kicad
 [general]
@@ -50,6 +50,8 @@ ViaDiameter1=0.8
 ViaDrill1=0.4
 ViaDiameter2=0.5
 ViaDrill2=0.3
+ViaDiameter3=1.2
+ViaDrill3=0.6
 dPairWidth1=0.2
 dPairGap1=0.25
 dPairViaGap1=0.25
@@ -246,7 +248,7 @@ Enabled=0
 [pcbnew/Netclasses]
 [pcbnew/Netclasses/Default]
 Name=Default
-Clearance=0.2
+Clearance=0.127
 TrackWidth=0.25
 ViaDiameter=0.8
 ViaDrill=0.4
