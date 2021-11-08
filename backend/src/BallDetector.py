@@ -5,8 +5,8 @@ from src.Tools import linear_map
 
 class BallDetector():
     def __init__(self):
-        self.camera_angle = 0
-        self.camera_transformation = np.array([0, 0, 0.0])
+        self.camera_angle = -12
+        self.camera_transformation = np.array([0, 0, 0.205])
         self.camera_fov = (87, 58) #H, V
 
         blobparams = cv2.SimpleBlobDetector_Params()
@@ -15,7 +15,7 @@ class BallDetector():
         blobparams.blobColor = 255
 
         #blobparams.filterByArea = True
-        blobparams.minArea = 10
+        blobparams.minArea = 100
         blobparams.maxArea = 100000
 
         #blobparams.minDistBetweenBlobs = 100
@@ -32,7 +32,7 @@ class BallDetector():
         self.detector = cv2.SimpleBlobDetector_create(blobparams)
 
         self.keypoints = []
-        self.depth_area = [0, 0, 0 ,0]
+        self.depth_area = [0, 0, 0, 0]
 
     def getLocations(self, mask, depth_frame):
 
@@ -62,17 +62,22 @@ class BallDetector():
                 dist = np.mean(depth_ball_area)
                 dist /= 1000 #mm to m
 
-                alpha = (linear_map(y, 0, mheight, -self.camera_fov[1]/2, self.camera_fov[1]/2)+self.camera_angle)/180*pi
-                beeta = linear_map(x, 0, mwidth, -self.camera_fov[0]/2, self.camera_fov[0]/2)/180*pi
+                alpha = (linear_map(y, mheight, 0, -self.camera_fov[1]/2, self.camera_fov[1]/2) + self.camera_angle - 90.0)/180*pi
+                beeta = linear_map(x, mwidth, 0, -self.camera_fov[0]/2, self.camera_fov[0]/2)/180*pi
+
+
             
                 s = sin(alpha)*dist
 
-                cord_z = -cos(beeta)*s
-                cord_y = sin(beeta)*s
-                cord_x = cos(alpha)*dist
+                cord_x = sin(beeta) * s
+                cord_y = -cos(beeta) * s
+                cord_z = cos(alpha) * dist
+                #cord_x = sin(beeta)*s
+                #cord_y = cos(alpha)*dist
+                #cord_z = cos(beeta)*s
 
-                loc = np.array([cord_x, cord_y, cord_z])
-                locations.append(np.add(loc, self.camera_transformation))
+                loc = np.add(np.array([cord_x, cord_y, cord_z]), self.camera_transformation)
+                print(loc)
+                locations.append(loc)
 
         return locations
-

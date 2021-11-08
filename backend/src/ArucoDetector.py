@@ -27,6 +27,7 @@ class ArucoDetector():
         rvecs, tvecs, _ = aruco.estimatePoseSingleMarkers(corners, self.marker_size, self.mtx, self.dist) #translation [x, y, z] camera to marker
                                                                                             #rotation [over x, over y, over dist(z)] camera to marker, in radians
 
+        """
         if len(corners) == 2:
             print("rvecs")
             for rv in rvecs:    
@@ -35,6 +36,7 @@ class ArucoDetector():
             for tv in tvecs:    
                 print(tv)
             print("----")
+        """
 
         if rvecs is None:
             rvecs = np.array([])

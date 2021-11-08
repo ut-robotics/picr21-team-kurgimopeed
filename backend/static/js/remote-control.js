@@ -76,6 +76,7 @@ $(document).ready(function () {
     }
 
     var motors_enabled = false;
+    var drive_enabled = false;
     var speed = 0;
     var thrower = 0;
 
@@ -116,6 +117,7 @@ $(document).ready(function () {
             movement["thrower"] = thrower
         }
         movement["enable"] = motors_enabled
+        movement["drive_enable"] = drive_enabled
         sendMessage(JSON.stringify(movement))
     }
 
@@ -191,6 +193,24 @@ $(document).ready(function () {
 
     $("#main_switch").click(function () {
         main_toggle()
+    })
+
+    $("#drive_switch").click(function () {
+        let e = $(this)
+        const en = "main_enabled"
+        const dis = "main_disabled"
+        if (e.hasClass(dis)) {
+            e.removeClass(dis)
+            e.addClass(en)
+            e.text("Drive ON")
+            drive_enabled = true;
+        } else {
+            e.removeClass(en)
+            e.addClass(dis)
+            e.text("Drive OFF")
+            drive_enabled = false;
+        }
+        updateMotorValues();
     })
 
     function send_show_mask(){

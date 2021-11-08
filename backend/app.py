@@ -11,6 +11,7 @@ import json
 
 from src.motor_driver import MotorDriver
 from src.ImageProcess import ImageProcess
+from src.DrivingLogic import DrivingLogic
 from src.nuc_led import NucLED
 from src.MusicBox import MusicBox
 
@@ -59,7 +60,8 @@ manager = ConnectionManager()
 motor_driver = MotorDriver()
 motor_driver.start()
 
-image_proccess = ImageProcess(motor_driver)
+driving_logic = DrivingLogic(motor_driver)
+image_proccess = ImageProcess(driving_logic)
 image_proccess.start()
 
 musicbox = MusicBox(motor_driver)
@@ -80,13 +82,19 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
             await manager.send_personal_message(f"You wrote: {text}", websocket)
             data = json.loads(text)
             print(data)
-            speed, direction, turn, thrower, enable = [data[i] for i in ["speed", "direction", "turn", "thrower", "enable"]]
+            speed, direction, turn, thrower, enable, driving_enable = [data[i] for i in ["speed", "direction", "turn", "thrower", "enable", "drive_enable"]]
             if enable:
+                driving_logic.enable = False
                 led.set_led(led.TYPE_RING, color=led.RING_GREEN)
                 motor_driver.send(speed=speed, direction=direction, turn_speed=turn, thrower=thrower, callback=None)
+            elif driving_enable:
+                driving_logic.enable = True
             else:
+                driving_logic.enable = False
                 led.set_led(led.TYPE_RING, color=led.RING_RED)
                 motor_driver.stop()
+
+
     except WebSocketDisconnect:
         default_led()
         motor_driver.stop()

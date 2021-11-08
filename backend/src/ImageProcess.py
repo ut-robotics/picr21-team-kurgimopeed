@@ -16,10 +16,10 @@ calibrator = ArucoCalibrator()
 
 
 class ImageProcess(RSCamera):
-    def __init__(self, motor_driver):
+    def __init__(self, driving_logic):
         super().__init__()
         # start capture thread
-        self.motor_driver = motor_driver
+        self.driving_logic = driving_logic 
 
         self.stop = False
         self.thread = Thread(target=self.run)
@@ -139,13 +139,15 @@ class ImageProcess(RSCamera):
                 debug1 = cv2.rectangle(debug1, (xl, yu), (xr, yd), (0, 0, 255), 2)
 
                 location = self.locationProcess.get(self.color_frame, self.depth_frame, color_mask, debug_frame=debug2)
-                #print(location) # temp remove, put back if necessary - josh
+                #print(len(location["balls"])) # temp remove, put back if necessary - josh
                 
                 self.debug_frame1 = self.convert_debug_frame(debug1, self.depth_resolution)
                 self.debug_frame2 = self.convert_debug_frame(debug2, self.color_resolution)
 
                 self.new_debug_frame1 = True
                 self.new_debug_frame2 = True
+
+                self.driving_logic.run_logic(location) # params
 
                 #print(depth_frame)
         finally:
