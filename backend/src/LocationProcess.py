@@ -88,7 +88,10 @@ class LocationProcess():
             #location handler if no markers found
 
         balls = self.ball.getLocations(mask, depth)
-        ball_locations = [self.rotation_transform(ball, self.robot_rotation) for ball in balls]
+        # TODO: i am unsure about this fn, comment back in after proper localization?
+        # -josh
+        #ball_locations = [(self.rotation_transform(ball[0], self.robot_rotation), ball[1]) for ball in balls]
+        ball_locations = balls
 
         #print(self.robot_location)
         return {"robot_loc":self.robot_location, 

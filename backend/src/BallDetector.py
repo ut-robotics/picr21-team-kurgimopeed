@@ -34,8 +34,8 @@ class BallDetector():
         self.keypoints = []
         self.depth_area = [0, 0, 0, 0]
 
+    # should ball tracking be done here?
     def getLocations(self, mask, depth_frame):
-
         kernel = np.ones((5,5),np.uint8)
         mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
 
@@ -62,22 +62,22 @@ class BallDetector():
                 dist = np.mean(depth_ball_area)
                 dist /= 1000 #mm to m
 
+                # just works (tm)
                 alpha = (linear_map(y, mheight, 0, -self.camera_fov[1]/2, self.camera_fov[1]/2) + self.camera_angle - 90.0)/180*pi
                 beeta = linear_map(x, mwidth, 0, -self.camera_fov[0]/2, self.camera_fov[0]/2)/180*pi
 
-
-            
                 s = sin(alpha)*dist
 
                 cord_x = sin(beeta) * s
                 cord_y = -cos(beeta) * s
                 cord_z = cos(alpha) * dist
-                #cord_x = sin(beeta)*s
-                #cord_y = cos(alpha)*dist
-                #cord_z = cos(beeta)*s
 
                 loc = np.add(np.array([cord_x, cord_y, cord_z]), self.camera_transformation)
-                print(loc)
-                locations.append(loc)
+                #print(loc)
+
+                # vector magnitude
+                dist_to_camera = np.linalg.norm(loc)
+                # a dictionary with ids would be better
+                locations.append((loc, dist_to_camera))
 
         return locations
