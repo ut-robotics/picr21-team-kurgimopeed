@@ -117,28 +117,34 @@ class ImageProcess(RSCamera):
                         tc = list(json.load(f).values())
                 """
 
-                lower = np.array(self.threshold_values[:3])
-                upper = np.array(self.threshold_values[3:])
+                lower = self.threshold_values[:3]
+                upper = self.threshold_values[3:]
 
-                color_hsv = cv2.cvtColor(self.color_frame, cv2.COLOR_BGR2HSV)
-                color_mask = cv2.inRange(color_hsv, lower, upper)
-
-                kernel = np.ones((5,5),np.uint8)
-                color_mask = cv2.morphologyEx(color_mask, cv2.MORPH_OPEN, kernel)
+                self.locationProcess.ball.set_threshold(lower, upper)
 
                 #scale it to see better visualization
                 debug1 = cv2.convertScaleAbs(debug1, alpha=0.14)
                 debug1 = cv2.cvtColor(cv2.bitwise_not(debug1), cv2.COLOR_GRAY2BGR)
 
-                if self.show_mask:
-                    debug2 = cv2.bitwise_and(debug2, debug2, mask=color_mask)
-
                 #add debug data
-                debug2 = cv2.drawKeypoints(debug2, self.locationProcess.ball.keypoints, np.array([]), (255,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-                xl, xr, yu, yd = self.locationProcess.ball.depth_area
-                debug1 = cv2.rectangle(debug1, (xl, yu), (xr, yd), (0, 0, 255), 2)
+                if self.show_mask:
+                    ball_mask = self.locationProcess.ball.get_mask(self.color_frame)
+                    debug2 = cv2.bitwise_and(debug2, debug2, mask=ball_mask)
+                else:
+                    ball_debug_mask = self.locationProcess.ball.debug_mask
 
-                location = self.locationProcess.get(self.color_frame, self.depth_frame, color_mask, debug_frame=debug2)
+                    if ball_debug_mask is not None:
+                        #draw green layer on top of original frame from ball debug mask
+                        green_frame = np.zeros((ball_debug_mask.shape[0], ball_debug_mask.shape[1], 3), np.uint8)
+                        green_frame[:] = (0, 255, 0)
+                        ball_debug = cv2.bitwise_and(debug2, debug2, mask=cv2.bitwise_not(ball_debug_mask))
+                        ball_debug_color = cv2.bitwise_and(green_frame, green_frame, mask=ball_debug_mask)
+                        debug2 = np.add(ball_debug, ball_debug_color)
+                
+                debug2 = cv2.drawKeypoints(debug2, self.locationProcess.ball.keypoints, np.array([]), (255,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+
+
+                location = self.locationProcess.get(self.color_frame, self.depth_frame, debug_frame=debug2)
                 #print(len(location["balls"])) # temp remove, put back if necessary - josh
                 
                 self.debug_frame1 = self.convert_debug_frame(debug1, self.depth_resolution)

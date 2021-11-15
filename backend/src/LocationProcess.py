@@ -57,7 +57,7 @@ class LocationProcess():
 
         return cord
 
-    def get(self, color, depth, mask, debug_frame=None):
+    def get(self, color, depth, debug_frame=None):
         _, markers = self.aruco.getMarkerLocations(color, debug_frame=debug_frame)
 
         if len(markers)>0:
@@ -87,7 +87,7 @@ class LocationProcess():
             pass
             #location handler if no markers found
 
-        balls = self.ball.getLocations(mask, depth)
+        balls = self.ball.getLocations(color, depth)
         # TODO: i am unsure about this fn, comment back in after proper localization?
         # -josh
         #ball_locations = [(self.rotation_transform(ball[0], self.robot_rotation), ball[1]) for ball in balls]

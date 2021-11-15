@@ -6,9 +6,14 @@ import pyrealsense2 as rs
 from threading import Thread
 import time
 
+camera_angle = -12
+camera_transformation = np.array([-0.033, 0, 0.205])
+camera_fov = (87, 58) #H, V
+
 class RSCamera():
     def __init__(self):
         # configure depth and color streams
+
         self.pipeline = rs.pipeline()
         self.config = rs.config()
 

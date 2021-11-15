@@ -1,4 +1,8 @@
+from cv2 import line
 from src.motor_driver import MotorDriver
+from src.Tools import linear_map
+import math
+from simple_pid import PID
 
 # logic notes
 # no balls -> spin.
@@ -38,40 +42,55 @@ class DrivingLogic():
         # because its hard to turn towards distant balls precisely
         self.BALL_CENTER_TOLERANCE = 0.01 # in m
 
+        self.pid = PID(0.6, 0, 0, setpoint=0)
+        self.pid.output_limits = (-20, 20)
+
     def run_logic(self, data):
-        #if not self.enable:
-        #    return
+        if not self.enable:
+            return
+
+        self.motor_driver.stop()
 
         # no balls -> spin
         if not len(data["balls"]):
-            self.motor_driver.send(turn_speed=10)
+            self.motor_driver.send(turn_speed=3)
             return
 
-        # sort balls by distance
+        # sort balls by distance and get closest
         ball_loc, ball_depth = sorted(data["balls"], key=lambda ball: ball[1])[0]
-
-        # vague target ball location 
-        # height is not considered as a constraint atm
-        target = [0.028, 0.22]
-        tolerance = [0.01, 0.01]
-        #delta_target = [ball_coord - target_coord for ball_coord, target_coord in zip(closest, target)]
 
         # x is perpendicular to robot forward vector (horizontal)
         # y is parralel to robot forward vector (horizontal)
         # z is parralel to robot up vector (vertical)
 
-        # TODO: scale turning speed with delta and depth
-        l = ["turn right", "turn left", "forwards", "backwards"]
-        for coord in range(2):
-            delta = ball_loc[coord] - target[coord]
-            if delta > tolerance[coord]:
-                print(l[2 * coord])
-                return
-            elif delta < -tolerance[coord]:
-                print(l[2 * coord + 1])
-                return
+        #print(self.pid.tunings)
 
-        print("ball found")
+        depth_target = 0.25
+        alpha = math.atan(ball_loc[0] / ball_loc[1]) * 180.0 / math.pi
+        new = self.pid(alpha)
+        target_speed = min((ball_depth - depth_target) * 100, 30)
+        self.motor_driver.send(direction=0, turn_speed=new, speed=target_speed)
+        print(alpha)
+        print(new)
+        print(ball_depth - depth_target)
+        print("")
+
+        return
+
+
+        print("")
+        return
+        if alpha > turning_tolerance or alpha < -turning_tolerance:
+            turn_speed = linear_map(alpha, -50, 40, 15, -15)
+            print(turn_speed)
+            #print(alpha)
+            self.motor_driver.send(turn_speed=turn_speed)
+            return
+
+        # driving
+        depth_tolerance = 0.02 #
+        depth_target = 0
+        print("found:", ball_depth)
 
         # pseudo
         # if goal not found

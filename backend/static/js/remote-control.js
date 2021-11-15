@@ -75,6 +75,17 @@ $(document).ready(function () {
         ws.send(data)
     }
 
+    var pid_ar = ["p", "i", "d", "setpoint"];
+    pid_ar.forEach(v => {
+        let e = $(`#pid_${v}`);
+        e.change(function() {
+            let v = e.val();
+            let data = {"pid": pid_ar.map(v_ => parseFloat($(`#pid_${v_}`).val()))}
+            console.log(data)
+            sendMessage(JSON.stringify(data))
+        });
+    })
+
     var motors_enabled = false;
     var drive_enabled = false;
     var speed = 0;
