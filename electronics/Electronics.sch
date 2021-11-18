@@ -13008,9 +13008,9 @@ Text Label 700  3050 0    50   ~ 0
 MCU-debug-LED_R2
 Text Label 700  2950 0    50   ~ 0
 MCU-debug-LED_R1
-Text Label 700  2350 0    50   ~ 0
+Text Label 700  2450 0    50   ~ 0
 MCU-debug-LED_G2
-Text Label 700  2250 0    50   ~ 0
+Text Label 700  2350 0    50   ~ 0
 MCU-debug-LED_G1
 Wire Wire Line
 	3350 5250 3400 5250
@@ -13214,8 +13214,6 @@ Wire Wire Line
 	700  2550 1700 2550
 Wire Wire Line
 	1700 2350 700  2350
-Wire Wire Line
-	700  2250 1700 2250
 Wire Wire Line
 	1700 3450 1700 3550
 $Comp
@@ -13959,7 +13957,7 @@ Text Label 5150 3050 2    50   ~ 0
 MCU-USB_DP
 Text Label 5150 3150 2    50   ~ 0
 MCU-USB_DM
-Text Label 700  2450 0    50   ~ 0
+Text Label 700  2250 0    50   ~ 0
 MCU_NRST
 Wire Wire Line
 	4300 2550 5150 2550
@@ -14152,4 +14150,37 @@ F 3 "~" H 1000 7050 50  0001 C CNN
 	1    1000 7050
 	1    0    0    -1  
 $EndComp
+$Comp
+L Device:C C?
+U 1 1 61987BE0
+P 1350 2000
+AR Path="/613FDA12/61987BE0" Ref="C?"  Part="1" 
+AR Path="/61987BE0" Ref="C32"  Part="1" 
+F 0 "C32" V 1098 2000 50  0000 C CNN
+F 1 "0.1uF" V 1189 2000 50  0000 C CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder" H 1388 1850 50  0001 C CNN
+F 3 "~" H 1350 2000 50  0001 C CNN
+	1    1350 2000
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 61987BE6
+P 1200 2000
+AR Path="/613FDA12/61987BE6" Ref="#PWR?"  Part="1" 
+AR Path="/61987BE6" Ref="#PWR0189"  Part="1" 
+F 0 "#PWR0189" H 1200 1750 50  0001 C CNN
+F 1 "GND" H 1205 1827 50  0000 C CNN
+F 2 "" H 1200 2000 50  0001 C CNN
+F 3 "" H 1200 2000 50  0001 C CNN
+	1    1200 2000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	700  2250 1500 2250
+Wire Wire Line
+	1500 2000 1500 2250
+Connection ~ 1500 2250
+Wire Wire Line
+	1500 2250 1700 2250
 $EndSCHEMATC
