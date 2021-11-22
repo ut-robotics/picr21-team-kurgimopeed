@@ -4,9 +4,9 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 2 3
-Title ""
-Date ""
-Rev ""
+Title "Kurkkumopo HBridge driver"
+Date "2021-11-01"
+Rev "1.2"
 Comp ""
 Comment1 ""
 Comment2 ""
@@ -26,17 +26,6 @@ F 3 "~" H 2600 1500 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	2800 1500 2800 1600
-$Comp
-L power:GND #PWR0125
-U 1 1 6160C826
-P 2800 1600
-F 0 "#PWR0125" H 2800 1350 50  0001 C CNN
-F 1 "GND" H 2805 1427 50  0000 C CNN
-F 2 "" H 2800 1600 50  0001 C CNN
-F 3 "" H 2800 1600 50  0001 C CNN
-	1    2800 1600
-	1    0    0    -1  
-$EndComp
 $Comp
 L power:Vdrive #PWR0126
 U 1 1 6160C82C
@@ -63,17 +52,6 @@ F 3 "~" H 2850 2250 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	2750 2400 2850 2400
-$Comp
-L Device:CP C10
-U 1 1 6160C840
-P 2600 1100
-F 0 "C10" V 2855 1100 50  0000 C CNN
-F 1 "47uF" V 2764 1100 50  0000 C CNN
-F 2 "Capacitor_THT:CP_Radial_D8.0mm_P3.50mm" H 2638 950 50  0001 C CNN
-F 3 "~" H 2600 1100 50  0001 C CNN
-	1    2600 1100
-	0    -1   -1   0   
-$EndComp
 Wire Wire Line
 	2300 1050 2300 1100
 Wire Wire Line
@@ -120,17 +98,6 @@ $EndComp
 Wire Wire Line
 	6450 1500 6450 1600
 $Comp
-L power:GND #PWR0127
-U 1 1 6160C89D
-P 6450 1600
-F 0 "#PWR0127" H 6450 1350 50  0001 C CNN
-F 1 "GND" H 6455 1427 50  0000 C CNN
-F 2 "" H 6450 1600 50  0001 C CNN
-F 3 "" H 6450 1600 50  0001 C CNN
-	1    6450 1600
-	1    0    0    -1  
-$EndComp
-$Comp
 L power:Vdrive #PWR0128
 U 1 1 6160C8A3
 P 5950 1050
@@ -156,17 +123,6 @@ F 3 "~" H 6500 2250 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	6400 2400 6500 2400
-$Comp
-L Device:CP C13
-U 1 1 6160C8B7
-P 6250 1100
-F 0 "C13" V 6505 1100 50  0000 C CNN
-F 1 "47uF" V 6414 1100 50  0000 C CNN
-F 2 "Capacitor_THT:CP_Radial_D8.0mm_P3.50mm" H 6288 950 50  0001 C CNN
-F 3 "~" H 6250 1100 50  0001 C CNN
-	1    6250 1100
-	0    -1   -1   0   
-$EndComp
 Wire Wire Line
 	5950 1050 5950 1100
 Wire Wire Line
@@ -224,17 +180,6 @@ $EndComp
 Wire Wire Line
 	9900 1500 9900 1600
 $Comp
-L power:GND #PWR0129
-U 1 1 6160C914
-P 9900 1600
-F 0 "#PWR0129" H 9900 1350 50  0001 C CNN
-F 1 "GND" H 9905 1427 50  0000 C CNN
-F 2 "" H 9900 1600 50  0001 C CNN
-F 3 "" H 9900 1600 50  0001 C CNN
-	1    9900 1600
-	1    0    0    -1  
-$EndComp
-$Comp
 L power:Vdrive #PWR0130
 U 1 1 6160C91A
 P 9400 1050
@@ -260,17 +205,6 @@ F 3 "~" H 9950 2250 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	9850 2400 9950 2400
-$Comp
-L Device:CP C16
-U 1 1 6160C92E
-P 9700 1100
-F 0 "C16" V 9955 1100 50  0000 C CNN
-F 1 "47uF" V 9864 1100 50  0000 C CNN
-F 2 "Capacitor_THT:CP_Radial_D8.0mm_P3.50mm" H 9738 950 50  0001 C CNN
-F 3 "~" H 9700 1100 50  0001 C CNN
-	1    9700 1100
-	0    -1   -1   0   
-$EndComp
 Wire Wire Line
 	9400 1050 9400 1100
 Wire Wire Line
@@ -13566,12 +13500,6 @@ EB 4F F0 F6 E5 20 BB A0 4F 3A DC 5A EF C0 BE B8 F0 A8 AF 25 F5 FF 07 55 75 B2 C4
 00 00 00 49 45 4E 44 AE 42 60 82 
 EndData
 $EndBitmap
-Text Notes 7350 7500 0    50   ~ 0
-Kurkkumopo HBridge driver
-Text Notes 8100 7650 0    50   ~ 0
-24/10/2021
-Text Notes 10550 7650 0    50   ~ 0
-1.1
 $Comp
 L Device:R R?
 U 1 1 617496D9
@@ -13708,5 +13636,80 @@ F 2 "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder" V 9780 2900 50  0
 F 3 "~" H 9850 2900 50  0001 C CNN
 	1    9850 2900
 	-1   0    0    1   
+$EndComp
+$Comp
+L Device:CP C?
+U 1 1 6189E08C
+P 2600 1100
+AR Path="/615F51F3/6189E08C" Ref="C?"  Part="1" 
+AR Path="/617B7795/6189E08C" Ref="C?"  Part="1" 
+AR Path="/615F228F/6189E08C" Ref="C10"  Part="1" 
+F 0 "C10" V 2855 1100 50  0000 C CNN
+F 1 "100uF" V 2764 1100 50  0000 C CNN
+F 2 "Capacitor_SMD:CP_Elec_8x10" H 2638 950 50  0001 C CNN
+F 3 "~" H 2600 1100 50  0001 C CNN
+	1    2600 1100
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Device:CP C?
+U 1 1 6189F82C
+P 6250 1100
+AR Path="/615F51F3/6189F82C" Ref="C?"  Part="1" 
+AR Path="/617B7795/6189F82C" Ref="C?"  Part="1" 
+AR Path="/615F228F/6189F82C" Ref="C13"  Part="1" 
+F 0 "C13" V 6505 1100 50  0000 C CNN
+F 1 "100uF" V 6414 1100 50  0000 C CNN
+F 2 "Capacitor_SMD:CP_Elec_8x10" H 6288 950 50  0001 C CNN
+F 3 "~" H 6250 1100 50  0001 C CNN
+	1    6250 1100
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Device:CP C?
+U 1 1 618A2886
+P 9700 1100
+AR Path="/615F51F3/618A2886" Ref="C?"  Part="1" 
+AR Path="/617B7795/618A2886" Ref="C?"  Part="1" 
+AR Path="/615F228F/618A2886" Ref="C16"  Part="1" 
+F 0 "C16" V 9955 1100 50  0000 C CNN
+F 1 "100uF" V 9864 1100 50  0000 C CNN
+F 2 "Capacitor_SMD:CP_Elec_8x10" H 9738 950 50  0001 C CNN
+F 3 "~" H 9700 1100 50  0001 C CNN
+	1    9700 1100
+	0    -1   -1   0   
+$EndComp
+$Comp
+L power:Earth #PWR0125
+U 1 1 6189EC29
+P 9900 1600
+F 0 "#PWR0125" H 9900 1350 50  0001 C CNN
+F 1 "Earth" H 9900 1450 50  0001 C CNN
+F 2 "" H 9900 1600 50  0001 C CNN
+F 3 "~" H 9900 1600 50  0001 C CNN
+	1    9900 1600
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:Earth #PWR0127
+U 1 1 6189FF3E
+P 6450 1600
+F 0 "#PWR0127" H 6450 1350 50  0001 C CNN
+F 1 "Earth" H 6450 1450 50  0001 C CNN
+F 2 "" H 6450 1600 50  0001 C CNN
+F 3 "~" H 6450 1600 50  0001 C CNN
+	1    6450 1600
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:Earth #PWR0129
+U 1 1 618A18C8
+P 2800 1600
+F 0 "#PWR0129" H 2800 1350 50  0001 C CNN
+F 1 "Earth" H 2800 1450 50  0001 C CNN
+F 2 "" H 2800 1600 50  0001 C CNN
+F 3 "~" H 2800 1600 50  0001 C CNN
+	1    2800 1600
+	1    0    0    -1  
 $EndComp
 $EndSCHEMATC
