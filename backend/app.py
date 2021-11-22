@@ -161,9 +161,11 @@ async def play_march(request: Request):
 @app.post("/trackbar-config")
 async def save_config(request: Request):
     j = await request.json()
-    image_proccess.threshold_values = list(j.values())
+    #print(j)
+    image_proccess.threshold_values[j["threshold_config"]] = j["threshold_values"]
+    image_proccess.active_threshold_config = j["threshold_config"]
     with open(image_proccess.trackbar_path, "w") as f:
-        json.dump(j, f)
+        json.dump(image_proccess.threshold_values, f)
 
 @app.get("/court")
 async def court(request: Request):

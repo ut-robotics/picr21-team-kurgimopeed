@@ -3,6 +3,7 @@ import numpy as np
 from math import sin, cos, pi, sqrt
 from src.Tools import linear_map
 from src.RSCamera import camera_angle, camera_fov, camera_transformation
+from threading import Thread
 
 class BallDetector():
     def __init__(self):
@@ -31,10 +32,13 @@ class BallDetector():
 
         self.detector = cv2.SimpleBlobDetector_create(blobparams)
 
-        self.keypoints = []
         self.debug_mask = None
+        #self.process_queue = Queue()
+        self.locations = []
 
-    def set_threshold(self, lower, upper):
+    def set_threshold(self, threshold_values):
+        lower = threshold_values["balls"][:3]
+        upper = threshold_values["balls"][3:]
         self.threshold_lower = np.array([lower])
         self.threshold_upper = np.array([upper])
 
@@ -46,16 +50,31 @@ class BallDetector():
         mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
         return mask
 
+    def get_debug_mask(self):
+        return self.debug_mask
+
+    def start_process(self, color, depth):
+        process = Thread(target=self.getLocations, args=(color, depth))
+        process.start()
+        return process
+
+    def join(self, process: Thread):
+        #locations, self.debug_mask = self.process_queue.get()
+        process.join()
+        return self.locations
+        
+
 
     # should ball tracking be done here?
     def getLocations(self, color_frame, depth_frame):
         mask = self.get_mask(color_frame)
         mheight, mwidth = mask.shape
 
-        self.debug_mask = np.zeros(mask.shape, dtype=np.uint8)
+        debug_mask = np.zeros(mask.shape, dtype=np.uint8)
 
         keypoints = self.detector.detect(mask)
-        self.keypoints = keypoints
+
+        resized_depth = cv2.resize(depth_frame, (mwidth, mheight))
 
         locations = []
         for keypoint in keypoints:
@@ -65,13 +84,12 @@ class BallDetector():
             ball_mask = np.zeros(mask.shape, dtype=np.uint8)
             ball_mask = cv2.circle(ball_mask, (int(x),int(y)),int(radius), (255,255,255),cv2.FILLED)
 
-            resized_depth = cv2.resize(depth_frame, (mwidth, mheight))
             filtered_depth = cv2.bitwise_and(resized_depth, resized_depth, mask=ball_mask)
 
             measure_point_count = np.count_nonzero(filtered_depth)
             if measure_point_count > 0:
                 dist = np.sum(filtered_depth)/measure_point_count
-                self.debug_mask = cv2.bitwise_or(self.debug_mask, ball_mask)
+                debug_mask = cv2.bitwise_or(debug_mask, ball_mask)
 
                 dist /= 1000 #mm to m
 
@@ -94,4 +112,6 @@ class BallDetector():
                 # a dictionary with ids would be better
                 locations.append((loc, dist_to_robot))
 
-        return locations
+        self.locations = locations
+        self.debug_mask = debug_mask
+        #return locations, debug_mask

@@ -3,6 +3,7 @@ from serial.tools.list_ports import comports
 import struct
 from multiprocessing import Process, Queue
 from math import pi, sin
+import time
 
 STOP_CODE = 0 #random defined number of STOP_CODE to be treated as special number
 
@@ -55,6 +56,7 @@ class MotorControllerHandler():
                 if callback is not None:
                     print(recv)
                     callback(recv)
+                time.sleep(0.02) #limit to 50hz
         print("Motor controller stopped")
 
 class MotorDriver(MotorControllerHandler):

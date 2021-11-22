@@ -1,6 +1,7 @@
 from cv2 import transform
 from src.ArucoDetector import ArucoDetector
 from src.BallDetector import BallDetector
+from src.GoalDetector import GoalDetector
 
 from math import pi, cos, sin
 import numpy as np
@@ -31,6 +32,7 @@ class LocationProcess():
         #self.marker_size = 0.04
         self.aruco = ArucoDetector(self.marker_size)
         self.ball = BallDetector()
+        self.goal = GoalDetector()
 
     def rotation_transform(self, cord, rot):
         x_rot, y_rot, z_rot = [i/180*pi for i in rot] #converion to radians
@@ -58,7 +60,7 @@ class LocationProcess():
         return cord
 
     def get(self, color, depth, debug_frame=None):
-        _, markers = self.aruco.getMarkerLocations(color, debug_frame=debug_frame)
+        ''' _, markers = self.aruco.getMarkerLocations(color, debug_frame=debug_frame)
 
         if len(markers)>0:
             correct_marker_count = 0
@@ -86,14 +88,30 @@ class LocationProcess():
         else:
             pass
             #location handler if no markers found
-
-        balls = self.ball.getLocations(color, depth)
+        '''
+        #balls = self.ball.getLocations(color, depth)
+        #balls = []
         # TODO: i am unsure about this fn, comment back in after proper localization?
         # -josh
         #ball_locations = [(self.rotation_transform(ball[0], self.robot_rotation), ball[1]) for ball in balls]
-        ball_locations = balls
+        #ball_locations = balls
+
+        #pink_goal = self.goal.getLocations(color, depth, id=self.goal.ID_PINK)
+        #blue_goal = self.goal.getLocations(color, depth, id=self.goal.ID_BLUE)
+
+        balls_process = self.ball.start_process(color, depth)
+        pink_process = self.goal.start_process(color, depth, self.goal.ID_PINK)
+        blue_process = self.goal.start_process(color, depth, self.goal.ID_BLUE)
+         
+        ball_locations = self.ball.join(balls_process)
+        pink_goal = self.goal.join(pink_process, self.goal.ID_PINK)
+        blue_goal = self.goal.join(blue_process, self.goal.ID_BLUE)
+        #pink_goal = []
+        #blue_goal = []
 
         #print(self.robot_location)
         return {"robot_loc":self.robot_location, 
                 "robot_rot":self.robot_rotation,
+                "pink_goal":pink_goal,
+                "blue_goal":blue_goal,
                 "balls":ball_locations}

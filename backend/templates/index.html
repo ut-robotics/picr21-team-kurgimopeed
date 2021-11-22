@@ -74,6 +74,11 @@
         <div id="calibrate">
             <div>
                 <button onclick="calibrate_camera()">Calibrate camera</button><br>
+                Threshold config: <select name="" id="threshold_config">
+                    <option value="balls">balls</option>
+                    <option value="blue_goal">blue_goal</option>
+                    <option value="pink_goal">pink_goal</option>
+                </select><br>
                 Show mask: <button id="show_mark_switch" >OFF</button><br>
                 <snap id="camera_calibration_response"></snap>
             </div>
@@ -84,8 +89,10 @@
         -->
     </div>
 
+    <!--
     <button onclick="load_config()">Load threshold.json</button>
     <button onclick="save_config()">Save threshold.json</button>
+    -->
 
     <div>
         <div>

@@ -38,12 +38,19 @@ class ImageProcess(RSCamera):
 
         self.trackbar_path = "../config/threshold_config.json"
 
-        self.threshold_values = [0, 0, 0, 255, 255, 255]
+        self.threshold_values = {
+            "balls": [0, 0, 0, 255, 255, 255],
+            "pink_goal": [0, 0, 0, 255, 255, 255],
+            "blue_goal": [0, 0, 0, 255, 255, 255],
+        }
         if os.path.exists(self.trackbar_path):
             with open("../config/threshold_config.json") as f:
-                self.threshold_values = list(json.load(f).values())
+                self.threshold_values = json.load(f)
+        self.active_threshold_config = list(self.threshold_values.keys())[0]
 
         self.locationProcess = LocationProcess()
+
+        self.fps_start_time = 0
 
     def start(self):
         self.thread.start()
@@ -73,6 +80,13 @@ class ImageProcess(RSCamera):
     def convert_debug_frame(self, frame, from_reso=(640, 480)):
         image = cv2.resize(frame, (from_reso[0]//2, from_reso[1]//2))
         return cv2.imencode(".jpg", image)[1].tobytes()
+
+    def draw_mask_on_frame(self, frame, mask, color):
+        solid_color = np.zeros((mask.shape[0], mask.shape[1], 3), np.uint8)
+        solid_color[:] = color
+        ball_debug = cv2.bitwise_and(frame, frame, mask=cv2.bitwise_not(mask))
+        ball_debug_color = cv2.bitwise_and(solid_color, solid_color, mask=mask)
+        return np.add(ball_debug, ball_debug_color)
 
     def run(self):
         self.stop = False
@@ -117,36 +131,56 @@ class ImageProcess(RSCamera):
                         tc = list(json.load(f).values())
                 """
 
-                lower = self.threshold_values[:3]
-                upper = self.threshold_values[3:]
+                ball = self.locationProcess.ball
+                ball.set_threshold(self.threshold_values)
 
-                self.locationProcess.ball.set_threshold(lower, upper)
+                goal = self.locationProcess.goal
+                goal.set_threshold(self.threshold_values, id=goal.ID_BLUE)
+                goal.set_threshold(self.threshold_values, id=goal.ID_PINK)
 
                 #scale it to see better visualization
                 debug1 = cv2.convertScaleAbs(debug1, alpha=0.14)
                 debug1 = cv2.cvtColor(cv2.bitwise_not(debug1), cv2.COLOR_GRAY2BGR)
-
+                
                 #add debug data
                 if self.show_mask:
-                    ball_mask = self.locationProcess.ball.get_mask(self.color_frame)
-                    debug2 = cv2.bitwise_and(debug2, debug2, mask=ball_mask)
+                    if self.active_threshold_config == "pink_goal":
+                        goal_mask = goal.get_mask(self.color_frame, id=goal.ID_PINK)
+                        debug2 = cv2.bitwise_and(debug2, debug2, mask=goal_mask)
+                    if self.active_threshold_config == "blue_goal":
+                        goal_mask = goal.get_mask(self.color_frame, id=goal.ID_BLUE)
+                        debug2 = cv2.bitwise_and(debug2, debug2, mask=goal_mask)
+                    if self.active_threshold_config == "balls":
+                        ball_mask = ball.get_mask(self.color_frame)
+                        debug2 = cv2.bitwise_and(debug2, debug2, mask=ball_mask)
                 else:
-                    ball_debug_mask = self.locationProcess.ball.debug_mask
+                    if self.active_threshold_config == "pink_goal":
+                        pink_goal_mask = goal.get_debug_mask(id=goal.ID_PINK)
+                        if pink_goal_mask is not None:
+                            debug2 = self.draw_mask_on_frame(debug2, pink_goal_mask, (255, 0, 255))
 
-                    if ball_debug_mask is not None:
-                        #draw green layer on top of original frame from ball debug mask
-                        green_frame = np.zeros((ball_debug_mask.shape[0], ball_debug_mask.shape[1], 3), np.uint8)
-                        green_frame[:] = (0, 255, 0)
-                        ball_debug = cv2.bitwise_and(debug2, debug2, mask=cv2.bitwise_not(ball_debug_mask))
-                        ball_debug_color = cv2.bitwise_and(green_frame, green_frame, mask=ball_debug_mask)
-                        debug2 = np.add(ball_debug, ball_debug_color)
-                
-                debug2 = cv2.drawKeypoints(debug2, self.locationProcess.ball.keypoints, np.array([]), (255,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+                    if self.active_threshold_config == "blue_goal":
+                        blue_goal_mask = goal.get_debug_mask(id=goal.ID_BLUE)
+                        if blue_goal_mask is not None:
+                            debug2 = self.draw_mask_on_frame(debug2, blue_goal_mask, (255, 0, 0))
+
+                    if self.active_threshold_config == "balls":
+                        ball_mask = ball.get_debug_mask()
+                        if ball_mask is not None:
+                            debug2 = self.draw_mask_on_frame(debug2, ball_mask, (0, 255, 0))
+                        
+                #debug2 = cv2.drawKeypoints(debug2, self.locationProcess.ball.keypoints, np.array([]), (255,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
 
                 location = self.locationProcess.get(self.color_frame, self.depth_frame, debug_frame=debug2)
                 #print(len(location["balls"])) # temp remove, put back if necessary - josh
-                
+
+                fps_current_time = time.time()
+                dtime = fps_current_time-self.fps_start_time
+                self.fps_start_time = fps_current_time
+                cv2.putText(debug2, "%sFPS"%(round(1/dtime)), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                dtime = time.time()
+
                 self.debug_frame1 = self.convert_debug_frame(debug1, self.depth_resolution)
                 self.debug_frame2 = self.convert_debug_frame(debug2, self.color_resolution)
 

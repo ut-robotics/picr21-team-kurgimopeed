@@ -1,28 +1,52 @@
+var threshold_values = {}
+
 function load_config() {
     $.ajax({
         url: "/trackbar-config",
         method: "get",
         dataType: "json",
         success: function (data) {
-            for (let i = 0; i < 6; ++i) {
-                let text = "hsv"[i % 3] + " " + (i < 3 ? "L" : "H")
-
-                let val = data[text];
-                $(`#hsv${i}`).val(val)
-                let e = $(`[for^=hsv${i}]`)
-                e.text(e.text().split(":")[0] + ": " + val)
+            console.log(data)
+            threshold_values = data;
+            //debugger
+            for ([key, values] of Object.entries(threshold_values)) {
+                let group = `${key}_threshold`;
+                $("#calibrate").append(`<div id="${group}"></div>`)
+                let groupel = $(`#${group}`);
+                groupel.hide();
+                for (let i = 0; i < 6; ++i) {
+                    groupel.append(`<input type="range" min="0" max="255" id="${group}_${i}" style="width: 50vh" value="${values[i]}">`)
+                    $(`#${group}_${i}`)[0].addEventListener("input", _ => {
+                        save_config()
+                    })
+                }
             }
+
+            var first = `#${Object.keys(threshold_values)[0]}_threshold`;
+            $(first).show();
+
+            $("#threshold_config").change(_ => {
+                $(first).hide()
+                let val = `#${$("#threshold_config").val()}_threshold`;
+                $(val).show();
+                first = val;
+
+                save_config();
+            });
         }
     })
 }
 
 function save_config() {
-    let data = { }
+    let data = {
+        "threshold_config": $("#threshold_config").val(),
+        "threshold_values": []
+    }
 
     for (let i = 0; i < 6; ++i) {
-        let text = "hsv"[i % 3] + " " + (i < 3 ? "L" : "H")
+        let element = `#${data.threshold_config}_threshold_${i}`;
 
-        data[text] = parseInt($(`#hsv${i}`).val())
+        data["threshold_values"].push(parseInt($(element).val()))
     }
 
     $.ajax({
@@ -47,18 +71,5 @@ function calibrate_camera(){
 }
 
 $(document).ready(_ => {
-    for (let i = 0; i < 6; ++i) {
-        let text = "hsv"[i % 3] + " " + (i < 3 ? "L" : "H")
-        $("#calibrate").append(
-`<label for="hsv${i}">${text}: 0</label>
-<input type="range" min="0" max="255" id="hsv${i}" style="width: 50vh">`
-        )
-        $(`#hsv${i}`)[0].addEventListener("input", _ => {
-            let e = $(`[for^=hsv${i}]`)
-            e.text(e.text().split(":")[0] + ": " + $(`#hsv${i}`).val())
-            save_config();
-        });
-    }
-
     load_config();
 });
