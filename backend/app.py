@@ -11,6 +11,7 @@ import json
 
 from src.motor_driver import MotorDriver
 from src.ImageProcess import ImageProcess
+from src.DrivingLogic import DrivingLogic
 from src.nuc_led import NucLED
 from src.MusicBox import MusicBox
 
@@ -59,7 +60,8 @@ manager = ConnectionManager()
 motor_driver = MotorDriver()
 motor_driver.start()
 
-image_proccess = ImageProcess(motor_driver)
+driving_logic = DrivingLogic(motor_driver)
+image_proccess = ImageProcess(driving_logic)
 image_proccess.start()
 
 musicbox = MusicBox(motor_driver)
@@ -79,14 +81,25 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
             text = await websocket.receive_text()
             await manager.send_personal_message(f"You wrote: {text}", websocket)
             data = json.loads(text)
-            print(data)
-            speed, direction, turn, thrower, enable = [data[i] for i in ["speed", "direction", "turn", "thrower", "enable"]]
-            if enable:
-                led.set_led(led.TYPE_RING, color=led.RING_GREEN)
-                motor_driver.send(speed=speed, direction=direction, turn_speed=turn, thrower=thrower, callback=None)
+            #print(data)
+            if "pid" in data:
+                data = data["pid"]
+                driving_logic.pid.tunings = data[:3]
+                driving_logic.pid.setpoint = data[-1]
             else:
-                led.set_led(led.TYPE_RING, color=led.RING_RED)
-                motor_driver.stop()
+                speed, direction, turn, thrower, enable, driving_enable = [data[i] for i in ["speed", "direction", "turn", "thrower", "enable", "drive_enable"]]
+                if enable:
+                    driving_logic.enable = False
+                    led.set_led(led.TYPE_RING, color=led.RING_GREEN)
+                    motor_driver.send(speed=speed, direction=direction, turn_speed=turn, thrower=thrower, callback=None)
+                elif driving_enable:
+                    driving_logic.enable = True
+                else:
+                    driving_logic.enable = False
+                    led.set_led(led.TYPE_RING, color=led.RING_RED)
+                    motor_driver.stop()
+
+
     except WebSocketDisconnect:
         default_led()
         motor_driver.stop()
@@ -139,6 +152,11 @@ async def play_march(request: Request):
 async def play_march(request: Request):
     status = 200 if image_proccess.calibrate() else 417 #ok vs ecpectation failed
     return Response(status_code=status)
+
+@app.post("/set_debug_color_mask")
+async def play_march(request: Request):
+    j = await request.json()
+    image_proccess.show_mask = False if j["state"] == "OFF" else True
 
 @app.post("/trackbar-config")
 async def save_config(request: Request):

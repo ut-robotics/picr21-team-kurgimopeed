@@ -12,25 +12,37 @@ class ArucoDetector():
         with np.load(self.config_path) as X:
             self.mtx, self.dist, _, _ = [X[i] for i in ('mtx','dist','rvecs','tvecs')]
 
-        self.aruco_dict = aruco.Dictionary_get(aruco.DICT_4X4_250)
+        self.aruco_dict = aruco.Dictionary_get(aruco.DICT_ARUCO_ORIGINAL)
         self.parameters =  aruco.DetectorParameters_create()
 
-    def getMarkerLocations(self, frame):
+    def getMarkerLocations(self, frame, debug_frame=None):
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         corners, ids, rejectedImgPoints = aruco.detectMarkers(gray, self.aruco_dict, parameters=self.parameters)
 
         if ids is None:
             ids = np.array([])
             
-        frame_markers = aruco.drawDetectedMarkers(frame.copy(), corners, ids)
-        rvecs, tvecs, _ = aruco.estimatePoseSingleMarkers(corners, self.marker_length, self.mtx, self.dist) #translation [x, y, z] camera to marker
+        if debug_frame is not None:
+            aruco.drawDetectedMarkers(debug_frame, corners, ids)
+        rvecs, tvecs, _ = aruco.estimatePoseSingleMarkers(corners, self.marker_size, self.mtx, self.dist) #translation [x, y, z] camera to marker
                                                                                             #rotation [over x, over y, over dist(z)] camera to marker, in radians
+
+        """
+        if len(corners) == 2:
+            print("rvecs")
+            for rv in rvecs:    
+                print(rv)
+            print("tvecs")
+            for tv in tvecs:    
+                print(tv)
+            print("----")
+        """
 
         if rvecs is None:
             rvecs = np.array([])
 
-        if corners:
-            frame_markers = cv2.circle(frame_markers, tuple(corners[0][0][0]), 10, (255, 0, 255), 2)
+        #if corners:
+        #    frame_markers = cv2.circle(frame_markers, tuple(corners[0][0][0]), 10, (255, 0, 255), 2)
 
         if tvecs is None:
             tvecs = np.array([])
@@ -45,7 +57,7 @@ class ArucoDetector():
 
         return corners, markers #markers contain array of dictionaries {"id", "tvect", "rvect"W}
 
-    def coordinateTransform(tvect, rvect):
+    def coordinateTransform(self, tvect, rvect):
         r_matrix, _ = cv2.Rodrigues(rvect)
         r_matrix_inv = np.linalg.inv(r_matrix)
 
@@ -54,7 +66,7 @@ class ArucoDetector():
 
         return np.transpose(cam_tvect), cam_rvect
 
-    def QuaternionToDegrees(rvecs):
+    def QuaternionToDegrees(self, rvecs):
         R, _ = cv2.Rodrigues(rvecs)
 
         yaw = 180*math.asin(R[2][0])/math.pi

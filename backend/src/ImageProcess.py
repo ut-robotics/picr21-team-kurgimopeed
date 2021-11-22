@@ -9,15 +9,17 @@ from src.LocationProcess import LocationProcess
 from threading import Thread
 import time, json, os
 
+import copy as cp
+
 detector = cv2.SimpleBlobDetector()
 calibrator = ArucoCalibrator()
 
 
 class ImageProcess(RSCamera):
-    def __init__(self, motor_driver):
+    def __init__(self, driving_logic):
         super().__init__()
         # start capture thread
-        self.motor_driver = motor_driver
+        self.driving_logic = driving_logic 
 
         self.stop = False
         self.thread = Thread(target=self.run)
@@ -31,6 +33,8 @@ class ImageProcess(RSCamera):
 
         self.new_debug_frame2 = False
         self.debug_frame2 = np.array([])
+
+        self.show_mask = True
 
         self.trackbar_path = "../config/threshold_config.json"
 
@@ -77,11 +81,22 @@ class ImageProcess(RSCamera):
         try:
             while not self.stop:
                 frames = self.pipeline.wait_for_frames()
-                depth_frame = frames.get_depth_frame()
-                color_frame = frames.get_color_frame()
+
+                #https://github.com/IntelRealSense/librealsense/blob/master/wrappers/python/examples/align-depth2color.py
+                aligned_frames = self.align.process(frames)
+
+                # Get aligned frames
+                depth_frame = aligned_frames.get_depth_frame()
+                color_frame = aligned_frames.get_color_frame()
+
+                #depth_frame = frames.get_depth_frame()
+                #color_frame = frames.get_color_frame()
 
                 self.depth_frame = np.asanyarray(depth_frame.get_data(), dtype=np.uint16)
-                self.color_frame = np.array(color_frame.get_data(), dtype=np.uint8)
+                self.color_frame = np.asanyarray(color_frame.get_data(), dtype=np.uint8)
+
+                debug1 = cp.deepcopy(self.depth_frame)
+                debug2 = cp.deepcopy(self.color_frame)
 
                 #print(dept_frame)
                 #depth_frame = np.array([[(x//256) for x in y] for y in depth_frame], dtype=np.uint8)
@@ -102,34 +117,43 @@ class ImageProcess(RSCamera):
                         tc = list(json.load(f).values())
                 """
 
-                lower = np.array(self.threshold_values[:3])
-                upper = np.array(self.threshold_values[3:])
+                lower = self.threshold_values[:3]
+                upper = self.threshold_values[3:]
 
-                color_hsv = cv2.cvtColor(self.color_frame, cv2.COLOR_BGR2HSV)
-                color_mask = cv2.inRange(color_hsv, lower, upper)
-
-                print(self.locationProcess.get(color_mask, self.depth_frame))
+                self.locationProcess.ball.set_threshold(lower, upper)
 
                 #scale it to see better visualization
-                depth_frame = cv2.convertScaleAbs(self.depth_frame, alpha=0.14)
-                depth_frame = cv2.cvtColor(cv2.bitwise_not(depth_frame), cv2.COLOR_GRAY2BGR)
+                debug1 = cv2.convertScaleAbs(debug1, alpha=0.14)
+                debug1 = cv2.cvtColor(cv2.bitwise_not(debug1), cv2.COLOR_GRAY2BGR)
 
+                #add debug data
+                if self.show_mask:
+                    ball_mask = self.locationProcess.ball.get_mask(self.color_frame)
+                    debug2 = cv2.bitwise_and(debug2, debug2, mask=ball_mask)
+                else:
+                    ball_debug_mask = self.locationProcess.ball.debug_mask
 
-
-                self.color_frame = cv2.bitwise_and(self.color_frame, self.color_frame, mask=color_mask)
-                self.color_frame = cv2.drawKeypoints(self.color_frame, self.locationProcess.ball.keypoints, np.array([]), (255,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-
-                xl, xr, yu, yd = self.locationProcess.ball.depth_area
-
-                depth_frame = cv2.rectangle(depth_frame, (xl, yu), (xr, yd), (0, 0, 255), 2)
+                    if ball_debug_mask is not None:
+                        #draw green layer on top of original frame from ball debug mask
+                        green_frame = np.zeros((ball_debug_mask.shape[0], ball_debug_mask.shape[1], 3), np.uint8)
+                        green_frame[:] = (0, 255, 0)
+                        ball_debug = cv2.bitwise_and(debug2, debug2, mask=cv2.bitwise_not(ball_debug_mask))
+                        ball_debug_color = cv2.bitwise_and(green_frame, green_frame, mask=ball_debug_mask)
+                        debug2 = np.add(ball_debug, ball_debug_color)
                 
-                self.debug_frame1 = self.convert_debug_frame(depth_frame, self.depth_resolution)
-                self.debug_frame2 = self.convert_debug_frame(
-                    self.color_frame, 
-                    self.color_resolution)
+                debug2 = cv2.drawKeypoints(debug2, self.locationProcess.ball.keypoints, np.array([]), (255,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+
+
+                location = self.locationProcess.get(self.color_frame, self.depth_frame, debug_frame=debug2)
+                #print(len(location["balls"])) # temp remove, put back if necessary - josh
+                
+                self.debug_frame1 = self.convert_debug_frame(debug1, self.depth_resolution)
+                self.debug_frame2 = self.convert_debug_frame(debug2, self.color_resolution)
 
                 self.new_debug_frame1 = True
                 self.new_debug_frame2 = True
+
+                self.driving_logic.run_logic(location) # params
 
                 #print(depth_frame)
         finally:

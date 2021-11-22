@@ -6,9 +6,14 @@ import pyrealsense2 as rs
 from threading import Thread
 import time
 
+camera_angle = -12
+camera_transformation = np.array([-0.033, 0, 0.205])
+camera_fov = (87, 58) #H, V
+
 class RSCamera():
     def __init__(self):
         # configure depth and color streams
+
         self.pipeline = rs.pipeline()
         self.config = rs.config()
 
@@ -22,7 +27,8 @@ class RSCamera():
         #am.load_json()
 
         self.depth_resolution = (848, 480)
-        self.color_resolution = (960, 540)
+        #self.color_resolution = (960, 540)
+        self.color_resolution = (1920, 1080)
 
         # enable depth
         # 848x480 90 fps max
@@ -32,13 +38,17 @@ class RSCamera():
         # enable rgb
         # 960x540 60 fps max, 1920x1080 30 possible
         x, y = self.color_resolution
-        self.config.enable_stream(rs.stream.color, x, y, rs.format.bgr8, 60)
+        #self.config.enable_stream(rs.stream.color, x, y, rs.format.bgr8, 60)
+        self.config.enable_stream(rs.stream.color, x, y, rs.format.bgr8, 30)
 
         #atexit.register(self.cleanup)
 
         # should be tuple?
         self.color_frame = None
         self.depth_frame = None
+
+        align_to = rs.stream.color
+        self.align = rs.align(align_to)
 
     def start(self):
         self.pipeline.start(self.config)

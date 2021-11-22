@@ -21,6 +21,7 @@
         <h2>Your ID: <span id="ws-id"></span></h2>
         <b>WS status: <span id="ws-status"></span></b><br>
         <button id="main_switch" class="main_disabled">OFF</button><br>
+        <button id="drive_switch" class="main_disabled">Drive OFF</button><br>
         <div>
             <div class="row">
                 <div class="column">
@@ -53,17 +54,34 @@
                 </div>
             </div>
         </div>
-        </div>
-
-
-    <div id="video">
     </div>
+
+    <hr>
     <div>
-        <button onclick="calibrate_camera()">Calibrate camera</button>
-        <snap id="camera_calibration_response"></snap>
+        <h4>PID tuning</h4>
+        <label for="pid_p">Kp</label>
+        <input id="pid_p" type="number" value="0", step="0.05">
+        <label for="pid_i">Ki</label>
+        <input id="pid_i" type="number" value="0", step="0.05">
+        <label for="pid_d">Kd</label>
+        <input id="pid_d" type="number" value="0", step="0.05">
+        <label for="pid_setpoint">setpoint (target value)</label>
+        <input id="pid_setpoint" type="number" value="0", step="0.05">
     </div>
+    <hr>
 
-    <div id="calibrate">
+    <div class="camera_section">
+        <div id="calibrate">
+            <div>
+                <button onclick="calibrate_camera()">Calibrate camera</button><br>
+                Show mask: <button id="show_mark_switch" >OFF</button><br>
+                <snap id="camera_calibration_response"></snap>
+            </div>
+        </div>
+        <!--
+        <div id="video">
+        </div>
+        -->
     </div>
 
     <button onclick="load_config()">Load threshold.json</button>

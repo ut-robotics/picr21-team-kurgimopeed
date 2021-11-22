@@ -70,3 +70,9 @@
 .connected {
     color: lime;
 }
+
+.camera_section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}

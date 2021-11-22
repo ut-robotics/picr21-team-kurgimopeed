@@ -4,20 +4,20 @@ class WSHandler {
         this.ws = null
     }
 
-    connect(){
+    connect() {
         this.ws = new WebSocket(`ws://${window.location.hostname}/ws/${this.client_id}`);
         this.ws.onmessage = function (event) {
             console.log(event.data)
         };
     }
-    status(){
-        if (this.ws === null){
+    status() {
+        if (this.ws === null) {
             return WebSocket.CLOSED //if no ws initialized, defualt is closed state
         }
         return this.ws.readyState
     }
-    send(data){
-        if (this.ws !== null){
+    send(data) {
+        if (this.ws !== null) {
             this.ws.send(data)
         }
     }
@@ -28,17 +28,17 @@ $(document).ready(function () {
     document.querySelector("#ws-id").textContent = ws.client_id;
 
     //ws watchdog
-    setInterval(function(){
+    setInterval(function () {
         let ws_status = $("#ws-status")
 
         if (ws.status() === WebSocket.OPEN) {
             if (ws_status.text() !== "OPEN") {
                 $("#video").html(`
-<h2>depth feed</h2>
-<img src="/depth-feed" width="50%">
+                    <h2>depth feed</h2>
+                    <img src="/depth-feed" width="100%">
 
-<h2>color feed</h2>
-<img src="/color-feed" width="100%">
+                    <h2>color feed</h2>
+                    <img src="/color-feed" width="100%">
                 `);
             }
         } else {
@@ -46,7 +46,7 @@ $(document).ready(function () {
             window.stop(); // haha ebig hakke ::--DD
         }
 
-        switch (ws.status()){
+        switch (ws.status()) {
             case WebSocket.CLOSED:
                 ws_status.text("CLOSED")
                 ws_status[0].setAttribute("class", "closed");
@@ -75,12 +75,24 @@ $(document).ready(function () {
         ws.send(data)
     }
 
+    var pid_ar = ["p", "i", "d", "setpoint"];
+    pid_ar.forEach(v => {
+        let e = $(`#pid_${v}`);
+        e.change(function() {
+            let v = e.val();
+            let data = {"pid": pid_ar.map(v_ => parseFloat($(`#pid_${v_}`).val()))}
+            console.log(data)
+            sendMessage(JSON.stringify(data))
+        });
+    })
+
     var motors_enabled = false;
+    var drive_enabled = false;
     var speed = 0;
     var thrower = 0;
 
-    var movement = { "speed": 0, "direction": 0, "turn":0, "thrower":0, "enable": motors_enabled }
-    var keys_pressed = { "up": false, "down": false, "left": false, "right": false, "turnL":false, "turnR":false }
+    var movement = { "speed": 0, "direction": 0, "turn": 0, "thrower": 0, "enable": motors_enabled }
+    var keys_pressed = { "up": false, "down": false, "left": false, "right": false, "turnL": false, "turnR": false }
 
     const speed_slider = $('#speed_slider')[0];
     speed_slider.value = speed
@@ -105,8 +117,8 @@ $(document).ready(function () {
     }
 
     //called by every function that changes motor values
-    function updateMotorValues(){
-        if (!motors_enabled){
+    function updateMotorValues() {
+        if (!motors_enabled) {
             movement["speed"] = 0
             movement["turn"] = 0
             movement["thrower"] = 0
@@ -116,6 +128,7 @@ $(document).ready(function () {
             movement["thrower"] = thrower
         }
         movement["enable"] = motors_enabled
+        movement["drive_enable"] = drive_enabled
         sendMessage(JSON.stringify(movement))
     }
 
@@ -147,22 +160,22 @@ $(document).ready(function () {
         movement["turn"] = keys_pressed["turnL"] ? speed : 0 + keys_pressed["turnR"] ? -speed : 0
     }
 
-    function setKeyActive(key, val){ //sets keys that are pressed active and not pressed keys non active
-        if (val){
-            $("#key_"+key).addClass("active")
+    function setKeyActive(key, val) { //sets keys that are pressed active and not pressed keys non active
+        if (val) {
+            $("#key_" + key).addClass("active")
         } else {
-            $("#key_"+key).removeClass("active")
+            $("#key_" + key).removeClass("active")
         }
     }
 
-    function setKeyPressed(event, set_val){
+    function setKeyPressed(event, set_val) {
         let arrow = event.key.toLowerCase().split("arrow")
-        if (arrow.length === 2){ //has length 2 only if arraow keys pressed
+        if (arrow.length === 2) { //has length 2 only if arraow keys pressed
             keys_pressed[arrow[1]] = set_val;
             setKeyActive(arrow[1], set_val)
             updateMotorValues()
         }
-        switch (event.key){ //handle keys for turn movement
+        switch (event.key) { //handle keys for turn movement
             case "q":
                 keys_pressed["turnL"] = set_val
                 setKeyActive("turnL", set_val)
@@ -184,32 +197,68 @@ $(document).ready(function () {
     })
 
     $(document).keypress(function (event) {
-        if (event.key == "f"){
+        if (event.key == "f") {
             main_toggle()
         }
     })
 
-    $("#main_switch").click(function (){
+    $("#main_switch").click(function () {
         main_toggle()
+    })
+
+    $("#drive_switch").click(function () {
+        let e = $(this)
+        const en = "main_enabled"
+        const dis = "main_disabled"
+        if (e.hasClass(dis)) {
+            e.removeClass(dis)
+            e.addClass(en)
+            e.text("Drive ON")
+            drive_enabled = true;
+        } else {
+            e.removeClass(en)
+            e.addClass(dis)
+            e.text("Drive OFF")
+            drive_enabled = false;
+        }
+        updateMotorValues();
+    })
+
+    function send_show_mask(){
+        $.ajax({
+            url: "/set_debug_color_mask",
+            method: "post",
+            data: JSON.stringify({state:$("#show_mark_switch").text()})
+        })
+    }
+
+    send_show_mask()
+    $("#show_mark_switch").click(function () {
+        if ($(this).text() == "ON") {
+            $(this).text("OFF")
+        } else {
+            $(this).text("ON")
+        }
+        send_show_mask()
     })
 
     const control_keys = ["turnL", "turnR", "left", "right", "up", "down"]
     control_keys.forEach(e => { //set mouse click events on all of the buttons on html
-        $("#key_"+e).mousedown(function (){
+        $("#key_" + e).mousedown(function () {
             keys_pressed[e] = true
             updateMotorValues()
         })
-        $("#key_"+e).mouseup(function (){
+        $("#key_" + e).mouseup(function () {
             keys_pressed[e] = false
             updateMotorValues()
         })
     });
 
-    function main_toggle(){  //main switch and attributes
+    function main_toggle() {  //main switch and attributes
         const en = "main_enabled"
         const dis = "main_disabled"
-        let main_switch = $("#main_switch") 
-        if (main_switch.hasClass(dis)){
+        let main_switch = $("#main_switch")
+        if (main_switch.hasClass(dis)) {
             main_switch.removeClass(dis)
             main_switch.addClass(en)
             main_switch.text("ON")

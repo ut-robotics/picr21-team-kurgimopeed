@@ -41,7 +41,7 @@
                 [-1, -1],
                 [0.5, -0.7]
             ],
-            "kurk": {
+            "robot": {
                 "pos": [0, 0],
                 "angle": 0
             }
@@ -60,7 +60,7 @@
         function render_kurk() {
             ctx.beginPath();
             ctx.fillStyle = "#86ffe3";
-            let pos = [canvas.width / 2 + scale(info.kurk.pos[0]), canvas.height / 2 + scale(info.kurk.pos[1])]
+            let pos = [canvas.width / 2 + scale(info.robot.pos[0]), canvas.height / 2 + scale(info.robot.pos[1])]
             ctx.arc(pos[0], pos[1], scale(0.3 / 2), 0.5, 2 * Math.PI - 0.5);
             ctx.fill();
 
@@ -78,6 +78,12 @@
             render_balls();
             render_kurk();
         }
+
+        var ws = new WebSocket(`ws://${window.location.hostname}/ws`);
+        ws.onmessage = function(event) {
+            // haha todo dxdxd
+            console.log(event)
+        };
     </script>
 </body>
 
