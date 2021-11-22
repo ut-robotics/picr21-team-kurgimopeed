@@ -4,21 +4,15 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 3
-Title ""
-Date ""
-Rev ""
+Title "CPU and isolators"
+Date "2021-11-01"
+Rev "1.2"
 Comp ""
 Comment1 ""
 Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
-Text Notes 7350 7500 0    50   ~ 0
-CPU and isolators
-Text Notes 8100 7650 0    50   ~ 0
-31/10/2021
-Text Notes 10550 7650 0    50   ~ 0
-1.1
 $Bitmap
 Pos 7450 6850
 Scale 0.300000
@@ -13014,9 +13008,9 @@ Text Label 700  3050 0    50   ~ 0
 MCU-debug-LED_R2
 Text Label 700  2950 0    50   ~ 0
 MCU-debug-LED_R1
-Text Label 700  2350 0    50   ~ 0
+Text Label 700  2450 0    50   ~ 0
 MCU-debug-LED_G2
-Text Label 700  2250 0    50   ~ 0
+Text Label 700  2350 0    50   ~ 0
 MCU-debug-LED_G1
 Wire Wire Line
 	3350 5250 3400 5250
@@ -13221,8 +13215,6 @@ Wire Wire Line
 Wire Wire Line
 	1700 2350 700  2350
 Wire Wire Line
-	700  2250 1700 2250
-Wire Wire Line
 	1700 3450 1700 3550
 $Comp
 L STM32G441KB:STM32G441KBT3 U1
@@ -13257,21 +13249,6 @@ Wire Wire Line
 Wire Wire Line
 	2000 1550 2150 1550
 $Comp
-L Device:CP C?
-U 1 1 617240AB
-P 1850 1550
-AR Path="/613FDA12/617240AB" Ref="C?"  Part="1" 
-AR Path="/617240AB" Ref="C2"  Part="1" 
-F 0 "C2" V 2105 1550 50  0000 C CNN
-F 1 "4.7uF" V 2014 1550 50  0000 C CNN
-F 2 "Capacitor_THT:CP_Radial_D5.0mm_P2.00mm" H 1888 1400 50  0001 C CNN
-F 3 "~" H 1850 1550 50  0001 C CNN
-	1    1850 1550
-	0    1    1    0   
-$EndComp
-Wire Wire Line
-	2000 1250 2000 1550
-$Comp
 L power:GND #PWR?
 U 1 1 617240A4
 P 2150 1550
@@ -13284,10 +13261,6 @@ F 3 "" H 2150 1550 50  0001 C CNN
 	1    2150 1550
 	1    0    0    -1  
 $EndComp
-Connection ~ 2000 1550
-Wire Wire Line
-	1700 1250 1700 1550
-Connection ~ 1700 1550
 Connection ~ 1700 1250
 Wire Wire Line
 	1700 1050 1700 1250
@@ -13903,7 +13876,7 @@ F 3 "" H 5350 3550 50  0001 C CNN
 $EndComp
 Connection ~ 5350 3550
 Wire Wire Line
-	4300 3550 5350 3550
+	4300 3550 4950 3550
 $Comp
 L Device:C C?
 U 1 1 61724092
@@ -13984,7 +13957,7 @@ Text Label 5150 3050 2    50   ~ 0
 MCU-USB_DP
 Text Label 5150 3150 2    50   ~ 0
 MCU-USB_DM
-Text Label 700  2450 0    50   ~ 0
+Text Label 700  2250 0    50   ~ 0
 MCU_NRST
 Wire Wire Line
 	4300 2550 5150 2550
@@ -14081,5 +14054,133 @@ Wire Wire Line
 Wire Wire Line
 	3350 6300 3950 6300
 Wire Wire Line
-	1700 1550 1700 2150
+	2000 1250 2000 1550
+$Comp
+L Device:C C?
+U 1 1 61834ECC
+P 1850 1550
+AR Path="/613FDA12/61834ECC" Ref="C?"  Part="1" 
+AR Path="/61834ECC" Ref="C2"  Part="1" 
+F 0 "C2" V 1700 1550 50  0000 C CNN
+F 1 "4.7uF" V 1600 1550 50  0000 C CNN
+F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.33x1.80mm_HandSolder" H 1888 1400 50  0001 C CNN
+F 3 "~" H 1850 1550 50  0001 C CNN
+	1    1850 1550
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	1700 1250 1700 1550
+Connection ~ 1700 1550
+Wire Wire Line
+	1700 1550 1700 2050
+Connection ~ 2000 1550
+Connection ~ 1700 2050
+Wire Wire Line
+	1700 2050 1700 2150
+$Comp
+L Device:C C?
+U 1 1 618E44E9
+P 4950 3700
+AR Path="/613FDA12/618E44E9" Ref="C?"  Part="1" 
+AR Path="/618E44E9" Ref="C31"  Part="1" 
+F 0 "C31" H 5064 3654 50  0000 L CNN
+F 1 "4.7uF" H 5064 3745 50  0000 L CNN
+F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.33x1.80mm_HandSolder" H 4988 3550 50  0001 C CNN
+F 3 "~" H 4950 3700 50  0001 C CNN
+	1    4950 3700
+	-1   0    0    1   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 618EA48D
+P 4950 3850
+AR Path="/613FDA12/618EA48D" Ref="#PWR?"  Part="1" 
+AR Path="/618EA48D" Ref="#PWR0188"  Part="1" 
+F 0 "#PWR0188" H 4950 3600 50  0001 C CNN
+F 1 "GND" H 4955 3677 50  0000 C CNN
+F 2 "" H 4950 3850 50  0001 C CNN
+F 3 "" H 4950 3850 50  0001 C CNN
+	1    4950 3850
+	1    0    0    -1  
+$EndComp
+Connection ~ 4950 3550
+Wire Wire Line
+	4950 3550 5350 3550
+$Comp
+L Mechanical:MountingHole H1
+U 1 1 61816050
+P 1000 6300
+F 0 "H1" H 1100 6346 50  0000 L CNN
+F 1 "MountingHole" H 1100 6255 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 1000 6300 50  0001 C CNN
+F 3 "~" H 1000 6300 50  0001 C CNN
+	1    1000 6300
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole H2
+U 1 1 61816B61
+P 1000 6550
+F 0 "H2" H 1100 6596 50  0000 L CNN
+F 1 "MountingHole" H 1100 6505 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 1000 6550 50  0001 C CNN
+F 3 "~" H 1000 6550 50  0001 C CNN
+	1    1000 6550
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole H3
+U 1 1 6181C2C0
+P 1000 6800
+F 0 "H3" H 1100 6846 50  0000 L CNN
+F 1 "MountingHole" H 1100 6755 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 1000 6800 50  0001 C CNN
+F 3 "~" H 1000 6800 50  0001 C CNN
+	1    1000 6800
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole H4
+U 1 1 61843A2A
+P 1000 7050
+F 0 "H4" H 1100 7096 50  0000 L CNN
+F 1 "MountingHole" H 1100 7005 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 1000 7050 50  0001 C CNN
+F 3 "~" H 1000 7050 50  0001 C CNN
+	1    1000 7050
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C?
+U 1 1 61987BE0
+P 1350 2000
+AR Path="/613FDA12/61987BE0" Ref="C?"  Part="1" 
+AR Path="/61987BE0" Ref="C32"  Part="1" 
+F 0 "C32" V 1098 2000 50  0000 C CNN
+F 1 "0.1uF" V 1189 2000 50  0000 C CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder" H 1388 1850 50  0001 C CNN
+F 3 "~" H 1350 2000 50  0001 C CNN
+	1    1350 2000
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 61987BE6
+P 1200 2000
+AR Path="/613FDA12/61987BE6" Ref="#PWR?"  Part="1" 
+AR Path="/61987BE6" Ref="#PWR0189"  Part="1" 
+F 0 "#PWR0189" H 1200 1750 50  0001 C CNN
+F 1 "GND" H 1205 1827 50  0000 C CNN
+F 2 "" H 1200 2000 50  0001 C CNN
+F 3 "" H 1200 2000 50  0001 C CNN
+	1    1200 2000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	700  2250 1500 2250
+Wire Wire Line
+	1500 2000 1500 2250
+Connection ~ 1500 2250
+Wire Wire Line
+	1500 2250 1700 2250
 $EndSCHEMATC
