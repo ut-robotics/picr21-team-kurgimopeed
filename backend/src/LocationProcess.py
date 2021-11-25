@@ -89,7 +89,7 @@ class LocationProcess():
             pass
             #location handler if no markers found
         '''
-        #balls = self.ball.getLocations(color, depth)
+
         #balls = []
         # TODO: i am unsure about this fn, comment back in after proper localization?
         # -josh
@@ -99,17 +99,20 @@ class LocationProcess():
         #pink_goal = self.goal.getLocations(color, depth, id=self.goal.ID_PINK)
         #blue_goal = self.goal.getLocations(color, depth, id=self.goal.ID_BLUE)
 
-        balls_process = self.ball.start_process(color, depth)
-        pink_process = self.goal.start_process(color, depth, self.goal.ID_PINK)
-        blue_process = self.goal.start_process(color, depth, self.goal.ID_BLUE)
-         
-        ball_locations = self.ball.join(balls_process)
-        pink_goal = self.goal.join(pink_process, self.goal.ID_PINK)
-        blue_goal = self.goal.join(blue_process, self.goal.ID_BLUE)
+        #balls_process = self.ball.start_process(color, depth)
+        #pink_process = self.goal.start_process(color, depth, self.goal.ID_PINK)
+        #blue_process = self.goal.start_process(color, depth, self.goal.ID_BLUE)
+        # 
+        #ball_locations = self.ball.join(balls_process)
+        #pink_goal = self.goal.join(pink_process, self.goal.ID_PINK)
+        #blue_goal = self.goal.join(blue_process, self.goal.ID_BLUE)
         #pink_goal = []
         #blue_goal = []
 
-        #print(self.robot_location)
+        ball_locations = self.ball.getLocations(color, depth)
+        pink_goal = self.goal.getLocations(color, depth, id=self.goal.ID_PINK)
+        blue_goal = self.goal.getLocations(color, depth, id=self.goal.ID_BLUE)
+
         return {"robot_loc":self.robot_location, 
                 "robot_rot":self.robot_rotation,
                 "pink_goal":pink_goal,

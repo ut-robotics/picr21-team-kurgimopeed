@@ -3,6 +3,7 @@ from src.motor_driver import MotorDriver
 from src.Tools import linear_map
 import math
 from simple_pid import PID
+from src.GoalDetector import GoalDetector
 
 # logic notes
 # no balls -> spin.
@@ -44,6 +45,8 @@ class DrivingLogic():
 
         self.pid = PID(0.6, 0, 0, setpoint=0)
         self.pid.output_limits = (-20, 20)
+
+        self.target_goal = GoalDetector.ID_BLUE
 
     def run_logic(self, data):
         if not self.enable:

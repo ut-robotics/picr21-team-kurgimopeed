@@ -130,12 +130,13 @@ class GoalDetector():
                 # vector magnitude
                 #depth camera already measures dist to camera
                 #dist_to_camera = dist
-                #dist_to_camera = np.linalg.norm(loc)
+                dist_to_robot = np.linalg.norm(loc)
                 # a dictionary with ids would be better
                 if id is self.ID_PINK:
-                    self.pink_location = loc
+                    self.pink_location = (loc, dist_to_robot)
+                    return self.pink_location
                 if id is self.ID_BLUE:
-                    self.blue_location = loc
-                #return loc
+                    self.blue_location = (loc, dist_to_robot)
+                    return self.blue_location
 
-        #return None
+        return None

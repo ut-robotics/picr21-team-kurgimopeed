@@ -20,6 +20,7 @@ class RSCamera():
         self.pipeline_wrapper = rs.pipeline_wrapper(self.pipeline)
         self.pipeline_profile = self.config.resolve(self.pipeline_wrapper)
         self.device = self.pipeline_profile.get_device()
+        #self.device.hardware_reset()
         self.device_product_line = str(self.device.get_info(rs.camera_info.product_line))
 
         # TODO: find good config and load 
@@ -27,8 +28,8 @@ class RSCamera():
         #am.load_json()
 
         self.depth_resolution = (848, 480)
-        #self.color_resolution = (960, 540)
-        self.color_resolution = (1920, 1080)
+        self.color_resolution = (960, 540)
+        #self.color_resolution = (1920, 1080)
 
         # enable depth
         # 848x480 90 fps max
@@ -38,8 +39,8 @@ class RSCamera():
         # enable rgb
         # 960x540 60 fps max, 1920x1080 30 possible
         x, y = self.color_resolution
-        #self.config.enable_stream(rs.stream.color, x, y, rs.format.bgr8, 60)
-        self.config.enable_stream(rs.stream.color, x, y, rs.format.bgr8, 30)
+        self.config.enable_stream(rs.stream.color, x, y, rs.format.bgr8, 60)
+        #self.config.enable_stream(rs.stream.color, x, y, rs.format.bgr8, 30)
 
         #atexit.register(self.cleanup)
 

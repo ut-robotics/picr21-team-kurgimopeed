@@ -16,19 +16,20 @@ class BallDetector():
         blobparams.blobColor = 255
 
         #blobparams.filterByArea = True
-        blobparams.minArea = 100
+        blobparams.minArea = 25
         blobparams.maxArea = 100000
 
         #blobparams.minDistBetweenBlobs = 100
 
-        #blobparams.filterByCircularity = True
-        blobparams.minCircularity = 0.8
+        blobparams.filterByCircularity = True
+        blobparams.minCircularity = 0.1
+        blobparams.maxCircularity = 1
 
-        blobparams.filterByConvexity = False
+        blobparams.filterByConvexity = True
         blobparams.minConvexity = 0.5
 
         blobparams.filterByInertia = False
-        blobparams.minInertiaRatio = 0.01
+        #blobparams.minInertiaRatio = 0.01
 
         self.detector = cv2.SimpleBlobDetector_create(blobparams)
 
@@ -63,8 +64,6 @@ class BallDetector():
         process.join()
         return self.locations
         
-
-
     # should ball tracking be done here?
     def getLocations(self, color_frame, depth_frame):
         mask = self.get_mask(color_frame)
@@ -114,4 +113,4 @@ class BallDetector():
 
         self.locations = locations
         self.debug_mask = debug_mask
-        #return locations, debug_mask
+        return locations

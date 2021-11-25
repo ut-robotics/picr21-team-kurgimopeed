@@ -271,4 +271,15 @@ $(document).ready(function () {
         }
         updateMotorValues()
     }
+
+    $("#target_goal").change(_ => {
+        let val = $("#target_goal").val()
+        let data = {"target_goal": val}
+        $.ajax({
+            url: "/set-target-goal",
+            method: "post",
+            data: JSON.stringify(data),
+            contentType: "application/json"
+        })
+    })
 });

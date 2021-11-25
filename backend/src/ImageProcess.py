@@ -14,7 +14,6 @@ import copy as cp
 detector = cv2.SimpleBlobDetector()
 calibrator = ArucoCalibrator()
 
-
 class ImageProcess(RSCamera):
     def __init__(self, driving_logic):
         super().__init__()
@@ -29,19 +28,21 @@ class ImageProcess(RSCamera):
         self.depth_frame = np.array([])
 
         self.new_debug_frame1 = False
-        self.debug_frame1 = np.array([])
+        #self.debug_frame1 = np.array([])
 
         self.new_debug_frame2 = False
-        self.debug_frame2 = np.array([])
+        #self.debug_frame2 = np.array([])
 
         self.show_mask = True
 
         self.trackbar_path = "../config/threshold_config.json"
 
         self.threshold_values = {
+            "off": [0, 0, 0, 0, 0, 0],
             "balls": [0, 0, 0, 255, 255, 255],
             "pink_goal": [0, 0, 0, 255, 255, 255],
             "blue_goal": [0, 0, 0, 255, 255, 255],
+            "black": [0, 0, 0, 255, 255, 255],
         }
         if os.path.exists(self.trackbar_path):
             with open("../config/threshold_config.json") as f:
@@ -66,20 +67,22 @@ class ImageProcess(RSCamera):
         self.new_debug_frame1 = False
         return ret
 
-    def get_frame1(self):
-        return self.debug_frame1
+    #def get_frame1(self):
+    #    return self.debug_frame1
 
     def has_new_frame2(self):
         ret = self.new_debug_frame2
         self.new_debug_frame2 = False
         return ret
 
-    def get_frame2(self):
-        return self.debug_frame2
+    #def get_frame2(self):
+    #    return self.debug_frame2
 
-    def convert_debug_frame(self, frame, from_reso=(640, 480)):
-        image = cv2.resize(frame, (from_reso[0]//2, from_reso[1]//2))
-        return cv2.imencode(".jpg", image)[1].tobytes()
+    #def convert_debug_frame(self, frame, from_reso=(640, 480)):
+    #    return None
+        #return cv2.imencode(".jpg", frame)[1].tobytes()
+        #image = cv2.resize(frame, (from_reso[0]//2, from_reso[1]//2))
+        #return cv2.imencode(".jpg", image)[1].tobytes()
 
     def draw_mask_on_frame(self, frame, mask, color):
         solid_color = np.zeros((mask.shape[0], mask.shape[1], 3), np.uint8)
@@ -94,6 +97,13 @@ class ImageProcess(RSCamera):
 
         try:
             while not self.stop:
+                fps_current_time = time.time()
+                dtime = fps_current_time-self.fps_start_time
+                self.fps_start_time = fps_current_time
+                fps = round(1/dtime)
+
+                #print(f"{fps=}")
+
                 frames = self.pipeline.wait_for_frames()
 
                 #https://github.com/IntelRealSense/librealsense/blob/master/wrappers/python/examples/align-depth2color.py
@@ -171,18 +181,14 @@ class ImageProcess(RSCamera):
                         
                 #debug2 = cv2.drawKeypoints(debug2, self.locationProcess.ball.keypoints, np.array([]), (255,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
-
                 location = self.locationProcess.get(self.color_frame, self.depth_frame, debug_frame=debug2)
-                #print(len(location["balls"])) # temp remove, put back if necessary - josh
+                #print(location["pink_goal"]) # temp remove, put back if necessary - josh
+                print(location["blue_goal"])
 
-                fps_current_time = time.time()
-                dtime = fps_current_time-self.fps_start_time
-                self.fps_start_time = fps_current_time
-                cv2.putText(debug2, "%sFPS"%(round(1/dtime)), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                dtime = time.time()
+                cv2.putText(debug2, "%sFPS"%(fps), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
-                self.debug_frame1 = self.convert_debug_frame(debug1, self.depth_resolution)
-                self.debug_frame2 = self.convert_debug_frame(debug2, self.color_resolution)
+                self.debug_frame1 = debug1
+                self.debug_frame2 = debug2
 
                 self.new_debug_frame1 = True
                 self.new_debug_frame2 = True

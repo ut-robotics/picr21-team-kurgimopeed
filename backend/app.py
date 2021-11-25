@@ -8,10 +8,12 @@ from fastapi.staticfiles import StaticFiles
 
 import time
 import json
+import cv2
 
 from src.motor_driver import MotorDriver
 from src.ImageProcess import ImageProcess
 from src.DrivingLogic import DrivingLogic
+from src.GoalDetector import GoalDetector
 from src.nuc_led import NucLED
 from src.MusicBox import MusicBox
 
@@ -110,9 +112,10 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
 def depth_feed(request: Request):
     def feed_generator():
         while not image_proccess.stop:
+            f =  cv2.imencode(".jpg", image_proccess.debug_frame1)[1].tobytes()
             yield (b"--frame\r\n"
-                b"Content-Type: image/jpeg\r\n\r\n" + image_proccess.get_frame1() + b"\r\n\r\n")
-            time.sleep(1/25) # big sync fix
+                b"Content-Type: image/jpeg\r\n\r\n" + f + b"\r\n\r\n")
+            time.sleep(1/10) # big sync fix
 
     while not image_proccess.has_new_frame1():
         time.sleep(0.2)
@@ -123,9 +126,10 @@ def depth_feed(request: Request):
 def color_feed(request: Request):
     def feed_generator():
         while not image_proccess.stop:
+            f =  cv2.imencode(".jpg", image_proccess.debug_frame2)[1].tobytes()
             yield (b"--frame\r\n"
-                b"Content-Type: image/jpeg\r\n\r\n" + image_proccess.get_frame2() + b"\r\n\r\n")
-            time.sleep(1/25) # big sync fix
+                b"Content-Type: image/jpeg\r\n\r\n" + f + b"\r\n\r\n")
+            time.sleep(1/10) # big sync fix
 
     while not image_proccess.has_new_frame2():
         time.sleep(0.2) 
@@ -166,6 +170,17 @@ async def save_config(request: Request):
     image_proccess.active_threshold_config = j["threshold_config"]
     with open(image_proccess.trackbar_path, "w") as f:
         json.dump(image_proccess.threshold_values, f)
+
+#@app.get("/get-target-goal")
+#async def get_target_goal(request: Request):
+#    return JSONResponse(content)
+#    j = await request.json()
+#    driving_logic.target_goal = GoalDetector.ID_BLUE if j["target_goal"] == "blue_goal" else GoalDetector.ID_PINK
+
+@app.post("/set-target-goal")
+async def set_target_goal(request: Request):
+    j = await request.json()
+    driving_logic.target_goal = GoalDetector.ID_BLUE if j["target_goal"] == "blue_goal" else GoalDetector.ID_PINK
 
 @app.get("/court")
 async def court(request: Request):

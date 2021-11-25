@@ -22,6 +22,10 @@
         <b>WS status: <span id="ws-status"></span></b><br>
         <button id="main_switch" class="main_disabled">OFF</button><br>
         <button id="drive_switch" class="main_disabled">Drive OFF</button><br>
+        Target goal: <select name="" id="target_goal">
+            <option value="blue_goal">blue_goal</option>
+            <option value="pink_goal">pink_goal</option>
+        </select><br>
         <div>
             <div class="row">
                 <div class="column">
@@ -75,9 +79,11 @@
             <div>
                 <button onclick="calibrate_camera()">Calibrate camera</button><br>
                 Threshold config: <select name="" id="threshold_config">
+                    <option value="off">off</option>
                     <option value="balls">balls</option>
                     <option value="blue_goal">blue_goal</option>
                     <option value="pink_goal">pink_goal</option>
+                    <option value="black">black</option>
                 </select><br>
                 Show mask: <button id="show_mark_switch" >OFF</button><br>
                 <snap id="camera_calibration_response"></snap>
