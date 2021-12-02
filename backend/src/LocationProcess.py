@@ -2,6 +2,7 @@ from cv2 import transform
 from src.ArucoDetector import ArucoDetector
 from src.BallDetector import BallDetector
 from src.GoalDetector import GoalDetector
+from src.BorderDetector import BorderDetector
 
 from math import pi, cos, sin
 import numpy as np
@@ -33,6 +34,7 @@ class LocationProcess():
         self.aruco = ArucoDetector(self.marker_size)
         self.ball = BallDetector()
         self.goal = GoalDetector()
+        self.border = BorderDetector()
 
     def rotation_transform(self, cord, rot):
         x_rot, y_rot, z_rot = [i/180*pi for i in rot] #converion to radians
@@ -112,6 +114,16 @@ class LocationProcess():
         ball_locations = self.ball.getLocations(color, depth)
         pink_goal = self.goal.getLocations(color, depth, id=self.goal.ID_PINK)
         blue_goal = self.goal.getLocations(color, depth, id=self.goal.ID_BLUE)
+
+        '''border_points = self.border.getLocations(color, depth)
+        border_dist = []
+        for i in ball_locations:
+            loc, dist = i
+            border_dist.append(self.border.get_closest_dist(loc, border_points))
+
+        print(border_points, border_dist)
+        #filter(lambda x:self.border.get_closest_dist(x[0], border_points)>0.3, ball_locations)
+        '''
 
         return {"robot_loc":self.robot_location, 
                 "robot_rot":self.robot_rotation,

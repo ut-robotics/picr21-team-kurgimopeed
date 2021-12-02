@@ -21,6 +21,8 @@ class GoalDetector():
         self.pink_location = None
         self.blue_location = None
 
+        self.goal_hack_const = np.array([-0.10, 0, 0])
+
     def set_threshold(self, threshold_values, id=ID_PINK):
         if id is self.ID_PINK:
             lower = threshold_values["pink_goal"][:3]
@@ -52,20 +54,6 @@ class GoalDetector():
         if (id == self.ID_BLUE):
             return self.blue_debug_mask
 
-    def start_process(self, color, depth, id):
-        process = Thread(target=self.getLocations, args=(color, depth, id))
-        process.start()
-        return process
-
-    def join(self, process: Thread, id):
-        #locations, self.debug_mask = self.process_queue.get()
-        process.join()
-        if id is self.ID_PINK:
-            return self.pink_location
-        elif id is self.ID_BLUE:
-            return self.blue_location
-        return None
-
     def getLocations(self, color_frame, depth_frame, id=ID_PINK):
         mask = self.get_mask(color_frame, id)
         mheight, mwidth = mask.shape
@@ -88,7 +76,7 @@ class GoalDetector():
                 g_area_size = g_size[0]*g_size[1]
                 
             if g_area_size < area_size:
-                if (area_size > 1000):
+                if (area_size > 1750):
                     goal = rect
 
 
@@ -100,9 +88,9 @@ class GoalDetector():
             goal_mask = np.zeros(mask.shape, dtype=np.uint8)
             cv2.fillPoly(goal_mask, pts=[np.int0(box)], color=(255,255,255))
 
-            resized_depth = cv2.resize(depth_frame, (mwidth, mheight))
+            #resized_depth = cv2.resize(depth_frame, (mwidth, mheight))
 
-            filtered_depth = cv2.bitwise_and(resized_depth, resized_depth, goal_mask)
+            filtered_depth = cv2.bitwise_and(depth_frame, depth_frame, mask=goal_mask)
 
             measure_point_count = np.count_nonzero(filtered_depth)
             if measure_point_count > 0:
@@ -125,6 +113,7 @@ class GoalDetector():
                 cord_z = cos(alpha) * dist
 
                 loc = np.add(np.array([cord_x, cord_y, cord_z]), camera_transformation)
+                loc = np.add(loc, self.goal_hack_const)
                 #print(loc)
 
                 # vector magnitude

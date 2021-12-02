@@ -148,6 +148,10 @@ class ImageProcess(RSCamera):
                 goal.set_threshold(self.threshold_values, id=goal.ID_BLUE)
                 goal.set_threshold(self.threshold_values, id=goal.ID_PINK)
 
+                border = self.locationProcess.border
+                border.set_threshold(self.threshold_values, id=border.ID_BLACK)
+                border.set_threshold(self.threshold_values, id=border.ID_WHITE)
+
                 #scale it to see better visualization
                 debug1 = cv2.convertScaleAbs(debug1, alpha=0.14)
                 debug1 = cv2.cvtColor(cv2.bitwise_not(debug1), cv2.COLOR_GRAY2BGR)
@@ -163,6 +167,12 @@ class ImageProcess(RSCamera):
                     if self.active_threshold_config == "balls":
                         ball_mask = ball.get_mask(self.color_frame)
                         debug2 = cv2.bitwise_and(debug2, debug2, mask=ball_mask)
+                    if self.active_threshold_config == "black_border":
+                        border_mask = border.get_mask(self.color_frame, id=border.ID_BLACK)
+                        debug2 = cv2.bitwise_and(debug2, debug2, mask=border_mask)
+                    if self.active_threshold_config == "white_border":
+                        border_mask = border.get_mask(self.color_frame, id=border.ID_WHITE)
+                        debug2 = cv2.bitwise_and(debug2, debug2, mask=border_mask)
                 else:
                     if self.active_threshold_config == "pink_goal":
                         pink_goal_mask = goal.get_debug_mask(id=goal.ID_PINK)
@@ -178,12 +188,17 @@ class ImageProcess(RSCamera):
                         ball_mask = ball.get_debug_mask()
                         if ball_mask is not None:
                             debug2 = self.draw_mask_on_frame(debug2, ball_mask, (0, 255, 0))
+
+                    if self.active_threshold_config == "white_border" or self.active_threshold_config == "black_border":
+                        border_mask = border.get_debug_mask()
+                        if border_mask is not None:
+                            debug2 = self.draw_mask_on_frame(debug2, border_mask, (0, 255, 255))
                         
                 #debug2 = cv2.drawKeypoints(debug2, self.locationProcess.ball.keypoints, np.array([]), (255,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
                 location = self.locationProcess.get(self.color_frame, self.depth_frame, debug_frame=debug2)
                 #print(location["pink_goal"]) # temp remove, put back if necessary - josh
-                print(location["blue_goal"])
+                #print(location["blue_goal"])
 
                 cv2.putText(debug2, "%sFPS"%(fps), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 

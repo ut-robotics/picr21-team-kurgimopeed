@@ -47,7 +47,7 @@ class BallDetector():
         color_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         mask = cv2.inRange(color_hsv, self.threshold_lower, self.threshold_upper)
 
-        kernel = np.ones((5,5),np.uint8)
+        kernel = np.ones((3,3),np.uint8)
         mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
         return mask
 
@@ -73,8 +73,6 @@ class BallDetector():
 
         keypoints = self.detector.detect(mask)
 
-        resized_depth = cv2.resize(depth_frame, (mwidth, mheight))
-
         locations = []
         for keypoint in keypoints:
             x, y = keypoint.pt
@@ -83,7 +81,7 @@ class BallDetector():
             ball_mask = np.zeros(mask.shape, dtype=np.uint8)
             ball_mask = cv2.circle(ball_mask, (int(x),int(y)),int(radius), (255,255,255),cv2.FILLED)
 
-            filtered_depth = cv2.bitwise_and(resized_depth, resized_depth, mask=ball_mask)
+            filtered_depth = cv2.bitwise_and(depth_frame, depth_frame, mask=ball_mask)
 
             measure_point_count = np.count_nonzero(filtered_depth)
             if measure_point_count > 0:
