@@ -1,10 +1,6 @@
 import cv2
 import numpy as np
-from math import sin, cos, pi, sqrt
-from src.Tools import linear_map
-from src.RSCamera import camera_angle, camera_fov, camera_transformation
-
-from threading import Thread
+from src.Tools import calculateCoordinate
 
 class GoalDetector():
     ID_PINK = 0
@@ -36,13 +32,11 @@ class GoalDetector():
             self.blue_upper = np.array(upper)
 
     # should ball tracking be done here?
-    def get_mask(self, frame, id=ID_PINK):
-        color_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-
+    def get_mask(self, hsv_frame, id=ID_PINK):
         if id is self.ID_PINK:
-            mask = cv2.inRange(color_hsv, self.pink_lower, self.pink_upper)
+            mask = cv2.inRange(hsv_frame, self.pink_lower, self.pink_upper)
         if id is self.ID_BLUE:
-            mask = cv2.inRange(color_hsv, self.blue_lower, self.blue_upper)
+            mask = cv2.inRange(hsv_frame, self.blue_lower, self.blue_upper)
 
         kernel = np.ones((5,5),np.uint8)
         mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
@@ -54,9 +48,8 @@ class GoalDetector():
         if (id == self.ID_BLUE):
             return self.blue_debug_mask
 
-    def getLocations(self, color_frame, depth_frame, id=ID_PINK):
-        mask = self.get_mask(color_frame, id)
-        mheight, mwidth = mask.shape
+    def getLocations(self, hsv_frame, depth_frame, id=ID_PINK):
+        mask = self.get_mask(hsv_frame, id)
 
         if (id == self.ID_PINK):
             self.pink_debug_mask = np.zeros(mask.shape, dtype=np.uint8)
@@ -102,24 +95,9 @@ class GoalDetector():
 
                 dist /= 1000 #mm to m
 
-                # just works (tm)
-                alpha = (linear_map(y_center, mheight, 0, -camera_fov[1]/2, camera_fov[1]/2) + camera_angle - 90.0)/180*pi
-                beeta = linear_map(x_center, mwidth, 0, -camera_fov[0]/2, camera_fov[0]/2)/180*pi
-
-                s = sin(alpha)*dist
-
-                cord_x = sin(beeta) * s
-                cord_y = -cos(beeta) * s
-                cord_z = cos(alpha) * dist
-
-                loc = np.add(np.array([cord_x, cord_y, cord_z]), camera_transformation)
+                loc, dist_to_robot = calculateCoordinate(x_center, y_center, dist, mask.shape)
                 loc = np.add(loc, self.goal_hack_const)
-                #print(loc)
 
-                # vector magnitude
-                #depth camera already measures dist to camera
-                #dist_to_camera = dist
-                dist_to_robot = np.linalg.norm(loc)
                 # a dictionary with ids would be better
                 if id is self.ID_PINK:
                     self.pink_location = (loc, dist_to_robot)

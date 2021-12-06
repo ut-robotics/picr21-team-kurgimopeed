@@ -61,8 +61,8 @@ class LocationProcess():
 
         return cord
 
-    def get(self, color, depth, debug_frame=None):
-        ''' _, markers = self.aruco.getMarkerLocations(color, debug_frame=debug_frame)
+    def get(self, hsv_frame, depth, debug_frame=None):
+        ''' _, markers = self.aruco.getMarkerLocations(hsv_frame, debug_frame=debug_frame)
 
         if len(markers)>0:
             correct_marker_count = 0
@@ -98,32 +98,22 @@ class LocationProcess():
         #ball_locations = [(self.rotation_transform(ball[0], self.robot_rotation), ball[1]) for ball in balls]
         #ball_locations = balls
 
-        #pink_goal = self.goal.getLocations(color, depth, id=self.goal.ID_PINK)
-        #blue_goal = self.goal.getLocations(color, depth, id=self.goal.ID_BLUE)
+        ball_locations = self.ball.getLocations(hsv_frame, depth)
+        pink_goal = self.goal.getLocations(hsv_frame, depth, id=self.goal.ID_PINK)
+        blue_goal = self.goal.getLocations(hsv_frame, depth, id=self.goal.ID_BLUE)
 
-        #balls_process = self.ball.start_process(color, depth)
-        #pink_process = self.goal.start_process(color, depth, self.goal.ID_PINK)
-        #blue_process = self.goal.start_process(color, depth, self.goal.ID_BLUE)
-        # 
-        #ball_locations = self.ball.join(balls_process)
-        #pink_goal = self.goal.join(pink_process, self.goal.ID_PINK)
-        #blue_goal = self.goal.join(blue_process, self.goal.ID_BLUE)
-        #pink_goal = []
-        #blue_goal = []
-
-        ball_locations = self.ball.getLocations(color, depth)
-        pink_goal = self.goal.getLocations(color, depth, id=self.goal.ID_PINK)
-        blue_goal = self.goal.getLocations(color, depth, id=self.goal.ID_BLUE)
-
-        '''border_points = self.border.getLocations(color, depth)
+        white_border_points = self.border.getLocations(hsv_frame, depth, id=self.border.ID_WHITE)
+        black_border_points = self.border.getLocations(hsv_frame, depth, id=self.border.ID_BLACK)
         border_dist = []
         for i in ball_locations:
             loc, dist = i
-            border_dist.append(self.border.get_closest_dist(loc, border_points))
+            w = self.border.get_closest_dist(loc, white_border_points)
+            b = self.border.get_closest_dist(loc, black_border_points)
+            border_dist.append(b-w)
 
-        print(border_points, border_dist)
+        print(border_dist)
         #filter(lambda x:self.border.get_closest_dist(x[0], border_points)>0.3, ball_locations)
-        '''
+        
 
         return {"robot_loc":self.robot_location, 
                 "robot_rot":self.robot_rotation,

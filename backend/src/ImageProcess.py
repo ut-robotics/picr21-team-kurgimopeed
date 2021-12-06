@@ -156,22 +156,23 @@ class ImageProcess(RSCamera):
                 debug1 = cv2.convertScaleAbs(debug1, alpha=0.14)
                 debug1 = cv2.cvtColor(cv2.bitwise_not(debug1), cv2.COLOR_GRAY2BGR)
                 
+                hsv_frame = cv2.cvtColor(self.color_frame, cv2.COLOR_BGR2HSV)
                 #add debug data
                 if self.show_mask:
                     if self.active_threshold_config == "pink_goal":
-                        goal_mask = goal.get_mask(self.color_frame, id=goal.ID_PINK)
+                        goal_mask = goal.get_mask(hsv_frame, id=goal.ID_PINK)
                         debug2 = cv2.bitwise_and(debug2, debug2, mask=goal_mask)
                     if self.active_threshold_config == "blue_goal":
-                        goal_mask = goal.get_mask(self.color_frame, id=goal.ID_BLUE)
+                        goal_mask = goal.get_mask(hsv_frame, id=goal.ID_BLUE)
                         debug2 = cv2.bitwise_and(debug2, debug2, mask=goal_mask)
                     if self.active_threshold_config == "balls":
-                        ball_mask = ball.get_mask(self.color_frame)
+                        ball_mask = ball.get_mask(hsv_frame)
                         debug2 = cv2.bitwise_and(debug2, debug2, mask=ball_mask)
                     if self.active_threshold_config == "black_border":
-                        border_mask = border.get_mask(self.color_frame, id=border.ID_BLACK)
+                        border_mask = border.get_mask(hsv_frame, id=border.ID_BLACK)
                         debug2 = cv2.bitwise_and(debug2, debug2, mask=border_mask)
                     if self.active_threshold_config == "white_border":
-                        border_mask = border.get_mask(self.color_frame, id=border.ID_WHITE)
+                        border_mask = border.get_mask(hsv_frame, id=border.ID_WHITE)
                         debug2 = cv2.bitwise_and(debug2, debug2, mask=border_mask)
                 else:
                     if self.active_threshold_config == "pink_goal":
@@ -190,13 +191,17 @@ class ImageProcess(RSCamera):
                             debug2 = self.draw_mask_on_frame(debug2, ball_mask, (0, 255, 0))
 
                     if self.active_threshold_config == "white_border" or self.active_threshold_config == "black_border":
-                        border_mask = border.get_debug_mask()
+                        border_mask = border.get_debug_mask(border.ID_WHITE)
                         if border_mask is not None:
-                            debug2 = self.draw_mask_on_frame(debug2, border_mask, (0, 255, 255))
+                            debug2 = self.draw_mask_on_frame(debug2, border_mask, (255, 255, 255))
+
+                        border_mask = border.get_debug_mask(border.ID_BLACK)
+                        if border_mask is not None:
+                            debug2 = self.draw_mask_on_frame(debug2, border_mask, (0, 0, 0))
                         
                 #debug2 = cv2.drawKeypoints(debug2, self.locationProcess.ball.keypoints, np.array([]), (255,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
-                location = self.locationProcess.get(self.color_frame, self.depth_frame, debug_frame=debug2)
+                location = self.locationProcess.get(hsv_frame, self.depth_frame, debug_frame=debug2)
                 #print(location["pink_goal"]) # temp remove, put back if necessary - josh
                 #print(location["blue_goal"])
 

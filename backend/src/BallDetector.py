@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 from math import sin, cos, pi, sqrt
-from src.Tools import linear_map
+from src.Tools import calculateCoordinate, linear_map
 from src.RSCamera import camera_angle, camera_fov, camera_transformation
 from threading import Thread
 
@@ -43,9 +43,8 @@ class BallDetector():
         self.threshold_lower = np.array([lower])
         self.threshold_upper = np.array([upper])
 
-    def get_mask(self, frame):
-        color_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        mask = cv2.inRange(color_hsv, self.threshold_lower, self.threshold_upper)
+    def get_mask(self, hsv_frame):
+        mask = cv2.inRange(hsv_frame, self.threshold_lower, self.threshold_upper)
 
         kernel = np.ones((3,3),np.uint8)
         mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
@@ -53,21 +52,10 @@ class BallDetector():
 
     def get_debug_mask(self):
         return self.debug_mask
-
-    def start_process(self, color, depth):
-        process = Thread(target=self.getLocations, args=(color, depth))
-        process.start()
-        return process
-
-    def join(self, process: Thread):
-        #locations, self.debug_mask = self.process_queue.get()
-        process.join()
-        return self.locations
         
     # should ball tracking be done here?
-    def getLocations(self, color_frame, depth_frame):
-        mask = self.get_mask(color_frame)
-        mheight, mwidth = mask.shape
+    def getLocations(self, hsv_frame, depth_frame):
+        mask = self.get_mask(hsv_frame)
 
         debug_mask = np.zeros(mask.shape, dtype=np.uint8)
 
@@ -90,24 +78,7 @@ class BallDetector():
 
                 dist /= 1000 #mm to m
 
-                # just works (tm)
-                alpha = (linear_map(y, mheight, 0, -camera_fov[1]/2, camera_fov[1]/2) + camera_angle - 90.0)/180*pi
-                beeta = linear_map(x, mwidth, 0, -camera_fov[0]/2, camera_fov[0]/2)/180*pi
-
-                s = sin(alpha)*dist
-
-                cord_x = sin(beeta) * s
-                cord_y = -cos(beeta) * s
-                cord_z = cos(alpha) * dist
-
-                loc = np.add(np.array([cord_x, cord_y, cord_z]), camera_transformation)
-                #print(loc)
-
-                # vector magnitude
-                #depth camera already measures dist to camera
-                dist_to_robot = np.linalg.norm(loc)
-                # a dictionary with ids would be better
-                locations.append((loc, dist_to_robot))
+                locations.append(calculateCoordinate(x, y, dist, mask.shape))
 
         self.locations = locations
         self.debug_mask = debug_mask
