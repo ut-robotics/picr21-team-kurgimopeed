@@ -102,7 +102,7 @@ class ImageProcess(RSCamera):
                 self.fps_start_time = fps_current_time
                 fps = round(1/dtime)
 
-                #print(f"{fps=}")
+                print(f"{fps=}")
 
                 frames = self.pipeline.wait_for_frames()
 

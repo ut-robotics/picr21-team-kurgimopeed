@@ -49,12 +49,22 @@ class BorderDetector():
         if id is self.ID_BLACK:
             return self.black_debug_mask
 
-    def getLocations(self, hsv_frame, depth_frame, id=ID_WHITE):
+    def generate_area_of_interest(self, frame_locations, shape):
+        mask = np.zeros(shape, dtype=np.uint8)
+        for x, y in frame_locations:
+            start = (x-self.grid_size, y-self.grid_size)
+            end =  (x+self.grid_size, y+self.grid_size)
+            cv2.rectangle(mask, np.int0(start), np.int0(end), (255, 255, 255), -1)
+        return mask
+
+    def getLocations(self, hsv_frame, depth_frame, id=ID_WHITE, area_of_interest=None):
         if id is self.ID_BLACK:
             mask = self.get_mask(hsv_frame, self.ID_BLACK)
         elif id is self.ID_WHITE:
             mask = self.get_mask(hsv_frame, self.ID_WHITE)
 
+        if area_of_interest is not None:
+            mask = cv2.bitwise_and(mask, mask, mask=area_of_interest)
         mheight, mwidth = mask.shape
 
         for x in range(0, mwidth, self.grid_size):
@@ -97,6 +107,7 @@ class BorderDetector():
             self.white_debug_mask = debug_mask
         elif id is self.ID_BLACK:
             self.black_debug_mask = debug_mask
+            
         return line_locations
 
     def get_closest_dist(self, point, locations):

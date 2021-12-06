@@ -35,7 +35,7 @@ class BallDetector():
 
         self.debug_mask = None
         #self.process_queue = Queue()
-        self.locations = []
+        self.locations_on_frame = []
 
     def set_threshold(self, threshold_values):
         lower = threshold_values["balls"][:3]
@@ -62,9 +62,12 @@ class BallDetector():
         keypoints = self.detector.detect(mask)
 
         locations = []
+        self.locations_on_frame = []
         for keypoint in keypoints:
             x, y = keypoint.pt
             radius = keypoint.size/2
+
+            self.locations_on_frame.append((x, y))
 
             ball_mask = np.zeros(mask.shape, dtype=np.uint8)
             ball_mask = cv2.circle(ball_mask, (int(x),int(y)),int(radius), (255,255,255),cv2.FILLED)
@@ -80,6 +83,5 @@ class BallDetector():
 
                 locations.append(calculateCoordinate(x, y, dist, mask.shape))
 
-        self.locations = locations
         self.debug_mask = debug_mask
         return locations

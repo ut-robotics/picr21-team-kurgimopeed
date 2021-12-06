@@ -102,9 +102,11 @@ class LocationProcess():
         pink_goal = self.goal.getLocations(hsv_frame, depth, id=self.goal.ID_PINK)
         blue_goal = self.goal.getLocations(hsv_frame, depth, id=self.goal.ID_BLUE)
 
-        white_border_points = self.border.getLocations(hsv_frame, depth, id=self.border.ID_WHITE)
-        black_border_points = self.border.getLocations(hsv_frame, depth, id=self.border.ID_BLACK)
+        area_of_interest = self.border.generate_area_of_interest(self.ball.locations_on_frame, hsv_frame.shape[:2])
+        white_border_points = self.border.getLocations(hsv_frame, depth, self.border.ID_WHITE, area_of_interest)
+        black_border_points = self.border.getLocations(hsv_frame, depth, self.border.ID_BLACK, area_of_interest)
         border_dist = []
+
         for i in ball_locations:
             loc, dist = i
             w = self.border.get_closest_dist(loc, white_border_points)
