@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from src.Tools import calculateCoordinate
+from src.Tools import calculateCoordinate, depth_distance
 
 class GoalDetector():
     ID_PINK = 0
@@ -75,24 +75,16 @@ class GoalDetector():
 
         if goal is not None:
             box = cv2.boxPoints(goal)
-            x_center = np.mean([i[0] for i in box])
-            y_center = np.mean([i[1] for i in box])
 
-            goal_mask = np.zeros(mask.shape, dtype=np.uint8)
-            cv2.fillPoly(goal_mask, pts=[np.int0(box)], color=(255,255,255))
-
-            #resized_depth = cv2.resize(depth_frame, (mwidth, mheight))
-
-            filtered_depth = cv2.bitwise_and(depth_frame, depth_frame, mask=goal_mask)
-
-            measure_point_count = np.count_nonzero(filtered_depth)
-            if measure_point_count > 0:
-                dist = np.sum(filtered_depth)/measure_point_count
+            dist = depth_distance(box, depth_frame)
+            if not np.isnan(dist):
                 if (id == self.ID_PINK):
-                    self.pink_debug_mask = goal_mask
+                    cv2.drawContours(self.pink_debug_mask,[np.int0(box)],0,(255,255,255),2)
                 if (id == self.ID_BLUE):
-                    self.blue_debug_mask = goal_mask
+                    cv2.drawContours(self.blue_debug_mask,[np.int0(box)],0,(255,255,255),2)
 
+                x_center = np.mean([i[0] for i in box])
+                y_center = np.mean([i[1] for i in box])
                 dist /= 1000 #mm to m
 
                 loc, dist_to_robot = calculateCoordinate(x_center, y_center, dist, mask.shape)

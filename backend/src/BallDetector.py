@@ -1,9 +1,6 @@
 import cv2
 import numpy as np
-from math import sin, cos, pi, sqrt
-from src.Tools import calculateCoordinate, linear_map
-from src.RSCamera import camera_angle, camera_fov, camera_transformation
-from threading import Thread
+from src.Tools import calculateCoordinate, depth_distance
 
 class BallDetector():
     def __init__(self):
@@ -16,7 +13,7 @@ class BallDetector():
         blobparams.blobColor = 255
 
         #blobparams.filterByArea = True
-        blobparams.minArea = 25
+        blobparams.minArea = 10
         blobparams.maxArea = 100000
 
         #blobparams.minDistBetweenBlobs = 100
@@ -67,20 +64,33 @@ class BallDetector():
             x, y = keypoint.pt
             radius = keypoint.size/2
 
-            self.locations_on_frame.append((x, y))
+            min_x, max_x = int(x-radius), int(x+radius)
+            min_y, max_y = int(y-radius), int(y+radius)
+            if min_x < 0:
+                min_x = 0
+            if max_x > depth_frame.shape[1]-1:
+                max_x = depth_frame.shape[1]-1
+            if min_y < 0:
+                min_y = 0
+            if max_y > depth_frame.shape[0]-1:
+                max_y = depth_frame.shape[0]-1
+        
+            section_depth_frame = depth_frame[min_y:max_y, min_x:max_x]
+            shape = (max_y-min_y, max_x-min_x)
 
-            ball_mask = np.zeros(mask.shape, dtype=np.uint8)
-            ball_mask = cv2.circle(ball_mask, (int(x),int(y)),int(radius), (255,255,255),cv2.FILLED)
+            ball_mask = np.zeros(shape, dtype=np.uint8)
+            ball_mask = cv2.circle(ball_mask, (int(x-min_x),int(y-min_y)),int(radius), (255,255,255),cv2.FILLED)
 
-            filtered_depth = cv2.bitwise_and(depth_frame, depth_frame, mask=ball_mask)
+            filtered_depth = cv2.bitwise_and(section_depth_frame, section_depth_frame, mask=ball_mask)
 
             measure_point_count = np.count_nonzero(filtered_depth)
             if measure_point_count > 0:
                 dist = np.sum(filtered_depth)/measure_point_count
-                debug_mask = cv2.bitwise_or(debug_mask, ball_mask)
+                cv2.circle(debug_mask, (int(x),int(y)),int(radius), (255,255,255),cv2.FILLED)
 
                 dist /= 1000 #mm to m
 
+                self.locations_on_frame.append((x, y))
                 locations.append(calculateCoordinate(x, y, dist, mask.shape))
 
         self.debug_mask = debug_mask

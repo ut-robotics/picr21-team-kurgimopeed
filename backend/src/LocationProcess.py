@@ -111,8 +111,12 @@ class LocationProcess():
             loc, dist = i
             w = self.border.get_closest_dist(loc, white_border_points)
             b = self.border.get_closest_dist(loc, black_border_points)
-            border_dist.append(b-w)
-
+            s = b-w
+            if np.isnan(s):
+                s = 0
+            border_dist.append(s)
+        
+        #print(ball_locations)
         print(border_dist)
         #filter(lambda x:self.border.get_closest_dist(x[0], border_points)>0.3, ball_locations)
         

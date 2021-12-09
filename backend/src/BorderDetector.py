@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from src.Tools import calculateCoordinate
+from src.Tools import calculateCoordinate, depth_distance
 
 class BorderDetector():
     ID_BLACK = 0
@@ -35,7 +35,7 @@ class BorderDetector():
         elif id is self.ID_WHITE:
             mask = cv2.inRange(hsv_frame, self.white_lower, self.white_upper)
 
-        kernel = np.ones((5,5),np.uint8)
+        kernel = np.ones((3,3),np.uint8)
         mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
 
         #make mask bigger
@@ -52,8 +52,8 @@ class BorderDetector():
     def generate_area_of_interest(self, frame_locations, shape):
         mask = np.zeros(shape, dtype=np.uint8)
         for x, y in frame_locations:
-            start = (x-self.grid_size, y-self.grid_size)
-            end =  (x+self.grid_size, y+self.grid_size)
+            start = (x-self.grid_size/2, y-self.grid_size/2)
+            end =  (x+self.grid_size/2, y+self.grid_size/2)
             cv2.rectangle(mask, np.int0(start), np.int0(end), (255, 255, 255), -1)
         return mask
 
@@ -65,6 +65,7 @@ class BorderDetector():
 
         if area_of_interest is not None:
             mask = cv2.bitwise_and(mask, mask, mask=area_of_interest)
+
         mheight, mwidth = mask.shape
 
         for x in range(0, mwidth, self.grid_size):
@@ -81,24 +82,18 @@ class BorderDetector():
             rect = cv2.minAreaRect(cnt)
             _, size, _ = rect
             area_size = size[0]*size[1]
-            if (area_size < 800):
+            if (area_size < 100):
                 continue
 
             box = cv2.boxPoints(rect)
 
-            selected_mask = np.zeros(mask.shape, dtype=np.uint8)
-            cv2.fillPoly(selected_mask, pts=[np.int0(box)], color=(255,255,255))
+            dist = depth_distance(box, depth_frame)
+            if not np.isnan(dist):
+                cv2.drawContours(debug_mask,[np.int0(box)],0,(255,255,255),2)
 
-            cv2.drawContours(debug_mask,[np.int0(box)],0,(255,255,255),2)
-
-            filtered_depth = cv2.bitwise_and(depth_frame, depth_frame, mask=selected_mask)
-
-            measure_point_count = np.count_nonzero(filtered_depth)
-            if measure_point_count > 0:
                 x_center = np.mean([i[0] for i in box])
                 y_center = np.mean([i[1] for i in box])
 
-                dist = np.sum(filtered_depth)/measure_point_count
                 dist /= 1000 #mm to m
 
                 line_locations.append(calculateCoordinate(x_center, y_center, dist, mask.shape))
