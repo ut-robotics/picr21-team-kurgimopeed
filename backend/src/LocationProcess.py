@@ -61,7 +61,7 @@ class LocationProcess():
 
         return cord
 
-    def get(self, hsv_frame, depth, debug_frame=None):
+    def get_location(self, hsv_frame, depth, debug_frame=None):
         ''' _, markers = self.aruco.getMarkerLocations(hsv_frame, debug_frame=debug_frame)
 
         if len(markers)>0:
@@ -117,10 +117,9 @@ class LocationProcess():
             border_dist.append(s)
         
         #print(ball_locations)
-        print(border_dist)
-        #filter(lambda x:self.border.get_closest_dist(x[0], border_points)>0.3, ball_locations)
+        #print(border_dist)
+        #filter(lambda n, x: border_dist[n] >=0, range(ball_locations))
         
-
         return {"robot_loc":self.robot_location, 
                 "robot_rot":self.robot_rotation,
                 "pink_goal":pink_goal,

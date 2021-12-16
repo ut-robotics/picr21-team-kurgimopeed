@@ -1,10 +1,11 @@
 from cv2 import line
-from src.motor_driver import MotorDriver
+from src.MotorDriver import MotorDriver
 from src.Tools import linear_map
 import math, time
 from simple_pid import PID
 from src.GoalDetector import GoalDetector
 from src.ThrowerTraining import ThrowerTraining
+from src.RefereeClient import RefereeClient
 
 # logic notes
 # no balls -> spin.
@@ -38,6 +39,7 @@ class DrivingLogic():
         self.enable = False # controlled from web interface
 
         self.thrower = ThrowerTraining()
+        self.referee = RefereeClient()
 
         # possible states
         # spin: look for balls
@@ -70,8 +72,16 @@ class DrivingLogic():
         self.min_balls = 1
 
     # called externally from referee server or front end
-    def init(self):
+    def start(self, target_goal=None):
+        self.enable = True
+        if target_goal is not None:
+            self.target_goal = target_goal
         self.state = self.spin
+
+    def stop(self):
+        self.enable = False
+        time.sleep(0.1)
+        self.motor_driver.stop()
     
     def spin(self, data):
         l = len(data["balls"])
@@ -159,27 +169,3 @@ class DrivingLogic():
         self.state(data)
 
         return
-
-
-        print("")
-        return
-        if alpha > turning_tolerance or alpha < -turning_tolerance:
-            turn_speed = linear_map(alpha, -50, 40, 15, -15)
-            print(turn_speed)
-            #print(alpha)
-            self.motor_driver.send(turn_speed=turn_speed)
-            return
-
-        # driving
-        depth_tolerance = 0.02 #
-        depth_target = 0
-        print("found:", ball_depth)
-
-        # pseudo
-        # if goal not found
-        #   rotate and revolve around ball, return
-        #   TODO: implement rotation around arbitrary target whilst
-        #   keeping forward vector pointed towards target
-        # 
-        # if goal not in forward vector tolerance
-        #   rotate left/right with appropriate speed

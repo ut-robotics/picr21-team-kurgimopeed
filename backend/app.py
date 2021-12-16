@@ -1,4 +1,3 @@
-import atexit
 from typing import List
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request, Form
@@ -10,12 +9,13 @@ import time
 import json
 import cv2
 
-from src.motor_driver import MotorDriver
-from src.ImageProcess import ImageProcess
-from src.DrivingLogic import DrivingLogic
+#from src.MotorDriver import MotorDriver
+#from src.ImageProcess import ImageProcess
+#from src.DrivingLogic import DrivingLogic
 from src.GoalDetector import GoalDetector
 from src.nuc_led import NucLED
 from src.MusicBox import MusicBox
+from src.RobotController import RobotController
 
 # camera works perfectly, just frames have to finish buffering after reload lol
 
@@ -60,20 +60,24 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
-motor_driver = MotorDriver()
-motor_driver.start()
+#motor_driver = MotorDriver()
+#motor_driver.start()
 
-driving_logic = DrivingLogic(motor_driver)
-image_proccess = ImageProcess(driving_logic)
-image_proccess.start()
+#driving_logic = DrivingLogic(motor_driver)
+#image_proccess = ImageProcess(driving_logic)
+#image_proccess.start()
 
-musicbox = MusicBox(motor_driver)
+robot_controller = RobotController()
+robot_controller.start()
+
+musicbox = MusicBox(robot_controller.motor_driver)
 
 @app.on_event("shutdown")
 async def shutdown_event():
-    motor_driver.close()
-    image_proccess.stop()
-    #led.set_led(led.TYPE_RING, 64, led.MODE_FADE_05HZ, led.RING_PINK)
+    robot_controller.close()
+    #motor_driver.close()
+    #image_proccess.stop()
+    led.set_led(led.TYPE_RING, 64, led.MODE_FADE_05HZ, led.RING_PINK)
 
 @app.websocket("/ws/{client_id}")
 async def websocket_endpoint(websocket: WebSocket, client_id: int):
@@ -92,35 +96,33 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
             else:
                 speed, direction, turn, thrower, enable, driving_enable = [data[i] for i in ["speed", "direction", "turn", "thrower", "enable", "drive_enable"]]
                 if enable:
-                    driving_logic.enable = False
-                    #led.set_led(led.TYPE_RING, color=led.RING_GREEN)
-                    motor_driver.send(speed=speed, direction=direction, turn_speed=turn, thrower=thrower, callback=None)
+                    robot_controller.driving_logic.stop()
+                    robot_controller.motor_driver.send(speed=speed, direction=direction, turn_speed=turn, thrower=thrower, callback=None)
                 elif driving_enable:
-                    driving_logic.enable = True
-                    driving_logic.init()
+                    robot_controller.driving_logic.start()
                 else:
-                    driving_logic.enable = False
                     time.sleep(0.1)
                     #led.set_led(led.TYPE_RING, color=led.RING_RED)
-                    motor_driver.stop()
+                    robot_controller.motor_driver.stop()
+                    robot_controller.driving_logic.stop()
 
 
     except WebSocketDisconnect:
         default_led()
-        motor_driver.stop()
+        robot_controller.motor_driver.stop()
         manager.disconnect(websocket)
         await manager.broadcast(f"Client #{client_id} left the chat")
 
 @app.get("/depth-feed")
 def depth_feed(request: Request):
     def feed_generator():
-        while not image_proccess.stop:
-            f =  cv2.imencode(".jpg", image_proccess.debug_frame1)[1].tobytes()
+        while not robot_controller.stop:
+            f =  cv2.imencode(".jpg", robot_controller.image_proccess.debug_frame1)[1].tobytes()
             yield (b"--frame\r\n"
                 b"Content-Type: image/jpeg\r\n\r\n" + f + b"\r\n\r\n")
             time.sleep(1/10) # big sync fix
 
-    while not image_proccess.has_new_frame1():
+    while not robot_controller.image_proccess.has_new_frame1():
         time.sleep(0.2)
     return StreamingResponse(feed_generator(), status_code=206, media_type="multipart/x-mixed-replace;boundary=frame")
 
@@ -128,13 +130,13 @@ def depth_feed(request: Request):
 @app.get("/color-feed")
 def color_feed(request: Request):
     def feed_generator():
-        while not image_proccess.stop:
-            f =  cv2.imencode(".jpg", image_proccess.debug_frame2)[1].tobytes()
+        while not robot_controller.stop:
+            f =  cv2.imencode(".jpg", robot_controller.image_proccess.debug_frame2)[1].tobytes()
             yield (b"--frame\r\n"
                 b"Content-Type: image/jpeg\r\n\r\n" + f + b"\r\n\r\n")
             time.sleep(1/10) # big sync fix
 
-    while not image_proccess.has_new_frame2():
+    while not robot_controller.image_proccess.has_new_frame2():
         time.sleep(0.2) 
     return StreamingResponse(feed_generator(), status_code=206, media_type="multipart/x-mixed-replace;boundary=frame")
 
@@ -144,7 +146,7 @@ async def index(request: Request):
 
 @app.get("/trackbar-config")
 async def load_config(request: Request):
-    with open(image_proccess.trackbar_path, "r") as f:
+    with open(robot_controller.image_proccess.trackbar_path, "r") as f:
         return JSONResponse(content=json.load(f))
 
 @app.post("/playmusic")
@@ -157,22 +159,22 @@ async def play_march(request: Request):
 
 @app.post("/calibrate-camera")
 async def play_march(request: Request):
-    status = 200 if image_proccess.calibrate() else 417 #ok vs ecpectation failed
+    status = 200 if robot_controller.image_proccess.calibrate() else 417 #ok vs ecpectation failed
     return Response(status_code=status)
 
 @app.post("/set_debug_color_mask")
 async def play_march(request: Request):
     j = await request.json()
-    image_proccess.show_mask = False if j["state"] == "OFF" else True
+    robot_controller.image_proccess.show_mask = False if j["state"] == "OFF" else True
 
 @app.post("/trackbar-config")
 async def save_config(request: Request):
     j = await request.json()
     #print(j)
-    image_proccess.threshold_values[j["threshold_config"]] = j["threshold_values"]
-    image_proccess.active_threshold_config = j["threshold_config"]
-    with open(image_proccess.trackbar_path, "w") as f:
-        json.dump(image_proccess.threshold_values, f)
+    robot_controller.image_proccess.threshold_values[j["threshold_config"]] = j["threshold_values"]
+    robot_controller.image_proccess.active_threshold_config = j["threshold_config"]
+    with open(robot_controller.image_proccess.trackbar_path, "w") as f:
+        json.dump(robot_controller.image_proccess.threshold_values, f)
 
 #@app.get("/get-target-goal")
 #async def get_target_goal(request: Request):
@@ -183,7 +185,7 @@ async def save_config(request: Request):
 @app.post("/set-target-goal")
 async def set_target_goal(request: Request):
     j = await request.json()
-    driving_logic.target_goal = GoalDetector.ID_BLUE if j["target_goal"] == "blue_goal" else GoalDetector.ID_PINK
+    robot_controller.driving_logic.target_goal = GoalDetector.ID_BLUE if j["target_goal"] == "blue_goal" else GoalDetector.ID_PINK
 
 @app.get("/court")
 async def court(request: Request):

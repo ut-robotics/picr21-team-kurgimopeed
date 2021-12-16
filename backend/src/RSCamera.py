@@ -3,9 +3,6 @@ import numpy as np
 import cv2
 import pyrealsense2 as rs
 
-from threading import Thread
-import time
-
 camera_angle = -12
 camera_transformation = np.array([-0.033, 0, 0.205])
 camera_fov = (87, 58) #H, V
@@ -55,27 +52,18 @@ class RSCamera():
         self.pipeline.start(self.config)
         print("started rs pipeline")
 
-    def cleanup(self):
+    def close(self):
         # stop the pipeline sir
         print("stopping rs pipeline")
         self.pipeline.stop()
 
-    def process_frame_thread(self):
-        while not self.stop:
-            # wait for a coherent pair of frames
-            frames = self.pipeline.wait_for_frames()
-            depth_frame = frames.get_depth_frame()
-            color_frame = frames.get_color_frame()
-            if not depth_frame or not color_frame:
-                continue # fuck
+    def get_aligned_frames(self):
+        aligned_frames = self.align.process(self.pipeline.wait_for_frames())
 
-            depth_image = np.asanyarray(depth_frame.get_data())
-            color_image = np.asanyarray(color_frame.get_data())
+        return (
+            np.asanyarray(aligned_frames.get_depth_frame().get_data(), dtype=np.uint16),
+            np.asanyarray(aligned_frames.get_color_frame().get_data(), dtype=np.uint8)
+        )
 
-            #depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
-
-            # this is retarded, we're going to handle depth and color differently anyway
-            #images = [(cv2.imencode(".jpg", x)[1]).tobytes() for x in (depth_frame, color_frame)]
-
-            self.depth_frame = cv2.imencode(".jpg", depth_image)[1].tobytes()
-            self.color_frame = cv2.imencode(".jpg", color_image)[1].tobytes()
+        #self.depth_frame = cv2.imencode(".jpg", depth_image)[1].tobytes()
+        #self.color_frame = cv2.imencode(".jpg", color_image)[1].tobytes()

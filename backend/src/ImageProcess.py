@@ -1,12 +1,8 @@
 import numpy as np
 import cv2
-from src.LocationProcess import LocationProcess
 
-from src.RSCamera import RSCamera
 from src.ArucoCalibrator import ArucoCalibrator
-from src.LocationProcess import LocationProcess
 
-from threading import Thread
 import time, json, os
 
 import copy as cp
@@ -14,16 +10,8 @@ import copy as cp
 detector = cv2.SimpleBlobDetector()
 calibrator = ArucoCalibrator()
 
-class ImageProcess(RSCamera):
-    def __init__(self, driving_logic):
-        super().__init__()
-        # start capture thread
-        self.driving_logic = driving_logic 
-
-        self.stop = False
-        self.thread = Thread(target=self.run)
-        self.thread.daemon = True
-
+class ImageProcess():
+    def __init__(self):
         self.color_frame = np.array([])
         self.depth_frame = np.array([])
 
@@ -49,18 +37,7 @@ class ImageProcess(RSCamera):
                 self.threshold_values = json.load(f)
         self.active_threshold_config = list(self.threshold_values.keys())[0]
 
-        self.locationProcess = LocationProcess()
-
         self.fps_start_time = 0
-
-    def start(self):
-        self.thread.start()
-        print("Image processing started")
-
-    def stop(self):
-        self.stop = True
-        self.thread.join()
-        print("Image processing stopped")
 
     def has_new_frame1(self):
         ret = self.new_debug_frame1
@@ -91,133 +68,86 @@ class ImageProcess(RSCamera):
         ball_debug_color = cv2.bitwise_and(solid_color, solid_color, mask=mask)
         return np.add(ball_debug, ball_debug_color)
 
-    def run(self):
-        self.stop = False
-        super().start()
+    def get_processed_frames(self, aligned_frames, location_process):
+        fps_current_time = time.time()
+        dtime = fps_current_time-self.fps_start_time
+        self.fps_start_time = fps_current_time
+        fps = round(1/dtime)
 
-        try:
-            while not self.stop:
-                fps_current_time = time.time()
-                dtime = fps_current_time-self.fps_start_time
-                self.fps_start_time = fps_current_time
-                fps = round(1/dtime)
+        print(f"{fps=}", end='\r')
 
-                print(f"{fps=}")
+        self.depth_frame, self.color_frame = aligned_frames
 
-                frames = self.pipeline.wait_for_frames()
+        debug1 = cp.deepcopy(self.depth_frame)
+        debug2 = cp.deepcopy(self.color_frame)
 
-                #https://github.com/IntelRealSense/librealsense/blob/master/wrappers/python/examples/align-depth2color.py
-                aligned_frames = self.align.process(frames)
+        ball = location_process.ball
+        ball.set_threshold(self.threshold_values)
 
-                # Get aligned frames
-                depth_frame = aligned_frames.get_depth_frame()
-                color_frame = aligned_frames.get_color_frame()
+        goal = location_process.goal
+        goal.set_threshold(self.threshold_values, id=goal.ID_BLUE)
+        goal.set_threshold(self.threshold_values, id=goal.ID_PINK)
 
-                #depth_frame = frames.get_depth_frame()
-                #color_frame = frames.get_color_frame()
+        border = location_process.border
+        border.set_threshold(self.threshold_values, id=border.ID_BLACK)
+        border.set_threshold(self.threshold_values, id=border.ID_WHITE)
 
-                self.depth_frame = np.asanyarray(depth_frame.get_data(), dtype=np.uint16)
-                self.color_frame = np.asanyarray(color_frame.get_data(), dtype=np.uint8)
+        #scale it to see better visualization
+        debug1 = cv2.convertScaleAbs(debug1, alpha=0.14)
+        debug1 = cv2.cvtColor(cv2.bitwise_not(debug1), cv2.COLOR_GRAY2BGR)
+        
+        hsv_frame = cv2.cvtColor(self.color_frame, cv2.COLOR_BGR2HSV)
+        #add debug data
+        if self.show_mask:
+            if self.active_threshold_config == "pink_goal":
+                goal_mask = goal.get_mask(hsv_frame, id=goal.ID_PINK)
+                debug2 = cv2.bitwise_and(debug2, debug2, mask=goal_mask)
+            if self.active_threshold_config == "blue_goal":
+                goal_mask = goal.get_mask(hsv_frame, id=goal.ID_BLUE)
+                debug2 = cv2.bitwise_and(debug2, debug2, mask=goal_mask)
+            if self.active_threshold_config == "balls":
+                ball_mask = ball.get_mask(hsv_frame)
+                debug2 = cv2.bitwise_and(debug2, debug2, mask=ball_mask)
+            if self.active_threshold_config == "black_border":
+                border_mask = border.get_mask(hsv_frame, id=border.ID_BLACK)
+                debug2 = cv2.bitwise_and(debug2, debug2, mask=border_mask)
+            if self.active_threshold_config == "white_border":
+                border_mask = border.get_mask(hsv_frame, id=border.ID_WHITE)
+                debug2 = cv2.bitwise_and(debug2, debug2, mask=border_mask)
+        else:
+            if self.active_threshold_config == "pink_goal":
+                pink_goal_mask = goal.get_debug_mask(id=goal.ID_PINK)
+                if pink_goal_mask is not None:
+                    debug2 = self.draw_mask_on_frame(debug2, pink_goal_mask, (255, 0, 255))
 
-                debug1 = cp.deepcopy(self.depth_frame)
-                debug2 = cp.deepcopy(self.color_frame)
+            if self.active_threshold_config == "blue_goal":
+                blue_goal_mask = goal.get_debug_mask(id=goal.ID_BLUE)
+                if blue_goal_mask is not None:
+                    debug2 = self.draw_mask_on_frame(debug2, blue_goal_mask, (255, 0, 0))
 
-                #print(dept_frame)
-                #depth_frame = np.array([[(x//256) for x in y] for y in depth_frame], dtype=np.uint8)
-                #depth_frame = np.clip(depth_frame, 0, 4000)
+            if self.active_threshold_config == "balls":
+                ball_mask = ball.get_debug_mask()
+                if ball_mask is not None:
+                    debug2 = self.draw_mask_on_frame(debug2, ball_mask, (0, 255, 0))
 
-                #depth_frame = np.vectorize(lambda x: x//0xff, otypes=[np.uint8])(depth_frame)
-                #depth_frame = cv2.applyColorMap(cv2.convertScaleAbs(depth_frame, alpha=0.15), cv2.COLORMAP_JET)
-                #depth_frame = cv2.convertScaleAbs(self.depth_frame, alpha=0.14)
-                #depth_frame = cv2.bitwise_not(depth_frame)
+            if self.active_threshold_config == "white_border" or self.active_threshold_config == "black_border":
+                border_mask = border.get_debug_mask(border.ID_WHITE)
+                if border_mask is not None:
+                    debug2 = self.draw_mask_on_frame(debug2, border_mask, (255, 255, 255))
 
-
-                # yes
-                """
-                curr = os.stat("../config/threshold_config.json").st_mtime
-                if changed != curr:
-                    changed = curr
-                    with open("../config/threshold_config.json", "r") as f:
-                        tc = list(json.load(f).values())
-                """
-
-                ball = self.locationProcess.ball
-                ball.set_threshold(self.threshold_values)
-
-                goal = self.locationProcess.goal
-                goal.set_threshold(self.threshold_values, id=goal.ID_BLUE)
-                goal.set_threshold(self.threshold_values, id=goal.ID_PINK)
-
-                border = self.locationProcess.border
-                border.set_threshold(self.threshold_values, id=border.ID_BLACK)
-                border.set_threshold(self.threshold_values, id=border.ID_WHITE)
-
-                #scale it to see better visualization
-                debug1 = cv2.convertScaleAbs(debug1, alpha=0.14)
-                debug1 = cv2.cvtColor(cv2.bitwise_not(debug1), cv2.COLOR_GRAY2BGR)
+                border_mask = border.get_debug_mask(border.ID_BLACK)
+                if border_mask is not None:
+                    debug2 = self.draw_mask_on_frame(debug2, border_mask, (0, 0, 0))
                 
-                hsv_frame = cv2.cvtColor(self.color_frame, cv2.COLOR_BGR2HSV)
-                #add debug data
-                if self.show_mask:
-                    if self.active_threshold_config == "pink_goal":
-                        goal_mask = goal.get_mask(hsv_frame, id=goal.ID_PINK)
-                        debug2 = cv2.bitwise_and(debug2, debug2, mask=goal_mask)
-                    if self.active_threshold_config == "blue_goal":
-                        goal_mask = goal.get_mask(hsv_frame, id=goal.ID_BLUE)
-                        debug2 = cv2.bitwise_and(debug2, debug2, mask=goal_mask)
-                    if self.active_threshold_config == "balls":
-                        ball_mask = ball.get_mask(hsv_frame)
-                        debug2 = cv2.bitwise_and(debug2, debug2, mask=ball_mask)
-                    if self.active_threshold_config == "black_border":
-                        border_mask = border.get_mask(hsv_frame, id=border.ID_BLACK)
-                        debug2 = cv2.bitwise_and(debug2, debug2, mask=border_mask)
-                    if self.active_threshold_config == "white_border":
-                        border_mask = border.get_mask(hsv_frame, id=border.ID_WHITE)
-                        debug2 = cv2.bitwise_and(debug2, debug2, mask=border_mask)
-                else:
-                    if self.active_threshold_config == "pink_goal":
-                        pink_goal_mask = goal.get_debug_mask(id=goal.ID_PINK)
-                        if pink_goal_mask is not None:
-                            debug2 = self.draw_mask_on_frame(debug2, pink_goal_mask, (255, 0, 255))
+        cv2.putText(debug2, "%sFPS"%(fps), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
-                    if self.active_threshold_config == "blue_goal":
-                        blue_goal_mask = goal.get_debug_mask(id=goal.ID_BLUE)
-                        if blue_goal_mask is not None:
-                            debug2 = self.draw_mask_on_frame(debug2, blue_goal_mask, (255, 0, 0))
+        self.debug_frame1 = debug1
+        self.debug_frame2 = debug2
 
-                    if self.active_threshold_config == "balls":
-                        ball_mask = ball.get_debug_mask()
-                        if ball_mask is not None:
-                            debug2 = self.draw_mask_on_frame(debug2, ball_mask, (0, 255, 0))
+        self.new_debug_frame1 = True
+        self.new_debug_frame2 = True
 
-                    if self.active_threshold_config == "white_border" or self.active_threshold_config == "black_border":
-                        border_mask = border.get_debug_mask(border.ID_WHITE)
-                        if border_mask is not None:
-                            debug2 = self.draw_mask_on_frame(debug2, border_mask, (255, 255, 255))
-
-                        border_mask = border.get_debug_mask(border.ID_BLACK)
-                        if border_mask is not None:
-                            debug2 = self.draw_mask_on_frame(debug2, border_mask, (0, 0, 0))
-                        
-                #debug2 = cv2.drawKeypoints(debug2, self.locationProcess.ball.keypoints, np.array([]), (255,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-
-                location = self.locationProcess.get(hsv_frame, self.depth_frame, debug_frame=debug2)
-                #print(location["pink_goal"]) # temp remove, put back if necessary - josh
-                #print(location["blue_goal"])
-
-                cv2.putText(debug2, "%sFPS"%(fps), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-
-                self.debug_frame1 = debug1
-                self.debug_frame2 = debug2
-
-                self.new_debug_frame1 = True
-                self.new_debug_frame2 = True
-
-                self.driving_logic.run_logic(location) # params
-
-                #print(depth_frame)
-        finally:
-            super().cleanup()
+        return hsv_frame, self.depth_frame, debug2
 
     def calibrate(self):
         return calibrator.calibrate(self.color_frame)
