@@ -101,7 +101,7 @@ class MotorDriver(MotorControllerHandler):
 
     #add new motor movement into queue that sends data to controller. 
     #Return true if successfuly added into queue
-    def send(self, speed=None, direction=None, turn_speed=None, thrower=None, callback=None, nowait=False):
+    def send(self, speed=None, direction=None, turn_speed=None, thrower=None, callback=None):
         if speed is not None:
             self.speed = speed
         if direction is not None:
@@ -110,13 +110,15 @@ class MotorDriver(MotorControllerHandler):
             self.turn_speed = turn_speed
 
         motor1, motor2, motor3 = self.get_target_motor_speeds()
-        if not self.send_queue.full() or nowait: #ignore when send queue is full
+
+        if not self.send_queue.full(): #ignore when send queue is full
             self.send_queue.put_nowait((motor1, motor2, motor3, thrower, callback))
             return True
+
         return False
 
-    def stop(self):
-        self.send(0, 0, 0, 0, nowait=True)
+    def stop(self, callback=None):
+        self.send_queue.put((0, 0, 0, 0, callback)) #Block until free slot to be sure that this data is sent to motors
 
     def close(self):
         print("stopping motor driver")
