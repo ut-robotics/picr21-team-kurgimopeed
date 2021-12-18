@@ -5,7 +5,6 @@ import math, time
 from simple_pid import PID
 from src.GoalDetector import GoalDetector
 from src.ThrowerTraining import ThrowerTraining
-from src.RefereeClient import RefereeClient
 
 # logic notes
 # no balls -> spin.
@@ -39,7 +38,6 @@ class DrivingLogic():
         self.enable = False # controlled from web interface
 
         self.thrower = ThrowerTraining()
-        self.referee = RefereeClient()
 
         # possible states
         # spin: look for balls
