@@ -83,7 +83,6 @@ static void MX_CRC_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-typedef volatile uint8_t __IO_b;
 
 typedef struct {
   int16_t speed;
@@ -113,7 +112,7 @@ mot_status_t def_mot_status = {
 };
 
 ser_command_t cmd_in = {0};
-__IO_b is_command_received= 0;
+__IO uint8_t is_command_received = 0;
 mcu_errors_t mcu_error;
 
 void CDC_On_Receive(uint8_t* buffer, uint32_t* length) {
@@ -129,8 +128,12 @@ void CDC_On_Receive(uint8_t* buffer, uint32_t* length) {
   }
 }
 
-void read_ser_input(mot_status_t* mot_status, ser_feedback_t* feedback) {
-
+void generate_feedback(mot_status_t* motor_status, ser_feedback_t* feedback) {
+  feedback->enc_data[0] = motor_status[0].enc_status;
+  feedback->enc_data[1] = motor_status[1].enc_status;
+  feedback->enc_data[2] = motor_status[2].enc_status;
+  feedback->crc = 0;
+  feedback->crc = HAL_CRC_Calculate(&hcrc, (uint32_t *) feedback, sizeof(*feedback) / 4) & 0xFF;
 }
 
 
@@ -158,6 +161,7 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 
+
   /* USER CODE BEGIN SysInit */
 
   /* USER CODE END SysInit */
@@ -179,28 +183,21 @@ int main(void)
   MX_CRC_Init();
   /* USER CODE BEGIN 2 */
   ser_feedback_t ser_feedback = {0};
-  mot_status_t motor_status[3] = {0};
-  hcrc.InputDataFormat = CRC_INPUTDATA_FORMAT_BYTES;
-  uint8_t* crc_calc_data;
+  mot_status_t motor_status[3] = {{0, 1337}, {0, 1337}, {0, 1337}};
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1) {
-	  //CDC_Transmit_FS(&num , 1);
-
-	  //CDC_Transmit_FS(&internal_data , sizeof(internal_data));
-	  //HAL_Delay(100);
-	  if (is_command_received) {
-	        is_command_received = 0;
-	        //HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_2);
-	        read_ser_input();
-	        ser_feedback.enc_data[0] = motor_status[0].enc_status;
-	        ser_feedback.enc_data[1] = motor_status[1].enc_status;
-	        ser_feedback.enc_data[2] = motor_status[2].enc_status;
-	        memcpy(crc_calc_data, &ser_feedback, sizeof(ser_feedback) - 1);
-	        ser_feedback.crc = HAL_CRC_Calculate(&hcrc, (uint32_t *) &crc_calc_data, sizeof(crc_calc_data));
-	        CDC_Transmit_FS((uint8_t*) &ser_feedback, sizeof(ser_feedback_t));
+    //CDC_Transmit_FS(&num , 1);
+	//CDC_Transmit_FS(&internal_data , sizeof(internal_data));
+	//HAL_Delay(100);
+	if (1) {
+	  is_command_received = 0;
+	  //HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_2);
+	  generate_feedback(motor_status, &ser_feedback);
+	  CDC_Transmit_FS((uint8_t*) &ser_feedback, sizeof(ser_feedback_t));
 	  }
     /* USER CODE END WHILE */
 
@@ -347,12 +344,12 @@ static void MX_CRC_Init(void)
   /* USER CODE BEGIN CRC_Init 1 */
 
   /* USER CODE END CRC_Init 1 */
-  hcrc.Instance = CRC;
-  hcrc.Init.DefaultPolynomialUse = DEFAULT_POLYNOMIAL_ENABLE;
-  hcrc.Init.DefaultInitValueUse = DEFAULT_INIT_VALUE_ENABLE;
-  hcrc.Init.InputDataInversionMode = CRC_INPUTDATA_INVERSION_NONE;
-  hcrc.Init.OutputDataInversionMode = CRC_OUTPUTDATA_INVERSION_DISABLE;
-  hcrc.InputDataFormat = CRC_INPUTDATA_FORMAT_BYTES;
+	hcrc.Instance = CRC;
+	hcrc.Init.DefaultPolynomialUse = DEFAULT_POLYNOMIAL_ENABLE;
+	hcrc.Init.DefaultInitValueUse = DEFAULT_INIT_VALUE_ENABLE;
+	hcrc.Init.InputDataInversionMode = CRC_INPUTDATA_INVERSION_NONE;
+	hcrc.Init.OutputDataInversionMode = CRC_OUTPUTDATA_INVERSION_DISABLE;
+	hcrc.InputDataFormat = CRC_INPUTDATA_FORMAT_WORDS;
   if (HAL_CRC_Init(&hcrc) != HAL_OK)
   {
     Error_Handler();
