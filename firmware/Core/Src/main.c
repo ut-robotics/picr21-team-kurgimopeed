@@ -94,16 +94,22 @@ typedef enum {
   MCU_USB_BAD_DATA
 } mcu_errors_t;
 
+typedef enum {
+	COMMAND_NOP
+} local_command_t;
+
 typedef struct {
   int16_t speeds[3];
   uint16_t thrower_speed;
-  uint8_t crc;
+  local_command_t command;
+  uint16_t crc;
 } ser_command_t;
 
 typedef struct {
   mcu_errors_t error;
   int32_t enc_data[3];
-  uint8_t crc;
+  uint16_t varia;
+  uint16_t crc;
 } ser_feedback_t;
 
 mot_status_t def_mot_status = {
@@ -118,22 +124,27 @@ mcu_errors_t mcu_error;
 void CDC_On_Receive(uint8_t* buffer, uint32_t* length) {
   is_command_received = 1;
   mcu_error = MCU_USB_BAD_DATA;
-  if (*length == sizeof(cmd_in)) {
-	  uint8_t ser_crc = HAL_CRC_Calculate(&hcrc, (uint32_t *) &buffer, (*length)-1);
-	  memcpy(&cmd_in, buffer, sizeof(ser_command_t));
-    if(cmd_in.crc == ser_crc) {
-    	//memcpy(&cmd_in, buffer, sizeof(ser_command_t));
+  if (*length == sizeof(ser_command_t)) {
+	  ser_command_t ser_data;
+	  memcpy(&ser_data, buffer, sizeof(ser_command_t));
+	  uint16_t got_crc = ser_data.crc;
+	  ser_data.crc = 0;
+	  uint16_t calculated_crc = HAL_CRC_Calculate(&hcrc, (uint32_t *) &ser_data, (*length));
+
+    if(got_crc == calculated_crc) {
+    	memcpy(&cmd_in, buffer, sizeof(ser_command_t));
     	mcu_error = MCU_OK;
     }
   }
 }
 
 void generate_feedback(mot_status_t* motor_status, ser_feedback_t* feedback) {
-  feedback->enc_data[0] = motor_status[0].enc_status;
-  feedback->enc_data[1] = motor_status[1].enc_status;
-  feedback->enc_data[2] = motor_status[2].enc_status;
+  feedback->error = mcu_error;
+  feedback->enc_data[0] = motor_status[0].speed;
+  feedback->enc_data[1] = motor_status[1].speed;
+  feedback->enc_data[2] = motor_status[2].speed;
   feedback->crc = 0;
-  feedback->crc = HAL_CRC_Calculate(&hcrc, (uint32_t *) feedback, sizeof(*feedback) / 4) & 0xFF;
+  feedback->crc = HAL_CRC_Calculate(&hcrc, (uint32_t *) feedback, sizeof(ser_feedback_t));
 }
 
 
@@ -183,7 +194,7 @@ int main(void)
   MX_CRC_Init();
   /* USER CODE BEGIN 2 */
   ser_feedback_t ser_feedback = {0};
-  mot_status_t motor_status[3] = {{0, 1337}, {0, 1337}, {0, 1337}};
+  mot_status_t motor_status[3] = {0};
 
   /* USER CODE END 2 */
 
@@ -193,9 +204,15 @@ int main(void)
     //CDC_Transmit_FS(&num , 1);
 	//CDC_Transmit_FS(&internal_data , sizeof(internal_data));
 	//HAL_Delay(100);
-	if (1) {
+	if(is_command_received) {
 	  is_command_received = 0;
 	  //HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_2);
+	  if(!mcu_error) {
+		  motor_status[0].speed = cmd_in.speeds[0];
+		  motor_status[1].speed = cmd_in.speeds[1];
+		  motor_status[2].speed = cmd_in.speeds[2];
+		  ser_feedback.varia = 0;
+	  }
 	  generate_feedback(motor_status, &ser_feedback);
 	  CDC_Transmit_FS((uint8_t*) &ser_feedback, sizeof(ser_feedback_t));
 	  }
@@ -349,7 +366,7 @@ static void MX_CRC_Init(void)
 	hcrc.Init.DefaultInitValueUse = DEFAULT_INIT_VALUE_ENABLE;
 	hcrc.Init.InputDataInversionMode = CRC_INPUTDATA_INVERSION_NONE;
 	hcrc.Init.OutputDataInversionMode = CRC_OUTPUTDATA_INVERSION_DISABLE;
-	hcrc.InputDataFormat = CRC_INPUTDATA_FORMAT_WORDS;
+	hcrc.InputDataFormat = CRC_INPUTDATA_FORMAT_BYTES;
   if (HAL_CRC_Init(&hcrc) != HAL_OK)
   {
     Error_Handler();
