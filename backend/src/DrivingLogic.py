@@ -78,8 +78,8 @@ class DrivingLogic():
 
     def stop(self):
         self.enable = False
-        time.sleep(0.1)
-        self.motor_driver.stop()
+        #time.sleep(0.1)
+        #self.motor_driver.stop()
     
     def spin(self, data):
         l = len(data["balls"])
@@ -165,5 +165,6 @@ class DrivingLogic():
             return
 
         self.state(data)
+        print(self.state)
 
         return
