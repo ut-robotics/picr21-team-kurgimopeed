@@ -5,10 +5,10 @@ stm32g4xx_hal_msp.c:159:6:HAL_CRC_MspInit	24	static
 stm32g4xx_hal_msp.c:181:6:HAL_CRC_MspDeInit	16	static
 stm32g4xx_hal_msp.c:203:6:HAL_RTC_MspInit	16	static
 stm32g4xx_hal_msp.c:225:6:HAL_RTC_MspDeInit	16	static
-stm32g4xx_hal_msp.c:247:6:HAL_TIM_PWM_MspInit	32	static
-stm32g4xx_hal_msp.c:291:6:HAL_TIM_Encoder_MspInit	64	static
-stm32g4xx_hal_msp.c:383:6:HAL_TIM_Base_MspInit	24	static
+stm32g4xx_hal_msp.c:247:6:HAL_TIM_Base_MspInit	32	static
+stm32g4xx_hal_msp.c:302:6:HAL_TIM_Encoder_MspInit	64	static
+stm32g4xx_hal_msp.c:394:6:HAL_TIM_PWM_MspInit	24	static
 stm32g4xx_hal_msp.c:410:6:HAL_TIM_MspPostInit	56	static
-stm32g4xx_hal_msp.c:536:6:HAL_TIM_PWM_MspDeInit	16	static
-stm32g4xx_hal_msp.c:580:6:HAL_TIM_Encoder_MspDeInit	16	static
-stm32g4xx_hal_msp.c:647:6:HAL_TIM_Base_MspDeInit	16	static
+stm32g4xx_hal_msp.c:536:6:HAL_TIM_Base_MspDeInit	16	static
+stm32g4xx_hal_msp.c:591:6:HAL_TIM_Encoder_MspDeInit	16	static
+stm32g4xx_hal_msp.c:658:6:HAL_TIM_PWM_MspDeInit	16	static

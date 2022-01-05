@@ -20,11 +20,10 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "usb_device.h"
-#include "usbd_cdc_if.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "usbd_cdc_if.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -85,7 +84,8 @@ static void MX_CRC_Init(void);
 /* USER CODE BEGIN 0 */
 
 typedef struct {
-  int16_t speed;
+  uint16_t speed;
+  uint8_t forward;
   int32_t enc_status;
 } mot_status_t;
 
@@ -147,6 +147,20 @@ void generate_feedback(mot_status_t* motor_status, ser_feedback_t* feedback) {
   feedback->crc = HAL_CRC_Calculate(&hcrc, (uint32_t *) feedback, sizeof(ser_feedback_t));
 }
 
+void wake_drivers_up() {
+  HAL_GPIO_WritePin(GPIOB, MOT_SLEEP_Pin, GPIO_PIN_RESET);
+  for(uint8_t i = 0; i < 125; i++) __asm("nop");
+  HAL_GPIO_WritePin(GPIOB, MOT_SLEEP_Pin, GPIO_PIN_SET);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
+  TIM1->ARR = 0xFFFF;
+  TIM2->ARR = 0xFFFF;
+}
+
 
 /* USER CODE END 0 */
 
@@ -172,7 +186,6 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 
-
   /* USER CODE BEGIN SysInit */
 
   /* USER CODE END SysInit */
@@ -193,26 +206,49 @@ int main(void)
   MX_ADC1_Init();
   MX_CRC_Init();
   /* USER CODE BEGIN 2 */
+  HAL_GPIO_WritePin(GPIOB, MOT_OFF_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOB, MOT_SLEEP_Pin, GPIO_PIN_SET);
+  wake_drivers_up();
+  HAL_GPIO_WritePin(GPIOB, MOT_OFF_Pin, GPIO_PIN_RESET);
   ser_feedback_t ser_feedback = {0};
   mot_status_t motor_status[3] = {0};
+  motor_status[0].speed = 10000;
+  motor_status[1].speed = 10000;
+  motor_status[2].speed = 10000;
+  if(motor_status[0].forward) {
+	TIM1->CCR1 = motor_status[0].speed;
+	TIM1->CCR2 = 0;
+  } else {
+	TIM1->CCR1 = 0;
+	TIM1->CCR2 = motor_status[0].speed;
+	  }
+  if(motor_status[1].forward) {
+	TIM2->CCR1 = motor_status[1].speed;
+	TIM2->CCR2 = 0;
+  } else {
+	TIM2->CCR1 = 0;
+	TIM2->CCR2 = motor_status[1].speed;
+  }
+  if(motor_status[2].forward) {
+	TIM2->CCR3 = motor_status[2].speed;
+	TIM2->CCR4 = 0;
+  } else {
+	TIM2->CCR3 = 0;
+	TIM2->CCR4 = motor_status[2].speed;
+  }
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1) {
-    //CDC_Transmit_FS(&num , 1);
-	//CDC_Transmit_FS(&internal_data , sizeof(internal_data));
-	//HAL_Delay(100);
+
 	if(is_command_received) {
 	  is_command_received = 0;
-	  //HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_2);
 	  if(!mcu_error) {
-		  motor_status[0].speed = cmd_in.speeds[0];
-		  motor_status[1].speed = cmd_in.speeds[1];
-		  motor_status[2].speed = cmd_in.speeds[2];
 		  ser_feedback.varia = 0;
-	  }
+	    }
+	  HAL_GPIO_TogglePin(GPIOF, GREEN_DBG_LED_1_Pin);
 	  generate_feedback(motor_status, &ser_feedback);
 	  CDC_Transmit_FS((uint8_t*) &ser_feedback, sizeof(ser_feedback_t));
 	  }
@@ -246,10 +282,10 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
   RCC_OscInitStruct.PLL.PLLM = RCC_PLLM_DIV1;
-  RCC_OscInitStruct.PLL.PLLN = 12;
+  RCC_OscInitStruct.PLL.PLLN = 18;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-  RCC_OscInitStruct.PLL.PLLQ = RCC_PLLQ_DIV4;
-  RCC_OscInitStruct.PLL.PLLR = RCC_PLLR_DIV6;
+  RCC_OscInitStruct.PLL.PLLQ = RCC_PLLQ_DIV6;
+  RCC_OscInitStruct.PLL.PLLR = RCC_PLLR_DIV2;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -258,12 +294,12 @@ void SystemClock_Config(void)
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV2;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4) != HAL_OK)
   {
     Error_Handler();
   }
@@ -302,7 +338,7 @@ static void MX_ADC1_Init(void)
   /** Common config
   */
   hadc1.Instance = ADC1;
-  hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
+  hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
   hadc1.Init.Resolution = ADC_RESOLUTION_12B;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
   hadc1.Init.GainCompensation = 0;
@@ -361,12 +397,12 @@ static void MX_CRC_Init(void)
   /* USER CODE BEGIN CRC_Init 1 */
 
   /* USER CODE END CRC_Init 1 */
-	hcrc.Instance = CRC;
-	hcrc.Init.DefaultPolynomialUse = DEFAULT_POLYNOMIAL_ENABLE;
-	hcrc.Init.DefaultInitValueUse = DEFAULT_INIT_VALUE_ENABLE;
-	hcrc.Init.InputDataInversionMode = CRC_INPUTDATA_INVERSION_NONE;
-	hcrc.Init.OutputDataInversionMode = CRC_OUTPUTDATA_INVERSION_DISABLE;
-	hcrc.InputDataFormat = CRC_INPUTDATA_FORMAT_BYTES;
+  hcrc.Instance = CRC;
+  hcrc.Init.DefaultPolynomialUse = DEFAULT_POLYNOMIAL_ENABLE;
+  hcrc.Init.DefaultInitValueUse = DEFAULT_INIT_VALUE_ENABLE;
+  hcrc.Init.InputDataInversionMode = CRC_INPUTDATA_INVERSION_NONE;
+  hcrc.Init.OutputDataInversionMode = CRC_OUTPUTDATA_INVERSION_DISABLE;
+  hcrc.InputDataFormat = CRC_INPUTDATA_FORMAT_BYTES;
   if (HAL_CRC_Init(&hcrc) != HAL_OK)
   {
     Error_Handler();
@@ -425,6 +461,7 @@ static void MX_TIM1_Init(void)
 
   /* USER CODE END TIM1_Init 0 */
 
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
   TIM_OC_InitTypeDef sConfigOC = {0};
   TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = {0};
@@ -439,6 +476,15 @@ static void MX_TIM1_Init(void)
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim1, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
   if (HAL_TIM_PWM_Init(&htim1) != HAL_OK)
   {
     Error_Handler();
@@ -501,6 +547,7 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 0 */
 
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
   TIM_OC_InitTypeDef sConfigOC = {0};
 
@@ -513,6 +560,15 @@ static void MX_TIM2_Init(void)
   htim2.Init.Period = 4.294967295E9;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
   if (HAL_TIM_PWM_Init(&htim2) != HAL_OK)
   {
     Error_Handler();
