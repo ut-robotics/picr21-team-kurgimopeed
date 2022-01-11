@@ -148,17 +148,21 @@ void generate_feedback(mot_status_t* motor_status, ser_feedback_t* feedback) {
 }
 
 void wake_drivers_up() {
-  HAL_GPIO_WritePin(GPIOB, MOT_SLEEP_Pin, GPIO_PIN_RESET);
-  for(uint8_t i = 0; i < 125; i++) __asm("nop");
-  HAL_GPIO_WritePin(GPIOB, MOT_SLEEP_Pin, GPIO_PIN_SET);
+  //for(uint8_t j = 0; j < 250; j++) {
+	  HAL_GPIO_WritePin(GPIOB, MOT_SLEEP_Pin, GPIO_PIN_RESET);
+	  for(uint16_t i = 0; i < 350; i++) __asm("nop");
+	  HAL_GPIO_WritePin(GPIOB, MOT_SLEEP_Pin, GPIO_PIN_SET);
+	  for(uint16_t i = 0; i < 10; i++) __asm("nop");
+  //}
+  TIM1->ARR = 0xFFFF;
+  TIM2->ARR = 0xFFFF;
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
-  TIM1->ARR = 0xFFFF;
-  TIM2->ARR = 0xFFFF;
+
 }
 
 
@@ -206,35 +210,35 @@ int main(void)
   MX_ADC1_Init();
   MX_CRC_Init();
   /* USER CODE BEGIN 2 */
-  HAL_GPIO_WritePin(GPIOB, MOT_OFF_Pin, GPIO_PIN_SET);
+  //for(uint8_t i = 0; i < 125; i++) __asm("nop");
+
+  //HAL_GPIO_WritePin(GPIOB, MOT_OFF_Pin, GPIO_PIN_SET);
   HAL_GPIO_WritePin(GPIOB, MOT_SLEEP_Pin, GPIO_PIN_SET);
+  HAL_Delay(100);
   wake_drivers_up();
-  HAL_GPIO_WritePin(GPIOB, MOT_OFF_Pin, GPIO_PIN_RESET);
+  //HAL_GPIO_WritePin(GPIOB, MOT_OFF_Pin, GPIO_PIN_RESET);
   ser_feedback_t ser_feedback = {0};
   mot_status_t motor_status[3] = {0};
   motor_status[0].speed = 10000;
   motor_status[1].speed = 10000;
   motor_status[2].speed = 10000;
+  TIM1->CCR1 = motor_status[0].speed;
+  TIM2->CCR1 = motor_status[1].speed;
+  TIM2->CCR3 = motor_status[2].speed;
   if(motor_status[0].forward) {
-	TIM1->CCR1 = motor_status[0].speed;
 	TIM1->CCR2 = 0;
   } else {
-	TIM1->CCR1 = 0;
-	TIM1->CCR2 = motor_status[0].speed;
+	TIM1->CCR2 = 65535;
 	  }
   if(motor_status[1].forward) {
-	TIM2->CCR1 = motor_status[1].speed;
 	TIM2->CCR2 = 0;
   } else {
-	TIM2->CCR1 = 0;
-	TIM2->CCR2 = motor_status[1].speed;
+	TIM2->CCR2 = 65535;
   }
   if(motor_status[2].forward) {
-	TIM2->CCR3 = motor_status[2].speed;
 	TIM2->CCR4 = 0;
   } else {
-	TIM2->CCR3 = 0;
-	TIM2->CCR4 = motor_status[2].speed;
+	TIM2->CCR4 = 65535;
   }
 
   /* USER CODE END 2 */
@@ -242,7 +246,7 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1) {
-
+	//HAL_Delay(1);
 	if(is_command_received) {
 	  is_command_received = 0;
 	  if(!mcu_error) {
@@ -252,6 +256,7 @@ int main(void)
 	  generate_feedback(motor_status, &ser_feedback);
 	  CDC_Transmit_FS((uint8_t*) &ser_feedback, sizeof(ser_feedback_t));
 	  }
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
