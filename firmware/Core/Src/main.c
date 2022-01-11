@@ -86,6 +86,7 @@ static void MX_CRC_Init(void);
 typedef struct {
   uint16_t speed;
   uint8_t forward;
+  int32_t integral;
   int32_t enc_status;
 } mot_status_t;
 
@@ -94,14 +95,10 @@ typedef enum {
   MCU_USB_BAD_DATA
 } mcu_errors_t;
 
-typedef enum {
-	COMMAND_NOP
-} local_command_t;
-
 typedef struct {
   int16_t speeds[3];
   uint16_t thrower_speed;
-  local_command_t command;
+  uint16_t command;
   uint16_t crc;
 } ser_command_t;
 
@@ -130,7 +127,6 @@ void CDC_On_Receive(uint8_t* buffer, uint32_t* length) {
 	  uint16_t got_crc = ser_data.crc;
 	  ser_data.crc = 0;
 	  uint16_t calculated_crc = HAL_CRC_Calculate(&hcrc, (uint32_t *) &ser_data, (*length));
-
     if(got_crc == calculated_crc) {
     	memcpy(&cmd_in, buffer, sizeof(ser_command_t));
     	mcu_error = MCU_OK;
@@ -147,13 +143,7 @@ void generate_feedback(mot_status_t* motor_status, ser_feedback_t* feedback) {
   feedback->crc = HAL_CRC_Calculate(&hcrc, (uint32_t *) feedback, sizeof(ser_feedback_t));
 }
 
-void wake_drivers_up() {
-  //for(uint8_t j = 0; j < 250; j++) {
-	  HAL_GPIO_WritePin(GPIOB, MOT_SLEEP_Pin, GPIO_PIN_RESET);
-	  for(uint16_t i = 0; i < 350; i++) __asm("nop");
-	  HAL_GPIO_WritePin(GPIOB, MOT_SLEEP_Pin, GPIO_PIN_SET);
-	  for(uint16_t i = 0; i < 10; i++) __asm("nop");
-  //}
+void init_pwm() {
   TIM1->ARR = 0xFFFF;
   TIM2->ARR = 0xFFFF;
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
@@ -162,9 +152,45 @@ void wake_drivers_up() {
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
-
 }
 
+void wake_drivers_up() {
+  for(uint8_t j = 0; j < 5; j++) {
+	  HAL_GPIO_WritePin(GPIOB, MOT_SLEEP_Pin, GPIO_PIN_RESET);
+	  for(uint16_t i = 0; i < 350; i++) __asm("nop");
+	  HAL_GPIO_WritePin(GPIOB, MOT_SLEEP_Pin, GPIO_PIN_SET);
+	  for(uint16_t i = 0; i < 10; i++) __asm("nop");
+  }
+}
+
+void update_motor_speeds(mot_status_t* motor_status) {
+  TIM1->CCR1 = motor_status[0].speed;
+  TIM2->CCR1 = motor_status[1].speed;
+  TIM2->CCR3 = motor_status[2].speed;
+  if(motor_status[0].forward) {
+	TIM1->CCR2 = 0;
+  } else {
+	TIM1->CCR2 = 65535;
+	  }
+  if(motor_status[1].forward) {
+	TIM2->CCR2 = 0;
+  } else {
+	TIM2->CCR2 = 65535;
+  }
+  if(motor_status[2].forward) {
+	TIM2->CCR4 = 0;
+  } else {
+	TIM2->CCR4 = 65535;
+  }
+}
+
+void update_motor_status(mot_status_t* motor_status) {
+  for(uint8_t i = 0; i < 3; i++) {
+	if(cmd_in.command & (1 << i))
+	  motor_status[i].forward = 1;
+	motor_status[i].speed = cmd_in.speeds[i];
+  }
+}
 
 /* USER CODE END 0 */
 
@@ -219,44 +245,24 @@ int main(void)
   //HAL_GPIO_WritePin(GPIOB, MOT_OFF_Pin, GPIO_PIN_RESET);
   ser_feedback_t ser_feedback = {0};
   mot_status_t motor_status[3] = {0};
-  motor_status[0].speed = 10000;
-  motor_status[1].speed = 10000;
-  motor_status[2].speed = 10000;
-  TIM1->CCR1 = motor_status[0].speed;
-  TIM2->CCR1 = motor_status[1].speed;
-  TIM2->CCR3 = motor_status[2].speed;
-  if(motor_status[0].forward) {
-	TIM1->CCR2 = 0;
-  } else {
-	TIM1->CCR2 = 65535;
-	  }
-  if(motor_status[1].forward) {
-	TIM2->CCR2 = 0;
-  } else {
-	TIM2->CCR2 = 65535;
-  }
-  if(motor_status[2].forward) {
-	TIM2->CCR4 = 0;
-  } else {
-	TIM2->CCR4 = 65535;
-  }
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1) {
-	//HAL_Delay(1);
+
 	if(is_command_received) {
+	  wake_drivers_up();
 	  is_command_received = 0;
 	  if(!mcu_error) {
-		  ser_feedback.varia = 0;
-	    }
+		update_motor_status(motor_status);
+	  }
 	  HAL_GPIO_TogglePin(GPIOF, GREEN_DBG_LED_1_Pin);
 	  generate_feedback(motor_status, &ser_feedback);
 	  CDC_Transmit_FS((uint8_t*) &ser_feedback, sizeof(ser_feedback_t));
-	  }
-
+	}
+	update_motor_speeds(motor_status);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
