@@ -52,6 +52,7 @@ TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim4;
+TIM_HandleTypeDef htim6;
 TIM_HandleTypeDef htim8;
 TIM_HandleTypeDef htim15;
 TIM_HandleTypeDef htim16;
@@ -76,6 +77,7 @@ static void MX_TIM15_Init(void);
 static void MX_DMA_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_CRC_Init(void);
+static void MX_TIM6_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -84,9 +86,13 @@ static void MX_CRC_Init(void);
 /* USER CODE BEGIN 0 */
 
 typedef struct {
-  uint16_t speed;
+  uint16_t target_speed;
   uint8_t forward;
   int32_t integral;
+  int16_t pos;
+  float flat_const;
+  float int_const;
+  float deriv_const;
   int32_t enc_status;
 } mot_status_t;
 
@@ -110,11 +116,12 @@ typedef struct {
 } ser_feedback_t;
 
 mot_status_t def_mot_status = {
-	.speed = 0,
+	.target_speed = 0,
 	.enc_status = 0
 };
 
 ser_command_t cmd_in = {0};
+mot_status_t motor_status[3] = {0};
 __IO uint8_t is_command_received = 0;
 mcu_errors_t mcu_error;
 
@@ -134,11 +141,15 @@ void CDC_On_Receive(uint8_t* buffer, uint32_t* length) {
   }
 }
 
-void generate_feedback(mot_status_t* motor_status, ser_feedback_t* feedback) {
+float map(float input, int32_t f_l, int32_t f_h, int32_t t_l, int32_t t_h) {
+  return ((input - f_l) * (t_h - t_l)) / ((f_h - f_l) + t_l);
+}
+
+void generate_feedback(ser_feedback_t* feedback) {
   feedback->error = mcu_error;
-  feedback->enc_data[0] = motor_status[0].speed;
-  feedback->enc_data[1] = motor_status[1].speed;
-  feedback->enc_data[2] = motor_status[2].speed;
+  feedback->enc_data[0] = motor_status[0].target_speed;
+  feedback->enc_data[1] = motor_status[1].target_speed;
+  feedback->enc_data[2] = motor_status[2].target_speed;
   feedback->crc = 0;
   feedback->crc = HAL_CRC_Calculate(&hcrc, (uint32_t *) feedback, sizeof(ser_feedback_t));
 }
@@ -154,6 +165,20 @@ void init_pwm() {
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
 }
 
+void set_pid_constants() {
+	motor_status[0].flat_const = 1;
+	motor_status[0].int_const = 0;
+	motor_status[0].deriv_const = 0;
+
+	motor_status[1].flat_const = 1;
+	motor_status[1].int_const = 0;
+	motor_status[1].deriv_const = 0;
+
+	motor_status[2].flat_const = 1;
+	motor_status[2].int_const = 0;
+	motor_status[2].deriv_const = 0;
+}
+
 void wake_drivers_up() {
   for(uint8_t j = 0; j < 5; j++) {
 	  HAL_GPIO_WritePin(GPIOB, MOT_SLEEP_Pin, GPIO_PIN_RESET);
@@ -163,10 +188,66 @@ void wake_drivers_up() {
   }
 }
 
-void update_motor_speeds(mot_status_t* motor_status) {
-  TIM1->CCR1 = motor_status[0].speed;
-  TIM2->CCR1 = motor_status[1].speed;
-  TIM2->CCR3 = motor_status[2].speed;
+void start_encoders() {
+  HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_1 | TIM_CHANNEL_2);
+  HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_1 | TIM_CHANNEL_2);
+  HAL_TIM_Encoder_Start(&htim8, TIM_CHANNEL_1 | TIM_CHANNEL_2);
+}
+
+void update_motor_status() {
+  for(uint8_t i = 0; i < 3; i++) {
+	if(cmd_in.command & (1 << i))
+	  motor_status[i].forward = 1;
+	else
+	  motor_status[i].forward = 0;
+	motor_status[i].target_speed = cmd_in.speeds[i];
+  }
+}
+
+int16_t calc_pwm(uint8_t mot_id) {
+  int16_t change, error;
+  float enc_pid_speed;
+
+  // Calculate change and update corresponding motor position
+  switch(mot_id) {
+    case(0):
+	  change = TIM3->CNT - motor_status[0].pos;
+      motor_status[0].pos = TIM3->CNT;
+      break;
+    case(1):
+      change = TIM4->CNT - motor_status[1].pos;
+      motor_status[1].pos = TIM4->CNT;
+      break;
+    case(2):
+      change = TIM8->CNT - motor_status[2].pos;
+      motor_status[2].pos = TIM8->CNT;
+  }
+
+  // Calculate error and PID
+  error = change - motor_status[mot_id].target_speed;
+  motor_status[mot_id].integral += error;
+  enc_pid_speed = error * motor_status[mot_id].flat_const +
+		  motor_status[mot_id].integral * motor_status[mot_id].int_const +
+		  change * motor_status[mot_id].deriv_const;
+
+  // Keep the motor speed within limits
+  if(enc_pid_speed > 106)
+	enc_pid_speed = 106;
+  else if(enc_pid_speed < -106)
+	enc_pid_speed = -106;
+
+  return map(enc_pid_speed, -106, 106, 0, 65535);
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+  int16_t mot1_change = TIM3->CNT - motor_status[0].pos;
+  motor_status[0].pos = TIM3->CNT;
+  int16_t mot1_error = motor_status[0].target_speed - mot1_change;
+  motor_status[0].integral += mot1_error;
+
+  TIM1->CCR1 = calc_pwm(0);
+  TIM2->CCR1 = calc_pwm(1);
+  TIM2->CCR3 = calc_pwm(2);
   if(motor_status[0].forward) {
 	TIM1->CCR2 = 0;
   } else {
@@ -181,14 +262,6 @@ void update_motor_speeds(mot_status_t* motor_status) {
 	TIM2->CCR4 = 0;
   } else {
 	TIM2->CCR4 = 65535;
-  }
-}
-
-void update_motor_status(mot_status_t* motor_status) {
-  for(uint8_t i = 0; i < 3; i++) {
-	if(cmd_in.command & (1 << i))
-	  motor_status[i].forward = 1;
-	motor_status[i].speed = cmd_in.speeds[i];
   }
 }
 
@@ -235,16 +308,18 @@ int main(void)
   MX_DMA_Init();
   MX_ADC1_Init();
   MX_CRC_Init();
+  MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
   //for(uint8_t i = 0; i < 125; i++) __asm("nop");
 
   //HAL_GPIO_WritePin(GPIOB, MOT_OFF_Pin, GPIO_PIN_SET);
   HAL_GPIO_WritePin(GPIOB, MOT_SLEEP_Pin, GPIO_PIN_SET);
+  set_pid_constants();
   HAL_Delay(100);
+  start_encoders();
   wake_drivers_up();
   //HAL_GPIO_WritePin(GPIOB, MOT_OFF_Pin, GPIO_PIN_RESET);
   ser_feedback_t ser_feedback = {0};
-  mot_status_t motor_status[3] = {0};
 
   /* USER CODE END 2 */
 
@@ -256,13 +331,12 @@ int main(void)
 	  wake_drivers_up();
 	  is_command_received = 0;
 	  if(!mcu_error) {
-		update_motor_status(motor_status);
+		update_motor_status();
 	  }
 	  HAL_GPIO_TogglePin(GPIOF, GREEN_DBG_LED_1_Pin);
-	  generate_feedback(motor_status, &ser_feedback);
+	  generate_feedback(&ser_feedback);
 	  CDC_Transmit_FS((uint8_t*) &ser_feedback, sizeof(ser_feedback_t));
 	}
-	update_motor_speeds(motor_status);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -712,6 +786,44 @@ static void MX_TIM4_Init(void)
   /* USER CODE BEGIN TIM4_Init 2 */
 
   /* USER CODE END TIM4_Init 2 */
+
+}
+
+/**
+  * @brief TIM6 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM6_Init(void)
+{
+
+  /* USER CODE BEGIN TIM6_Init 0 */
+
+  /* USER CODE END TIM6_Init 0 */
+
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM6_Init 1 */
+
+  /* USER CODE END TIM6_Init 1 */
+  htim6.Instance = TIM6;
+  htim6.Init.Prescaler = 20;
+  htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim6.Init.Period = 65535;
+  htim6.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim6) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim6, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM6_Init 2 */
+
+  /* USER CODE END TIM6_Init 2 */
 
 }
 

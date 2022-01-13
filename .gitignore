@@ -1,4 +1,5 @@
 __pycache__
+firmware/.settings/*
 *-bak*
 *-cache*
 *.o
