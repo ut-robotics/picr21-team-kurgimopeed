@@ -85,46 +85,63 @@ static void MX_TIM6_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+
+/**
+ * Motor status struct
+ */
 typedef struct {
-  uint16_t target_speed;
-  uint8_t forward;
-  int32_t integral;
-  int16_t pos;
-  float flat_const;
-  float int_const;
-  float deriv_const;
-  int32_t enc_status;
+  uint16_t target_speed;  ///< Current motor target speed
+  uint8_t forward;        ///< 0 means backwards, 1 is forwards
+  int32_t integral;       ///< Integral value for PID
+  int16_t pos;            ///< Current encoder position
+  float flat_const;       ///< PID constant for current error
+  float int_const;        ///< PID constant for integral
+  float deriv_const;      ///< PID constant for derivative
 } mot_status_t;
 
+
+/**
+ * List of possible errors that are sent to master
+ */
 typedef enum {
-  MCU_OK,
-  MCU_USB_BAD_DATA
+  MCU_OK,                 ///< Everythings good
+  MCU_USB_BAD_DATA,       ///< Got bad data from USB, eg. CRC mismatch
+  MCU_SPEED_TOO_HIGH      ///< Got too high speed from master
 } mcu_errors_t;
 
+
+/**
+ * Incoming command struct
+ */
 typedef struct {
-  int16_t speeds[3];
-  uint16_t thrower_speed;
-  uint16_t command;
-  uint16_t crc;
+  int16_t speeds[3];      ///< Incoming target speed array
+  uint16_t thrower_speed; ///< Incoming thrower target speed
+  uint16_t command;       ///< Other commands eg. 3 LSB direct motors
+  uint16_t crc;           ///< CRC for error detection
 } ser_command_t;
 
-typedef struct {
-  mcu_errors_t error;
-  int32_t enc_data[3];
-  uint16_t varia;
-  uint16_t crc;
-} ser_feedback_t;
 
-mot_status_t def_mot_status = {
-	.target_speed = 0,
-	.enc_status = 0
-};
+/**
+ * Serial feedback struct
+ */
+typedef struct {
+  mcu_errors_t error;     ///< If and what error has occured
+  int32_t enc_data[3];    ///< Encoder data
+  uint16_t varia;         ///< Other variable data eh. ball was detected
+  uint16_t crc;           ///< CRC for error detection
+} ser_feedback_t;
 
 ser_command_t cmd_in = {0};
 mot_status_t motor_status[3] = {0};
 __IO uint8_t is_command_received = 0;
 mcu_errors_t mcu_error;
 
+
+/**
+ * Function that gets called when new USB data arrives
+ *
+ * Updates cmd_in structure and so updates target speeds
+ */
 void CDC_On_Receive(uint8_t* buffer, uint32_t* length) {
   is_command_received = 1;
   mcu_error = MCU_USB_BAD_DATA;
@@ -141,19 +158,32 @@ void CDC_On_Receive(uint8_t* buffer, uint32_t* length) {
   }
 }
 
+
+/**
+ * Mapping function to get a value from one range to other
+ */
 float map(float input, int32_t f_l, int32_t f_h, int32_t t_l, int32_t t_h) {
   return ((input - f_l) * (t_h - t_l)) / ((f_h - f_l) + t_l);
 }
 
+
+/**
+ * Fills feedback struct to be sent to master
+ */
 void generate_feedback(ser_feedback_t* feedback) {
   feedback->error = mcu_error;
-  feedback->enc_data[0] = motor_status[0].target_speed;
-  feedback->enc_data[1] = motor_status[1].target_speed;
-  feedback->enc_data[2] = motor_status[2].target_speed;
+  feedback->enc_data[0] = motor_status[0].pos;
+  feedback->enc_data[1] = motor_status[1].pos;
+  feedback->enc_data[2] = motor_status[2].pos;
   feedback->crc = 0;
   feedback->crc = HAL_CRC_Calculate(&hcrc, (uint32_t *) feedback, sizeof(ser_feedback_t));
 }
 
+
+/**
+ * Initialises HAL TIM PWM and
+ * sets their max limits to 0xFFFF* to make sure it will not get counted to 0xFFFFFFFF
+ */
 void init_pwm() {
   TIM1->ARR = 0xFFFF;
   TIM2->ARR = 0xFFFF;
@@ -165,6 +195,10 @@ void init_pwm() {
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
 }
 
+
+/**
+ * Function for manually setting PID constants for each motor
+ */
 void set_pid_constants() {
 	motor_status[0].flat_const = 1;
 	motor_status[0].int_const = 0;
@@ -179,6 +213,10 @@ void set_pid_constants() {
 	motor_status[2].deriv_const = 0;
 }
 
+
+/**
+ * Wakes drivers up by sending 5 nSleep pulses
+ */
 void wake_drivers_up() {
   for(uint8_t j = 0; j < 5; j++) {
 	  HAL_GPIO_WritePin(GPIOB, MOT_SLEEP_Pin, GPIO_PIN_RESET);
@@ -188,12 +226,22 @@ void wake_drivers_up() {
   }
 }
 
+
+/**
+ * Starts TIM encoders
+ */
 void start_encoders() {
   HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_1 | TIM_CHANNEL_2);
   HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_1 | TIM_CHANNEL_2);
   HAL_TIM_Encoder_Start(&htim8, TIM_CHANNEL_1 | TIM_CHANNEL_2);
 }
 
+
+/**
+ * Called when new command arrives from master
+ *
+ * Reads the command byte and updates target speed
+ */
 void update_motor_status() {
   for(uint8_t i = 0; i < 3; i++) {
 	if(cmd_in.command & (1 << i))
@@ -204,6 +252,13 @@ void update_motor_status() {
   }
 }
 
+
+/**
+ * Calculates PWM speed that will be sent to the motors
+ * Takes motor id as input through which it can calculate error and get needed data
+ *
+ * Returns a value between 0 and 2^16 - 1
+ */
 int16_t calc_pwm(uint8_t mot_id) {
   int16_t change, error;
   float enc_pid_speed;
@@ -236,18 +291,23 @@ int16_t calc_pwm(uint8_t mot_id) {
   else if(enc_pid_speed < -106)
 	enc_pid_speed = -106;
 
+  // Map the encoder speed to PWM speed and return it
   return map(enc_pid_speed, -106, 106, 0, 65535);
 }
 
+
+/**
+ * Function that gets called periodically by timer interrupt
+ *
+ * Used for calculating and correcting PWM values for each motor
+ */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-  int16_t mot1_change = TIM3->CNT - motor_status[0].pos;
-  motor_status[0].pos = TIM3->CNT;
-  int16_t mot1_error = motor_status[0].target_speed - mot1_change;
-  motor_status[0].integral += mot1_error;
 
   TIM1->CCR1 = calc_pwm(0);
   TIM2->CCR1 = calc_pwm(1);
   TIM2->CCR3 = calc_pwm(2);
+
+  HAL_GPIO_TogglePin(GPIOF, GREEN_DBG_LED_1_Pin);
   if(motor_status[0].forward) {
 	TIM1->CCR2 = 0;
   } else {
@@ -310,14 +370,13 @@ int main(void)
   MX_CRC_Init();
   MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
-  //for(uint8_t i = 0; i < 125; i++) __asm("nop");
-
-  //HAL_GPIO_WritePin(GPIOB, MOT_OFF_Pin, GPIO_PIN_SET);
+  HAL_TIM_Base_Start_IT(&htim6);
   HAL_GPIO_WritePin(GPIOB, MOT_SLEEP_Pin, GPIO_PIN_SET);
   set_pid_constants();
   HAL_Delay(100);
   start_encoders();
   wake_drivers_up();
+  init_pwm();
   //HAL_GPIO_WritePin(GPIOB, MOT_OFF_Pin, GPIO_PIN_RESET);
   ser_feedback_t ser_feedback = {0};
 
@@ -326,14 +385,12 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1) {
-
 	if(is_command_received) {
 	  wake_drivers_up();
 	  is_command_received = 0;
 	  if(!mcu_error) {
 		update_motor_status();
 	  }
-	  HAL_GPIO_TogglePin(GPIOF, GREEN_DBG_LED_1_Pin);
 	  generate_feedback(&ser_feedback);
 	  CDC_Transmit_FS((uint8_t*) &ser_feedback, sizeof(ser_feedback_t));
 	}
