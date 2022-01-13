@@ -215,15 +215,13 @@ void set_pid_constants() {
 
 
 /**
- * Wakes drivers up by sending 5 nSleep pulses
+ * Wakes drivers up by sending an nSleep pulse
  */
 void wake_drivers_up() {
-  for(uint8_t j = 0; j < 5; j++) {
-	  HAL_GPIO_WritePin(GPIOB, MOT_SLEEP_Pin, GPIO_PIN_RESET);
-	  for(uint16_t i = 0; i < 350; i++) __asm("nop");
-	  HAL_GPIO_WritePin(GPIOB, MOT_SLEEP_Pin, GPIO_PIN_SET);
-	  for(uint16_t i = 0; i < 10; i++) __asm("nop");
-  }
+    HAL_GPIO_WritePin(GPIOB, MOT_SLEEP_Pin, GPIO_PIN_RESET);
+    for(uint16_t i = 0; i < 350; i++) __asm("nop");
+	HAL_GPIO_WritePin(GPIOB, MOT_SLEEP_Pin, GPIO_PIN_SET);
+	for(uint16_t i = 0; i < 10; i++) __asm("nop");
 }
 
 
