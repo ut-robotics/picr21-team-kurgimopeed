@@ -130,4 +130,3 @@ void CDC_On_Receive(uint8_t* buffer, uint32_t* length);
 
 #endif /* __USBD_CDC_IF_H__ */
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

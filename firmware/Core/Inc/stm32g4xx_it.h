@@ -58,6 +58,7 @@ void PendSV_Handler(void);
 void SysTick_Handler(void);
 void DMA1_Channel1_IRQHandler(void);
 void USB_LP_IRQHandler(void);
+void EXTI9_5_IRQHandler(void);
 void TIM6_DAC_IRQHandler(void);
 /* USER CODE BEGIN EFP */
 
@@ -68,5 +69,3 @@ void TIM6_DAC_IRQHandler(void);
 #endif
 
 #endif /* __STM32G4xx_IT_H */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

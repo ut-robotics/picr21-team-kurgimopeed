@@ -14,6 +14,7 @@
   * License. You may obtain a copy of the License at:
   *                        opensource.org/licenses/BSD-3-Clause
   *
+  *
   ******************************************************************************
   */
 /* USER CODE END Header */
@@ -116,6 +117,8 @@ typedef enum {
 typedef struct {
   int16_t speeds[3];      ///< Incoming target speed array
   uint16_t thrower_speed; ///< Incoming thrower target speed
+  uint16_t aim_pwm;       ///< Aim servo PWM value
+  uint16_t hold_pwm;      ///< Hold servo PWM value
   uint16_t command;       ///< Other commands eg. 3 LSB direct motors
   uint16_t crc;           ///< CRC for error detection
 } ser_command_t;
@@ -135,6 +138,8 @@ ser_command_t cmd_in = {0};
 mot_status_t motor_status[3] = {0};
 __IO uint8_t is_command_received = 0;
 mcu_errors_t mcu_error;
+uint8_t feedback_needed = 0;
+ser_feedback_t ser_feedback = {0};
 
 
 /**
@@ -170,13 +175,13 @@ float map(float input, int32_t f_l, int32_t f_h, int32_t t_l, int32_t t_h) {
 /**
  * Fills feedback struct to be sent to master
  */
-void generate_feedback(ser_feedback_t* feedback) {
-  feedback->error = mcu_error;
-  feedback->enc_data[0] = motor_status[0].pos;
-  feedback->enc_data[1] = motor_status[1].pos;
-  feedback->enc_data[2] = motor_status[2].pos;
-  feedback->crc = 0;
-  feedback->crc = HAL_CRC_Calculate(&hcrc, (uint32_t *) feedback, sizeof(ser_feedback_t));
+void generate_feedback() {
+  ser_feedback.error = mcu_error;
+  ser_feedback.enc_data[0] = motor_status[0].pos;
+  ser_feedback.enc_data[1] = motor_status[1].pos;
+  ser_feedback.enc_data[2] = motor_status[2].pos;
+  ser_feedback.crc = 0;
+  ser_feedback.crc = HAL_CRC_Calculate(&hcrc, (uint32_t *) &ser_feedback, sizeof(ser_feedback_t));
 }
 
 
@@ -187,12 +192,27 @@ void generate_feedback(ser_feedback_t* feedback) {
 void init_pwm() {
   TIM1->ARR = 0xFFFF;
   TIM2->ARR = 0xFFFF;
+
+  // Motor 1
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
+
+  // Motor 2
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
+
+  // Motor 3
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
+
+  // Thrower
+  HAL_TIM_PWM_Start(&htim15, TIM_CHANNEL_2);
+
+  // Hold servo
+  HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
+
+  // Aim servo
+  HAL_TIM_PWM_Start(&htim17, TIM_CHANNEL_1);
 }
 
 
@@ -248,6 +268,9 @@ void update_motor_status() {
 	  motor_status[i].forward = 0;
 	motor_status[i].target_speed = cmd_in.speeds[i];
   }
+  TIM15->CCR2 = 5000;
+  TIM16->CCR1 = 5000;
+  TIM17->CCR1 = 5000;
 }
 
 
@@ -293,7 +316,6 @@ int16_t calc_pwm(uint8_t mot_id) {
   return map(enc_pid_speed, -106, 106, 0, 65535);
 }
 
-
 /**
  * Function that gets called periodically by timer interrupt
  *
@@ -301,25 +323,37 @@ int16_t calc_pwm(uint8_t mot_id) {
  */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
-  TIM1->CCR1 = calc_pwm(0);
-  TIM2->CCR1 = calc_pwm(1);
-  TIM2->CCR3 = calc_pwm(2);
+  TIM1->CCR1 = cmd_in.speeds[0];
+  TIM2->CCR1 = cmd_in.speeds[1];
+  TIM2->CCR3 = cmd_in.speeds[2];
 
   HAL_GPIO_TogglePin(GPIOF, GREEN_DBG_LED_1_Pin);
-  if(motor_status[0].forward) {
+  if(!motor_status[0].forward) {
 	TIM1->CCR2 = 0;
   } else {
 	TIM1->CCR2 = 65535;
 	  }
-  if(motor_status[1].forward) {
+  if(!motor_status[1].forward) {
 	TIM2->CCR2 = 0;
   } else {
 	TIM2->CCR2 = 65535;
   }
-  if(motor_status[2].forward) {
+  if(!motor_status[2].forward) {
 	TIM2->CCR4 = 0;
   } else {
 	TIM2->CCR4 = 65535;
+  }
+}
+
+
+/*
+ * EXTI callback for ball detector
+ */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+  if(GPIO_Pin == GPIO_PIN_5) {
+	HAL_GPIO_TogglePin(RED_DBG_LED_1_GPIO_Port, RED_DBG_LED_1_Pin);
+	ser_feedback.varia = 0xFFFF;
+	feedback_needed = 1;
   }
 }
 
@@ -376,21 +410,29 @@ int main(void)
   wake_drivers_up();
   init_pwm();
   //HAL_GPIO_WritePin(GPIOB, MOT_OFF_Pin, GPIO_PIN_RESET);
-  ser_feedback_t ser_feedback = {0};
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1) {
+	  update_motor_status();
 	if(is_command_received) {
-	  wake_drivers_up();
+	  wake_drivers_up();HAL_GPIO_TogglePin(RED_DBG_LED_1_GPIO_Port, RED_DBG_LED_1_Pin);
+	  ser_feedback.varia = 0xFFFF;
+	  feedback_needed = 1;
 	  is_command_received = 0;
 	  if(!mcu_error) {
+		HAL_GPIO_TogglePin(GPIOF, GREEN_DBG_LED_2_Pin);
 		update_motor_status();
 	  }
-	  generate_feedback(&ser_feedback);
+	  feedback_needed = 1;
+	}
+	if(feedback_needed) {
+      generate_feedback();
 	  CDC_Transmit_FS((uint8_t*) &ser_feedback, sizeof(ser_feedback_t));
+	  feedback_needed = 0;
+	  ser_feedback.varia = 0;
 	}
     /* USER CODE END WHILE */
 
@@ -407,7 +449,6 @@ void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
-  RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
   /** Configure the main internal regulator output voltage
   */
@@ -440,18 +481,6 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /** Initializes the peripherals clocks
-  */
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_RTC|RCC_PERIPHCLK_USB
-                              |RCC_PERIPHCLK_ADC12;
-  PeriphClkInit.UsbClockSelection = RCC_USBCLKSOURCE_PLL;
-  PeriphClkInit.Adc12ClockSelection = RCC_ADC12CLKSOURCE_SYSCLK;
-  PeriphClkInit.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;
-
-  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
     Error_Handler();
   }
@@ -953,7 +982,7 @@ static void MX_TIM15_Init(void)
 
   /* USER CODE END TIM15_Init 1 */
   htim15.Instance = TIM15;
-  htim15.Init.Prescaler = 0;
+  htim15.Init.Prescaler = 45;
   htim15.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim15.Init.Period = 65535;
   htim15.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -1018,7 +1047,7 @@ static void MX_TIM16_Init(void)
 
   /* USER CODE END TIM16_Init 1 */
   htim16.Instance = TIM16;
-  htim16.Init.Prescaler = 0;
+  htim16.Init.Prescaler = 45;
   htim16.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim16.Init.Period = 65535;
   htim16.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -1081,7 +1110,7 @@ static void MX_TIM17_Init(void)
 
   /* USER CODE END TIM17_Init 1 */
   htim17.Instance = TIM17;
-  htim17.Init.Prescaler = 0;
+  htim17.Init.Prescaler = 45;
   htim17.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim17.Init.Period = 65535;
   htim17.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -1160,7 +1189,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOF, GREEN_DBG_LED_1_Pin|GREEN_DBG_LED_2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, RED_DBG_LED_1_Pin|RED_DBG_LED_2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(RED_DBG_LED_1_GPIO_Port, RED_DBG_LED_1_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, MOT_SLEEP_Pin|MOT_OFF_Pin, GPIO_PIN_RESET);
@@ -1172,12 +1201,18 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : RED_DBG_LED_1_Pin RED_DBG_LED_2_Pin */
-  GPIO_InitStruct.Pin = RED_DBG_LED_1_Pin|RED_DBG_LED_2_Pin;
+  /*Configure GPIO pin : RED_DBG_LED_1_Pin */
+  GPIO_InitStruct.Pin = RED_DBG_LED_1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  HAL_GPIO_Init(RED_DBG_LED_1_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : BALL_FINDER_Pin */
+  GPIO_InitStruct.Pin = BALL_FINDER_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(BALL_FINDER_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : MOT_SLEEP_Pin MOT_OFF_Pin */
   GPIO_InitStruct.Pin = MOT_SLEEP_Pin|MOT_OFF_Pin;
@@ -1185,6 +1220,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
 }
 
@@ -1224,4 +1263,3 @@ void assert_failed(uint8_t *file, uint32_t line)
 }
 #endif /* USE_FULL_ASSERT */
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

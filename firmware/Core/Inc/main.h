@@ -74,8 +74,9 @@ void Error_Handler(void);
 #define TRW_PWM_1_GPIO_Port GPIOA
 #define RED_DBG_LED_1_Pin GPIO_PIN_4
 #define RED_DBG_LED_1_GPIO_Port GPIOA
-#define RED_DBG_LED_2_Pin GPIO_PIN_5
-#define RED_DBG_LED_2_GPIO_Port GPIOA
+#define BALL_FINDER_Pin GPIO_PIN_5
+#define BALL_FINDER_GPIO_Port GPIOA
+#define BALL_FINDER_EXTI_IRQn EXTI9_5_IRQn
 #define HOLD_servo_PWM_Pin GPIO_PIN_6
 #define HOLD_servo_PWM_GPIO_Port GPIOA
 #define AIM_servo_PWM_Pin GPIO_PIN_7
@@ -111,5 +112,3 @@ void Error_Handler(void);
 #endif
 
 #endif /* __MAIN_H */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

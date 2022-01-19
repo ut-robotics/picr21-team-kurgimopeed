@@ -110,9 +110,11 @@ generate_crc32_table(crc32_poly)
 
 
 if __name__ == "__main__":
-    with serial.Serial('/dev/ttyACM1', 115200, timeout=3) as ser:
+    with serial.Serial('/dev/ttyACM0', 115200, timeout=3) as ser:
         while(1):
-            speeds = generate_send_moc()
+            speeds = input().split(",")
+            speeds = [int(speed) for speed in speeds]
+            print(speeds)
             if(send_data(speeds)):
                 print("Failed to send data!")
             serial_data = receive_data()
