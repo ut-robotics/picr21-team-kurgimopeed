@@ -92,6 +92,7 @@ class DrivingLogic():
     
     def spin(self, data):
         l = len(data["balls"])
+
         if self.min_balls <= l:
             self.state = self.drive
         else:
@@ -121,15 +122,17 @@ class DrivingLogic():
         if ball_depth - self.depth_target < 0.02:
             self.state = self.get_ball
 
-    def get_ball(self):
+    def get_ball(self, data):
         def exit():
             self.motor_driver.send(servo_hold=0)
             self.timer = None
 
         def callback(data):
             *motor_speeds, thrower_speed, ball_event = data
+            print("Got Ball", ball_event)
             if ball_event:
                 self.state = self.spin_goal
+                print("Got Ball")
                 exit()
         
         if self.timer is None:
@@ -138,7 +141,7 @@ class DrivingLogic():
             self.state = self.spin
             exit()
             return 
-        self.motor_driver.send(direction=0, speed=30, servo_hold=100, callback=callback)
+        self.motor_driver.send(direction=0, turn_speed=0, speed=30, servo_hold=100, callback=callback)
             
     def spin_goal(self, data):
         goal = self.get_goal_data(data)
@@ -163,7 +166,7 @@ class DrivingLogic():
             self.motor_driver.send(servo_hold=100)
 
 
-        if self.timer != None:
+        if self.timer is not None:
             if time.time() - self.timer > self.thrower_timeout:
                 self.timer = None
                 self.state = self.spin

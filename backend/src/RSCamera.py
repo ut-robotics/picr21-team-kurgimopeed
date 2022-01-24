@@ -1,10 +1,8 @@
 import numpy as np
-
-import cv2
 import pyrealsense2 as rs
 
-camera_angle = -12
-camera_transformation = np.array([0, 0, 0.205])
+camera_angle = -20
+camera_transformation = np.array([0, 0, 0.190])
 camera_fov = (87, 58) #H, V
 
 class RSCamera():
@@ -64,6 +62,3 @@ class RSCamera():
             np.asanyarray(aligned_frames.get_depth_frame().get_data(), dtype=np.uint16),
             np.asanyarray(aligned_frames.get_color_frame().get_data(), dtype=np.uint8)
         )
-
-        #self.depth_frame = cv2.imencode(".jpg", depth_image)[1].tobytes()
-        #self.color_frame = cv2.imencode(".jpg", color_image)[1].tobytes()

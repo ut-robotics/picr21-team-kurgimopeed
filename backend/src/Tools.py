@@ -55,5 +55,5 @@ def depth_distance(boxPoints, depth_frame):
 
     filtered_depth = cv2.bitwise_and(depth_frame, depth_frame, mask=mask)
     measure_point_count = np.count_nonzero(filtered_depth)
-    
+
     return np.sum(filtered_depth)/measure_point_count

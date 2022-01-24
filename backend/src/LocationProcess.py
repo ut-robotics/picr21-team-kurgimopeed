@@ -119,7 +119,7 @@ class LocationProcess():
         #print(ball_locations)
         #print(border_dist)
         #filter(lambda n, x: border_dist[n] >=0, range(ball_locations))
-        
+ 
         return {"robot_loc":self.robot_location, 
                 "robot_rot":self.robot_rotation,
                 "pink_goal":pink_goal,

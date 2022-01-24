@@ -47,6 +47,8 @@ class MainBoardComm():
     def receive_data(self):
         try:
             s = self.ser.read(20)
+            if s == b'':
+                return None
             #print("Received:", s)
             recv = struct.unpack('<llllHH', s)
         except Exception as e:

@@ -51,6 +51,8 @@ class MotorControllerHandler():
         with Serial(self.port, self.baudrate, timeout=self.timeout) as ser:
             comm = MainBoardComm(ser)
             reset_mainboard = True
+            while comm.receive_data() is not None:
+                pass #clear buffer
             while True:
                 callback = None #by default there is no callback
                 if not queue.empty():

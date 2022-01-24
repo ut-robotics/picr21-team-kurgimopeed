@@ -18,6 +18,7 @@ class GoalDetector():
         self.blue_location = None
 
         self.goal_hack_const = np.array([-0.10, 0, 0])
+        self.goal_min_area = 1750
 
     def set_threshold(self, threshold_values, id=ID_PINK):
         if id is self.ID_PINK:
@@ -69,7 +70,7 @@ class GoalDetector():
                 g_area_size = g_size[0]*g_size[1]
                 
             if g_area_size < area_size:
-                if (area_size > 1750):
+                if (area_size > self.goal_min_area):
                     goal = rect
 
 
@@ -77,6 +78,7 @@ class GoalDetector():
             box = cv2.boxPoints(goal)
 
             dist = depth_distance(box, depth_frame)
+
             if not np.isnan(dist):
                 if (id == self.ID_PINK):
                     cv2.drawContours(self.pink_debug_mask,[np.int0(box)],0,(255,255,255),2)
