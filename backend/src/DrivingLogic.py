@@ -45,6 +45,7 @@ class DrivingLogic():
         # circle: circle around ball looking for target goal
         # throw: throw and correct
         self.state = None
+        self.timer = None
 
         # drive turn_speed pid
         self.drive_pid = PID(0.6, 0, 0, setpoint=0)
@@ -61,8 +62,7 @@ class DrivingLogic():
 
         self.target_goal = GoalDetector.ID_PINK
 
-        self.thrower_timeout = 3.0
-        self.current_thrower_time = 0.0
+        self.thrower_timeout = 1
 
         self.spin_speed = 30
         self.spin_timeout = 5
@@ -74,12 +74,16 @@ class DrivingLogic():
         if ball_event:
             print("PALL")
 
+    def get_goal_data(self, data):
+        return data["blue_goal"] if self.target_goal == GoalDetector.ID_BLUE else data["pink_goal"]
+
     # called externally from referee server or front end
     def start(self, target_goal=None):
         self.enable = True
         if target_goal is not None:
             self.target_goal = target_goal
         self.state = self.spin
+        self.motor_driver.send(thrower=0, servo_hold=0, speed=0)
 
     def stop(self):
         self.enable = False
@@ -91,7 +95,7 @@ class DrivingLogic():
         if self.min_balls <= l:
             self.state = self.drive
         else:
-            self.motor_driver.send(speed=0, turn_speed=self.spin_speed, thrower=0)
+            self.motor_driver.send(speed=0, turn_speed=self.spin_speed)
 
     def drive(self, data):
         if not len(data["balls"]):
@@ -109,53 +113,43 @@ class DrivingLogic():
         alpha = (math.atan(ball_loc[0] / ball_loc[1]) * 180.0 / math.pi)
         new_turn_speed = self.drive_pid(alpha)
         target_speed = min((ball_depth - self.depth_target) * 100, 50)
-        self.motor_driver.send(direction=alpha, turn_speed=new_turn_speed, speed=target_speed, thrower=0)
+        self.motor_driver.send(direction=alpha, turn_speed=new_turn_speed, speed=target_speed)
         #print(f"{alpha=}")
         #print(f"{new_turn_speed=}")
         #print(f"{(ball_depth - self.depth_target)=}")
 
         if ball_depth - self.depth_target < 0.02:
-            self.state = self.circle
-
-    def circle(self, data):
-        if not len(data["balls"]):
-            self.state = self.spin
-            return
-            
-        ball_loc, ball_depth = sorted(data["balls"], key=lambda ball: ball[1])[0]
-        alpha = (math.atan(ball_loc[0] / ball_loc[1]) * 180.0 / math.pi)
-        new_turn_speed = self.circle_turn_pid(alpha)
-        delta = max(min(300 * (ball_depth - self.depth_target), 45), -45)
-        #print(f"{delta=}")
-
-        goal = data["blue_goal"] if self.target_goal == GoalDetector.ID_BLUE else data["pink_goal"]
-        if not goal:
-            self.circle_dir_pid.reset()
-            self.motor_driver.send(direction=90 - delta, turn_speed=new_turn_speed, speed=40)
-            return
-
-        goal_loc, goal_depth = goal
-        goal_alpha = (math.atan(goal_loc[0] / goal_loc[1]) * 180.0 / math.pi)
-        print(f"{alpha=}")
-        print(f"{goal_alpha=}")
-        new_dir_speed = self.circle_dir_pid(goal_alpha)
-
-        self.motor_driver.send(direction=90-delta, turn_speed=new_turn_speed, speed=new_dir_speed)
-        if abs(alpha) < 3 and abs(goal_alpha) < 3:
             self.state = self.get_ball
 
     def get_ball(self):
+        def exit():
+            self.motor_driver.send(servo_hold=0)
+            self.timer = None
+
         def callback(data):
             *motor_speeds, thrower_speed, ball_event = data
             if ball_event:
-                self.state = self.throw
-        self.motor_driver.send(servo_hold=0, callback=callback)
-
+                self.state = self.spin_goal
+                exit()
+        
+        if self.timer is None:
+            self.timer = time.time()
+        if time.time()-self.timer > 2:
+            self.state = self.spin
+            exit()
+            return 
+        self.motor_driver.send(direction=0, speed=30, servo_hold=100, callback=callback)
+            
+    def spin_goal(self, data):
+        goal = self.get_goal_data(data)
+        if goal:
+            self.state = self.throw
+        self.motor_driver.send(direction=0, turn_speed=20, speed=0)
 
     def throw(self, data):
-        goal = data["blue_goal"] if self.target_goal == GoalDetector.ID_BLUE else data["pink_goal"]
+        goal = self.get_goal_data(data)
         if not goal:
-            self.state = self.spin
+            self.state = self.spin_goal
             return
 
         goal_loc, goal_depth = goal
@@ -163,15 +157,20 @@ class DrivingLogic():
         #print(f"{goal_alpha=}")
         new_turn_speed = self.drive_pid(goal_alpha)
 
-        if self.current_thrower_time == 0.0:
-            self.current_thrower_time = time.time()
+        if goal_alpha < 2:
+            if self.timer is None:
+                self.timer = time.time()
+            self.motor_driver.send(servo_hold=100)
 
-        if time.time() - self.current_thrower_time > self.thrower_timeout:
-            self.current_thrower_time = 0.0
-            self.state = self.spin
-            return
 
-        self.motor_driver.send(direction=goal_alpha, turn_speed=new_turn_speed, speed=12, thrower=self.thrower.get_speed(goal_depth))
+        if self.timer != None:
+            if time.time() - self.timer > self.thrower_timeout:
+                self.timer = None
+                self.state = self.spin
+                self.motor_driver.send(servo_hold=0, thrower=0)
+                return
+
+        self.motor_driver.send(direction=0, turn_speed=new_turn_speed, speed=0, thrower=self.thrower.get_speed(goal_depth))
 
     def run_logic(self, data):
         if not self.enable or not self.state:
@@ -179,5 +178,3 @@ class DrivingLogic():
 
         self.state(data)
         print(self.state)
-
-        return
