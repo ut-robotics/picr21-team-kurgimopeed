@@ -60,24 +60,24 @@ class MotorControllerHandler():
                     *motors, callback = data #extract callback from queue data and assume that everything else is motor data
                     self.set_motors(motors) #sets local motor speeds if changed
 
-                    command = 0
-                    if self.motor1 < 0:
-                        command |= 0b1
-                    if self.motor2 < 0:
-                        command |= 0b10
-                    if self.motor3 < 0:
-                        command |= 0b100
-                    if reset_mainboard:
-                        command |= 0b1000
-                    send_error = comm.send_data(abs(self.motor1), abs(self.motor2), abs(self.motor3), 
-                                                self.thrower, self.servo_angle, self.servo_hold, command)
-                    recv = comm.receive_data()
+                command = 0
+                if self.motor1 < 0:
+                    command |= 0b1
+                if self.motor2 < 0:
+                    command |= 0b10
+                if self.motor3 < 0:
+                    command |= 0b100
+                if reset_mainboard:
+                    command |= 0b1000
+                send_error = comm.send_data(abs(self.motor1), abs(self.motor2), abs(self.motor3), 
+                                            self.thrower, self.servo_angle, self.servo_hold, command)
+                recv = comm.receive_data()
 
-                    if callback is not None and recv is not None:
-                        #print("received data from mainborad:", recv)
-                        callback(recv)
-                        pass
-                    reset_mainboard = False
+                if callback is not None and recv is not None:
+                    #print("received data from mainborad:", recv)
+                    callback(recv)
+                    pass
+                reset_mainboard = False
                 time.sleep(0.02) #limit to 50hz
         print("Motor controller stopped")
 
