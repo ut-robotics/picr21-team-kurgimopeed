@@ -130,10 +130,10 @@ class DrivingLogic():
         def callback(data):
             *motor_speeds, thrower_speed, ball_event = data
             print("Got Ball", ball_event)
-            if ball_event:
+            '''if ball_event:
                 self.state = self.spin_goal
                 print("Got Ball")
-                exit()
+                exit()'''
         
         if self.timer is None:
             self.timer = time.time()
@@ -173,7 +173,8 @@ class DrivingLogic():
                 self.motor_driver.send(servo_hold=0, thrower=0)
                 return
 
-        self.motor_driver.send(direction=0, turn_speed=new_turn_speed, speed=0, thrower=self.thrower.get_speed(goal_depth))
+        thrower_speed = self.thrower.get_speed(goal_depth)
+        self.motor_driver.send(direction=0, turn_speed=new_turn_speed, speed=0, thrower=45000)
 
     def run_logic(self, data):
         if not self.enable or not self.state:
