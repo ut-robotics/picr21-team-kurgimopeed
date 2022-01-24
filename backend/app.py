@@ -94,16 +94,17 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
                 #driving_logic.circle_turn_pid.tunings = data[:3]
                 #driving_logic.circle_turn_pid.setpoint = data[-1]
             else:
-                speed, direction, turn, thrower, enable, driving_enable = [data[i] for i in ["speed", "direction", "turn", "thrower", "enable", "drive_enable"]]
+                speed, direction, turn, thrower, ball_hold, thrower_angle, enable, driving_enable = [data[i] for i in ["speed", "direction", "turn", "thrower", "ball_hold", "thrower_angle", "enable", "drive_enable"]]
                 if enable:
                     robot_controller.driving_logic.stop()
-                    robot_controller.motor_driver.send(speed=speed, direction=direction, turn_speed=turn, thrower=thrower, callback=None)
+                    robot_controller.motor_driver.send(speed=speed, direction=direction, turn_speed=turn, thrower=thrower, servo_angle=thrower_angle, servo_hold=ball_hold)
                 elif driving_enable:
                     robot_controller.driving_logic.start()
                 else:
                     time.sleep(0.1)
                     #led.set_led(led.TYPE_RING, color=led.RING_RED)
-                    robot_controller.motor_driver.stop()
+                    if not musicbox.playing:
+                        robot_controller.motor_driver.stop()
                     robot_controller.driving_logic.stop()
 
 

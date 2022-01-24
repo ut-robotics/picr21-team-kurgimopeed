@@ -1,3 +1,4 @@
+from pickle import FALSE
 from queue import SimpleQueue
 import time
 from threading import Thread
@@ -71,6 +72,7 @@ class MusicBox(ToneMapper):
         super().__init__()
         self.motor_driver = motor_driver
         self.STOP = True
+        self.playing = False
 
         self.tone_length = 0.9 #in % how much tone should last and other for stop 
 
@@ -100,6 +102,7 @@ class MusicBox(ToneMapper):
                         sheet.put(line.split(" "))
 
         self.STOP = False
+        self.playing = True
         
         while not sheet.empty() and not self.STOP:
             note, length = sheet.get()
@@ -118,6 +121,7 @@ class MusicBox(ToneMapper):
                 if self.STOP:
                     break
 
+        self.playing = False
         self.motor_driver.send(thrower=0)
 
 if __name__ == "__main__":

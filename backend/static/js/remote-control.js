@@ -90,8 +90,10 @@ $(document).ready(function () {
     var drive_enabled = false;
     var speed = 0;
     var thrower = 0;
+    var ball_hold = 0;
+    var thrower_angle = 0;
 
-    var movement = { "speed": 0, "direction": 0, "turn": 0, "thrower": 0, "enable": motors_enabled }
+    var movement = { "speed": 0, "direction": 0, "turn": 0, "thrower": 0, "ball_hold": 0, "thrower_angle": 0, "enable": motors_enabled }
     var keys_pressed = { "up": false, "down": false, "left": false, "right": false, "turnL": false, "turnR": false }
 
     const speed_slider = $('#speed_slider')[0];
@@ -116,6 +118,28 @@ $(document).ready(function () {
         updateMotorValues()
     }
 
+    const ball_hold_slider = $('#ball_hold_slider')[0];
+    ball_hold_slider.value = ball_hold
+    ball_hold_slider.addEventListener('input', updateBallHoldValue); //Add listener if slider value changed 
+    $("#thrower_slider_text").text(ball_hold);
+
+    function updateBallHoldValue(e) {
+        ball_hold = parseInt(e.target.value)
+        $("#ball_hold_slider_text").text(ball_hold);
+        updateMotorValues()
+    }
+
+    const thrower_angle_slider = $('#thrower_angle_slider')[0];
+    thrower_angle_slider.value = thrower_angle
+    thrower_angle_slider.addEventListener('input', updateThrowerAngleValue); //Add listener if slider value changed 
+    $("#thrower_angle_slider_text").text(thrower_angle);
+
+    function updateThrowerAngleValue(e) {
+        thrower_angle = parseInt(e.target.value)
+        $("#thrower_angle_slider_text").text(thrower_angle);
+        updateMotorValues()
+    }
+
     //called by every function that changes motor values
     function updateMotorValues() {
         if (!motors_enabled) {
@@ -123,9 +147,13 @@ $(document).ready(function () {
             movement["turn"] = 0
             movement["thrower"] = 0
             movement["direction"] = 0
+            movement["ball_hold"] = 0
+            movement["thrower_angle"] = 0
         } else {
             movement_calculator()
             movement["thrower"] = thrower
+            movement["ball_hold"] = ball_hold
+            movement["thrower_angle"] = thrower_angle
         }
         movement["enable"] = motors_enabled
         movement["drive_enable"] = drive_enabled

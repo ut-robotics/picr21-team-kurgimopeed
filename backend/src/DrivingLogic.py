@@ -69,6 +69,11 @@ class DrivingLogic():
         self.spin_current_time = 0
         self.min_balls = 1
 
+    def callback(self, data):
+        *motor_speeds, thrower_speed, ball_event = data
+        if ball_event:
+            print("PALL")
+
     # called externally from referee server or front end
     def start(self, target_goal=None):
         self.enable = True
@@ -137,7 +142,15 @@ class DrivingLogic():
 
         self.motor_driver.send(direction=90-delta, turn_speed=new_turn_speed, speed=new_dir_speed)
         if abs(alpha) < 3 and abs(goal_alpha) < 3:
-            self.state = self.throw
+            self.state = self.get_ball
+
+    def get_ball(self):
+        def callback(data):
+            *motor_speeds, thrower_speed, ball_event = data
+            if ball_event:
+                self.state = self.throw
+        self.motor_driver.send(servo_hold=0, callback=callback)
+
 
     def throw(self, data):
         goal = data["blue_goal"] if self.target_goal == GoalDetector.ID_BLUE else data["pink_goal"]
