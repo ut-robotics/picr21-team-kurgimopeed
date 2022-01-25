@@ -1,3 +1,12 @@
 __pycache__
+firmware/.settings/*
 *-bak*
 *-cache*
+*.o
+*.elf
+*.bin
+*.map
+*.list
+*.mk
+*.su
+makefile
