@@ -3,64 +3,71 @@ from numpy.typing import _80Bit
 import scipy.optimize as opt
 
 #dist, speed
-old_data = [
-[1.14, 758],
-[1.18, 733],
-[1.34, 798],
-[1.37, 826],
-[1.42, 843],
-[1.47, 851],
-[1.53, 918],
-[1.69, 1000],
-[1.75, 1145],
-[1.8, 1041],
-[1.9, 1080],
-[2.03, 1250],
-[2.31, 1355],
-[2.72, 1590],
+low_data = [
+[0.60, 13000],
+[0.90, 14037],
+[1.22, 15950],
+[1.55, 17752],
+[1.84, 19817],
+[2.18, 22500],
+[2.53, 24358]
 ]
 
-data = [
-[.672, 705],
-[.79, 708],
-[.922, 730],
-[1.104, 770],
-[1.279, 800],
-[1.405, 850],
-[1.555, 888],
-[1.68, 910],
-[1.8, 983,],
-[1.905, 1000],
-[2.04, 1018],
-[2.2, 1080,],
-[2.45, 1156],
-[2.95, 1266]
+high_data = [
+[1.53, 18578],
+[1.88, 20642],
+[2.15, 22294],
+[2.49, 24358],
+[2.70, 26009],
+[3.02, 27248],
+[3.40, 28899],
+[3.68, 30550],
 ]
 
 class ThrowerTraining():
     def __init__(self):
-        self.speed_data = [x[1] for x in data]
-        self.dist_data = [x[0] for x in data]
+        self.low_a, self.low_b = self.fit_model(low_data)
+        self.high_a, self.high_b = self.fit_model(high_data)
 
-        self.a, self.b = self.fit_model()
+        self.angle_dist_thresholds = [1.8, 2.2] #[low, high] in meters
+
+        self.thrower_high = 33
+        self.thrower_low = 0
+
+        self.thrower_angle = self.thrower_low
 
     def speed_function(self, x, a, b):
         return a*x+b
 
-    def fit_model(self):
+    def fit_model(self, data):
+        speed_data = [x[1] for x in data]
+        dist_data = [x[0] for x in data]
         optimized_parameters, _ = opt.curve_fit(
             self.speed_function,
-            self.dist_data,
-            self.speed_data,
+            dist_data,
+            speed_data,
             bounds=([-np.inf, -np.inf], [np.inf, np.inf])
             )
 
         return optimized_parameters
 
     def get_speed(self, dist):
-        speed = self.speed_function(dist, self.a, self.b)
+        if dist <= self.angle_dist_thresholds[0]:
+            self.thrower_angle = self.thrower_low
+        elif dist >= self.angle_dist_thresholds[1]:
+            self.thrower_angle = self.thrower_high
+
+        if self.thrower_angle == self.thrower_low:
+            speed = self.speed_function(dist, self.low_a, self.low_b)
+        elif self.thrower_angle == self.thrower_high:
+            speed = self.speed_function(dist, self.high_a, self.high_b)
+        else:
+            print("Unknown thrower angle state")
+            speed = 0
+
         if speed < 0:
             return 0
-        if speed > 2500:
-            return 2500
-        return int(speed)
+        if speed > 45000:
+            return 45000
+
+        return int(speed), int(self.thrower_angle)

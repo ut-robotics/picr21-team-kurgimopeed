@@ -18,7 +18,7 @@ class GoalDetector():
         self.blue_location = None
 
         self.goal_hack_const = np.array([-0.10, 0, 0])
-        self.goal_min_area = 1750
+        self.goal_min_area = 1000
 
     def set_threshold(self, threshold_values, id=ID_PINK):
         if id is self.ID_PINK:
