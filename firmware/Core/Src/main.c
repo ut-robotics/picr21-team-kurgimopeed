@@ -91,9 +91,9 @@ static void MX_TIM6_Init(void);
  * Motor status struct
  */
 typedef struct {
-  uint16_t target_speed;  ///< Current motor target speed
+  float target_speed;  ///< Current motor target speed
   uint8_t forward;        ///< 0 means backwards, 1 is forwards
-  int32_t integral;       ///< Integral value for PID
+  float integral;       ///< Integral value for PID
   int16_t pos;            ///< Current encoder position
   float flat_const;       ///< PID constant for current error
   float int_const;        ///< PID constant for integral
@@ -143,6 +143,17 @@ ser_feedback_t ser_feedback = {0};
 
 
 /**
+ * Mapping function to get a value from one range to other
+ */
+uint16_t map(float input, int32_t f_l, int32_t f_h, int32_t t_l, int32_t t_h) {
+  return ((input - f_l) * (t_h - t_l)) / ((f_h - f_l) + t_l);
+}
+
+float f_map(uint16_t input, int32_t f_l, int32_t f_h, int32_t t_l, int32_t t_h) {
+  return (float) ((float) (input - f_l) * (t_h - t_l)) / ((f_h - f_l) + t_l);
+}
+
+/**
  * Function that gets called when new USB data arrives
  *
  * Updates cmd_in structure and so updates target speeds
@@ -158,17 +169,10 @@ void CDC_On_Receive(uint8_t* buffer, uint32_t* length) {
 	  uint16_t calculated_crc = HAL_CRC_Calculate(&hcrc, (uint32_t *) &ser_data, (*length));
     if(got_crc == calculated_crc) {
     	memcpy(&cmd_in, buffer, sizeof(ser_command_t));
+    	cmd_in.thrower_speed = map(cmd_in.thrower_speed, 0, 65535, 3120, 6240);
     	mcu_error = MCU_OK;
     }
   }
-}
-
-
-/**
- * Mapping function to get a value from one range to other
- */
-float map(float input, int32_t f_l, int32_t f_h, int32_t t_l, int32_t t_h) {
-  return ((input - f_l) * (t_h - t_l)) / ((f_h - f_l) + t_l);
 }
 
 
@@ -220,16 +224,16 @@ void init_pwm() {
  * Function for manually setting PID constants for each motor
  */
 void set_pid_constants() {
-	motor_status[0].flat_const = 1;
-	motor_status[0].int_const = 0;
+	motor_status[0].flat_const = 5;
+	motor_status[0].int_const = 0.1;
 	motor_status[0].deriv_const = 0;
 
-	motor_status[1].flat_const = 1;
-	motor_status[1].int_const = 0;
+	motor_status[1].flat_const = 5;
+	motor_status[1].int_const = 0.1;
 	motor_status[1].deriv_const = 0;
 
-	motor_status[2].flat_const = 1;
-	motor_status[2].int_const = 0;
+	motor_status[2].flat_const = 5;
+	motor_status[2].int_const = 0.1;
 	motor_status[2].deriv_const = 0;
 }
 
@@ -255,6 +259,15 @@ void start_encoders() {
 }
 
 
+void arm_thrower() {
+	TIM15->CCR2 = 3120;
+	HAL_Delay(500);
+	TIM15->CCR2 = 2000;
+	HAL_Delay(1500);
+	TIM15->CCR2 = 3120;
+}
+
+
 /**
  * Called when new command arrives from master
  *
@@ -266,11 +279,15 @@ void update_motor_status() {
 	  motor_status[i].forward = 1;
 	else
 	  motor_status[i].forward = 0;
-	motor_status[i].target_speed = cmd_in.speeds[i];
+	motor_status[i].target_speed = f_map(cmd_in.speeds[i], 0, 65535, 0, 106);
   }
-  TIM15->CCR2 = 5000;
-  TIM16->CCR1 = 5000;
-  TIM17->CCR1 = 5000;
+  if(cmd_in.command & (1 << 4)) {
+	arm_thrower();
+	wake_drivers_up();
+  }
+  TIM15->CCR2 = cmd_in.thrower_speed + 3120;
+  TIM16->CCR1 = cmd_in.hold_pwm;
+  TIM17->CCR1 = cmd_in.aim_pwm;
 }
 
 
@@ -281,8 +298,8 @@ void update_motor_status() {
  * Returns a value between 0 and 2^16 - 1
  */
 int16_t calc_pwm(uint8_t mot_id) {
-  int16_t change, error;
-  float enc_pid_speed;
+  int16_t change;
+  float pid_speed, error;
 
   // Calculate change and update corresponding motor position
   switch(mot_id) {
@@ -298,22 +315,25 @@ int16_t calc_pwm(uint8_t mot_id) {
       change = TIM8->CNT - motor_status[2].pos;
       motor_status[2].pos = TIM8->CNT;
   }
+  if(change < 0)
+	change *= -1;
+  if(change > 106)
+	change = 106;
 
   // Calculate error and PID
-  error = change - motor_status[mot_id].target_speed;
+  error = motor_status[mot_id].target_speed - change;
   motor_status[mot_id].integral += error;
-  enc_pid_speed = error * motor_status[mot_id].flat_const +
-		  motor_status[mot_id].integral * motor_status[mot_id].int_const +
-		  change * motor_status[mot_id].deriv_const;
+  pid_speed = error * motor_status[mot_id].flat_const +
+		  motor_status[mot_id].integral * motor_status[mot_id].int_const;
 
   // Keep the motor speed within limits
-  if(enc_pid_speed > 106)
-	enc_pid_speed = 106;
-  else if(enc_pid_speed < -106)
-	enc_pid_speed = -106;
+  if(pid_speed > 106)
+	pid_speed = 106;
+  else if(pid_speed < 0)
+	pid_speed = 0;
 
   // Map the encoder speed to PWM speed and return it
-  return map(enc_pid_speed, -106, 106, 0, 65535);
+  return map(pid_speed, 0, 106, 0, 65535);
 }
 
 /**
@@ -323,11 +343,11 @@ int16_t calc_pwm(uint8_t mot_id) {
  */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
-  TIM1->CCR1 = cmd_in.speeds[0];
-  TIM2->CCR1 = cmd_in.speeds[1];
-  TIM2->CCR3 = cmd_in.speeds[2];
-
   HAL_GPIO_TogglePin(GPIOF, GREEN_DBG_LED_1_Pin);
+  TIM1->CCR1 = calc_pwm(0);
+  TIM2->CCR1 = calc_pwm(1);
+  TIM2->CCR3 = calc_pwm(2);
+
   if(!motor_status[0].forward) {
 	TIM1->CCR2 = 0;
   } else {
@@ -356,6 +376,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	feedback_needed = 1;
   }
 }
+
 
 /* USER CODE END 0 */
 
@@ -409,18 +430,14 @@ int main(void)
   start_encoders();
   wake_drivers_up();
   init_pwm();
-  //HAL_GPIO_WritePin(GPIOB, MOT_OFF_Pin, GPIO_PIN_RESET);
+  TIM15->CCR2 = 3120;
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1) {
-	  update_motor_status();
 	if(is_command_received) {
-	  wake_drivers_up();HAL_GPIO_TogglePin(RED_DBG_LED_1_GPIO_Port, RED_DBG_LED_1_Pin);
-	  ser_feedback.varia = 0xFFFF;
-	  feedback_needed = 1;
 	  is_command_received = 0;
 	  if(!mcu_error) {
 		HAL_GPIO_TogglePin(GPIOF, GREEN_DBG_LED_2_Pin);
