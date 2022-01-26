@@ -6,7 +6,7 @@ from src.GoalDetector import GoalDetector
 
 class RefereeClient():
     def __init__(self):
-        self.ip = "192.168.3.38"
+        self.ip = "192.168.3.220"
         self.id = "kurk"
         self.port = 8111
 

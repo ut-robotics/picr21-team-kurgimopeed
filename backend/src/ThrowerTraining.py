@@ -13,6 +13,17 @@ low_data = [
 [2.53, 24358]
 ]
 
+'''high_data = [
+[1.53, 18578],
+[1.88, 20642],
+[2.15, 22294],
+[2.49, 24358],
+[2.70, 26009],
+[3.02, 27248],
+[3.40, 28899],
+[3.68, 30550],
+]'''
+
 high_data = [
 [1.53, 18578],
 [1.88, 20642],
@@ -60,7 +71,7 @@ class ThrowerTraining():
         if self.thrower_angle == self.thrower_low:
             speed = self.speed_function(dist, self.low_a, self.low_b)
         elif self.thrower_angle == self.thrower_high:
-            speed = self.speed_function(dist, self.high_a, self.high_b)
+            speed = 0.9*self.speed_function(dist, self.high_a, self.high_b)
         else:
             print("Unknown thrower angle state")
             speed = 0

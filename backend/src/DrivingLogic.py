@@ -57,7 +57,7 @@ class DrivingLogic():
         self.spin_ball_pid = PID(0.5, 0.5, 0.1, setpoint=0)
         self.spin_ball_pid.output_limits = (-20, 20)
 
-        self.depth_target = 0.35
+        self.depth_target = 0.5
 
         self.target_goal = GoalDetector.ID_BLUE
 
@@ -70,6 +70,7 @@ class DrivingLogic():
 
         self.approach_direction = 0
         self.ball_lost_right = True 
+        self.goal_lost_right = True 
         self.last_error = None
 
     def callback(self, data):
@@ -105,8 +106,8 @@ class DrivingLogic():
         if self.min_balls <= l:
             self.state = self.drive
         else:
-            #self.motor_driver.send(thrower=0,speed=0, turn_speed=-15 if self.ball_lost_right else 15, servo_hold=0, callback=self.callback)
-            self.motor_driver.send(thrower=0,speed=0, turn_speed=10, servo_hold=0, callback=self.callback)
+            self.motor_driver.send(thrower=0,speed=0, turn_speed=-10 if self.ball_lost_right else 10, servo_hold=0)
+            #self.motor_driver.send(thrower=0,speed=0, turn_speed=10, servo_hold=0, callback=self.callback)
 
     def drive(self, data):
         if not len(data["balls"]):
@@ -128,13 +129,13 @@ class DrivingLogic():
         target_speed = max(min((error) * 100, 50), 25)
         print(target_speed)
 
-        self.motor_driver.send(direction=alpha, turn_speed=new_turn_speed, speed=target_speed, thrower=0, callback=self.callback)
+        self.motor_driver.send(direction=5*alpha, turn_speed=new_turn_speed, speed=target_speed, thrower=0)#, callback=self.callback)
         #print(f"{alpha=}")
         print(f"{new_turn_speed=}")
         #print(f"{(ball_depth - self.depth_target)=}")
 
-        if error < 0:
-            self.state = self.spin_ball
+        if error < 0 and alpha < 1/ball_depth:
+            self.state = self.get_ball
 
     def spin_ball(self, data):
         if not len(data["balls"]):
@@ -144,25 +145,33 @@ class DrivingLogic():
         ball_loc, ball_depth = data["balls"][0]
 
         alpha = (math.atan(ball_loc[0] / ball_loc[1]) * 180.0 / math.pi)
-        print(alpha)
+        print(alpha, 1/ball_depth)
         self.ball_lost_right = False if alpha < 0 else True
 
-        if abs(alpha) < 0.9/ball_depth:
+        if abs(alpha) < 1/ball_depth:
             if self.timer is None:
                 self.timer = time.time()
             self.motor_driver.send(speed=0, turn_speed=0, servo_hold=0)
 
-            if time.time()-self.timer > 0.25:
+            if time.time()-self.timer > 0.5:
                 self.state = self.get_ball
                 return
         else:
             self.timer = None
 
         new_turn_speed = self.spin_ball_pid(alpha)
-        self.motor_driver.send(turn_speed=new_turn_speed, speed=0, servo_hold=0, callback=self.callback)
+        self.motor_driver.send(turn_speed=new_turn_speed, speed=0, direction=0, servo_hold=0)#, callback=self.callback)
 
 
     def get_ball(self, data):
+
+        alpha = 0
+        if len(data["balls"]):
+            ball_loc, ball_depth = data["balls"][0]
+
+            alpha = (math.atan(ball_loc[0] / ball_loc[1]) * 180.0 / math.pi)
+            self.ball_lost_right = False if alpha < 0 else True
+        new_turn_speed = self.spin_pid(alpha)
 
         def callback(data):
             *motor_speeds, thrower_speed, ball_event = data
@@ -174,20 +183,17 @@ class DrivingLogic():
             self.timer = time.time()
         if time.time()-self.timer > 3:
             if self.state == self.get_ball:
-                self.state = self.spin
+                self.state = self.spin_goal#self.spin
             return 
-        self.motor_driver.send(direction=0, turn_speed=0, speed=20, servo_hold=100, callback=callback)
+        self.motor_driver.send(direction=5*alpha, turn_speed=0, speed=20, servo_hold=100)#, callback=callback)
 
     def spin_goal(self, data):
-        def callback(data):
-            *motor_speeds, thrower_speed, ball_event = data
-            if not ball_event:
-                self.state = self.spin
-
         goal = self.get_goal_data(data)
         if goal:
             self.state = self.aim
-        self.motor_driver.send(direction=0, turn_speed=20, speed=0, callback=callback)
+
+        self.motor_driver.send(speed=0, turn_speed=-15 if self.goal_lost_right else 15, servo_hold=0)
+        #self.motor_driver.send(turn_speed=10, speed=0, callback=callback)
 
     def aim(self, data):
         def callback(data):
@@ -202,8 +208,9 @@ class DrivingLogic():
         goal_loc, goal_depth = goal
         goal_alpha = (math.atan(goal_loc[0] / goal_loc[1]) * 180.0 / math.pi)
         print(f"{goal_alpha=}")
+        self.goal_lost_right = False if goal_alpha < 0 else True
 
-        new_turn_speed = self.spin_pid(goal_alpha)
+        new_turn_speed = self.spin_ball_pid(goal_alpha)
         if abs(goal_alpha) < 2:
             if self.timer is None:
                 self.timer = time.time()
