@@ -24,7 +24,7 @@ class RobotController():
 
         self.referee_client = RefereeClient()
         self.referee_client.on_start_event(self.driving_logic.start)
-        self.referee_client.on_stop_event(self.driving_logic.stop)
+        self.referee_client.on_stop_event(self.driving_logic.referee_stop)
         self.referee_client.start()
 
         self.stop = False
@@ -36,7 +36,7 @@ class RobotController():
             aligned_frames = self.rs_camera.get_aligned_frames()
             hsv_frame, depth_frame, debug_frame = self.image_proccess.get_processed_frames(aligned_frames, self.location_process)
             location = self.location_process.get_location(hsv_frame, depth_frame, debug_frame)
-            print(location["pink_goal"])
+            #print(location["pink_goal"])
             self.driving_logic.run_logic(location)
 
     def start(self):

@@ -107,6 +107,7 @@ class LocationProcess():
         black_border_points = self.border.getLocations(hsv_frame, depth, self.border.ID_BLACK, area_of_interest)
         border_dist = []
 
+        filtered_balls = []
         for i in ball_locations:
             loc, dist = i
             w = self.border.get_closest_dist(loc, white_border_points)
@@ -114,7 +115,11 @@ class LocationProcess():
             s = b-w
             if np.isnan(s):
                 s = 0
+            if s >= 0:
+                filtered_balls.append(i)
             border_dist.append(s)
+
+        #print(border_dist)
         
         #print(ball_locations)
         #print(border_dist)
@@ -124,4 +129,4 @@ class LocationProcess():
                 "robot_rot":self.robot_rotation,
                 "pink_goal":pink_goal,
                 "blue_goal":blue_goal,
-                "balls":ball_locations}
+                "balls":filtered_balls}

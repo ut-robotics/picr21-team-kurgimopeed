@@ -32,24 +32,28 @@ class RefereeClient():
 
     async def ws_client(self):
         print("Referee ws started")
-        async with websockets.connect(self.uri) as ws:
-            while not self.stop:
-                msg = await ws.recv()
-                j = json.loads(msg)
-                print(j)
-                try:
-                    if j["signal"] == "start":
-                        if not self.id in j["targets"]:
-                            continue
+        while not self.stop:
+            try:
+                async with websockets.connect(self.uri) as ws:
+                    while not self.stop:
+                        msg = await ws.recv()
+                        j = json.loads(msg)
+                        #print(j)
+                        try:
+                            if j["signal"] == "start":
+                                if not self.id in j["targets"]:
+                                    continue
 
-                        index = j["targets"].index(self.id)
-                        goal = GoalDetector.ID_BLUE if j["baskets"][index] == "blue" else GoalDetector.ID_PINK
-                        self.start_func(goal)
-                    elif j["signal"] == "stop":
-                        if self.id in j["targets"]:
-                            self.stop_func()
-                except Exception as e:
-                    print(e)
+                                index = j["targets"].index(self.id)
+                                goal = GoalDetector.ID_BLUE if j["baskets"][index] == "blue" else GoalDetector.ID_PINK
+                                self.start_func(goal)
+                            elif j["signal"] == "stop":
+                                if self.id in j["targets"]:
+                                    self.stop_func()
+                        except Exception as e:
+                            print(e)
+            except websockets.exceptions.ConnectionClosedError:
+                pass
 
 
 

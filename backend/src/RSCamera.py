@@ -2,7 +2,7 @@ import numpy as np
 import pyrealsense2 as rs
 
 camera_angle = -20
-camera_transformation = np.array([0, 0, 0.190])
+camera_transformation = np.array([-0.01, 0, 0.190])
 camera_fov = (87, 58) #H, V
 
 class RSCamera():

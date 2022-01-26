@@ -70,7 +70,7 @@ class MotorControllerHandler():
                 if self.motor3 < 0:
                     command |= 0b100
                 if reset_mainboard:
-                    command |= 0b1000
+                    command |= 0b10000
                 send_error = comm.send_data(abs(self.motor1), abs(self.motor2), abs(self.motor3), 
                                             self.thrower, self.servo_angle, self.servo_hold, command)
                 recv = comm.receive_data()
@@ -149,7 +149,8 @@ class MotorDriver(MotorControllerHandler):
         motor1, motor2, motor3 = self.get_target_motor_speeds()
 
         if servo_hold is not None:
-            servo_hold = int(linear_map(servo_hold, 0, 100, 4450, 5))
+            if servo_hold != 0:
+                servo_hold = int(linear_map(servo_hold, 0, 100, 4450, 5))
 
         if servo_angle is not None:
             if servo_angle < 0:

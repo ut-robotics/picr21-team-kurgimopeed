@@ -14,7 +14,7 @@ class BorderDetector():
         self.white_debug_mask = None
         self.black_debug_mask = None
         
-        self.grid_size = 100
+        self.grid_size = 50
 
     def set_threshold(self, threshold_values, id=ID_WHITE):
         if id is self.ID_BLACK:
@@ -37,6 +37,7 @@ class BorderDetector():
 
         kernel = np.ones((3,3),np.uint8)
         mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+        mask = cv2.dilate(mask, kernel=np.ones((5,5),np.uint8))
 
         #make mask bigger
         #mask = cv2.erode(mask, np.ones((5,5),np.uint8))
@@ -51,9 +52,10 @@ class BorderDetector():
 
     def generate_area_of_interest(self, frame_locations, shape):
         mask = np.zeros(shape, dtype=np.uint8)
+        area_size = 300
         for x, y in frame_locations:
-            start = (x-self.grid_size/2, y-self.grid_size/2)
-            end =  (x+self.grid_size/2, y+self.grid_size/2)
+            start = (x-area_size, y-area_size)
+            end =  (x+area_size, y+area_size)
             cv2.rectangle(mask, np.int0(start), np.int0(end), (255, 255, 255), -1)
         return mask
 
@@ -82,7 +84,7 @@ class BorderDetector():
             rect = cv2.minAreaRect(cnt)
             _, size, _ = rect
             area_size = size[0]*size[1]
-            if (area_size < 100):
+            if (area_size < 50):
                 continue
 
             box = cv2.boxPoints(rect)
