@@ -50,7 +50,7 @@ class MotorControllerHandler():
     def run(self, queue):
         with Serial(self.port, self.baudrate, timeout=self.timeout) as ser:
             comm = MainBoardComm(ser)
-            reset_mainboard = True
+            motor_driver_reset_timer = 0
             while comm.receive_data() is not None:
                 pass #clear buffer
             while True:
@@ -69,8 +69,10 @@ class MotorControllerHandler():
                     command |= 0b10
                 if self.motor3 < 0:
                     command |= 0b100
-                if reset_mainboard:
+                current_time = time.time()
+                if current_time-motor_driver_reset_timer > 1:
                     command |= 0b10000
+                    motor_driver_reset_timer = current_time
                 send_error = comm.send_data(abs(self.motor1), abs(self.motor2), abs(self.motor3), 
                                             self.thrower, self.servo_angle, self.servo_hold, command)
                 recv = comm.receive_data()
@@ -79,7 +81,6 @@ class MotorControllerHandler():
                     #print("received data from mainborad:", recv)
                     callback(recv)
                     pass
-                reset_mainboard = False
                 time.sleep(0.02) #limit to 50hz
         print("Motor controller stopped")
 

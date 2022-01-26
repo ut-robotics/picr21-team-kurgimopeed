@@ -52,7 +52,7 @@ class BorderDetector():
 
     def generate_area_of_interest(self, frame_locations, shape):
         mask = np.zeros(shape, dtype=np.uint8)
-        area_size = 300
+        area_size = 100
         for x, y in frame_locations:
             start = (x-area_size, y-area_size)
             end =  (x+area_size, y+area_size)
