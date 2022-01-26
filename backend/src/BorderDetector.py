@@ -14,7 +14,7 @@ class BorderDetector():
         self.white_debug_mask = None
         self.black_debug_mask = None
         
-        self.grid_size = 50
+        self.grid_size = 200
 
     def set_threshold(self, threshold_values, id=ID_WHITE):
         if id is self.ID_BLACK:
@@ -84,7 +84,7 @@ class BorderDetector():
             rect = cv2.minAreaRect(cnt)
             _, size, _ = rect
             area_size = size[0]*size[1]
-            if (area_size < 50):
+            if (area_size < 100):
                 continue
 
             box = cv2.boxPoints(rect)
